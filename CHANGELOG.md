@@ -19,6 +19,7 @@
 - Cursor capability pack consumption guide
 - Codex capability pack consumption guide
 - Gemini CLI capability pack consumption guide
+- OpenCode capability pack consumption guide
 
 ## [0.5.0] - 2026-06-02
 

@@ -1,31 +1,94 @@
 # OpenCode
 
-## `AGENTS.md`
+## Purpose
 
-Keep `AGENTS.md` at the repository root so OpenCode can use it as the shared repository contract.
+Explain how OpenCode should consume `ai-engineering-harness` as a capability pack inside a target repository.
 
-## `commands/`
+## Runtime Fit
 
-Use `commands/` as the high-level operating loop. Reference the specific command document that matches the current phase of work instead of relying on implicit workflow.
+OpenCode is a good fit when the user wants an open agent workflow over a target repository with explicit markdown operating context.
 
-## `skills/`
+OpenCode should use the target repository's installed `AGENTS.md`, commands, skills, templates, and `.harness/` artifacts.
 
-Use `skills/` as compact reusable guidance for mapping, discussion, planning, execution, verification, and durable memory capture.
+OpenCode should not treat the `ai-engineering-harness` source repo as the product repo unless maintaining the harness itself.
 
-## `.harness/` Artifacts
+## Consumption Model
 
-Keep all active task artifacts in `.harness/` so OpenCode can read the current goal, plan, verification notes, and memory directly from the repository.
+Use OpenCode against the target repository after the harness operating surface has been installed or copied there.
 
-## Recommended First Prompt
+The source pack is only the canonical source. Product work happens in the target repository.
 
-> Read `AGENTS.md` plus the active `.harness/` artifacts first. Use the harness loop, keep changes surgical, and update markdown artifacts as the work progresses.
+## Recommended Setup
 
-## Known Limitations
+Use the current setup flow:
 
-- no OpenCode-specific installer is added
-- no plugin or marketplace packaging is assumed
-- the guide is usage-only, not a runtime integration
+```bash
+node install.js --target ../my-project --dry-run
+node install.js --target ../my-project
+node validate.js --target ../my-project --profile-only
+```
 
-## Safety Reminder
+Run these commands from the source pack repo, then run OpenCode from or against the target repo for product work, and keep `.harness/` artifacts in the target repo.
 
-Do not store secrets, tokens, customer data, or private business data in harness artifacts.
+## What OpenCode Should Read
+
+Inside the target repository, OpenCode should read:
+
+- `AGENTS.md`
+- `docs/consume-as-pack.md`
+- `docs/install-to-profile-walkthrough.md`
+- `docs/harness-build-usage.md`
+- `.harness/HARNESS.md`
+- `.harness/TEAM.md`
+- `.harness/SKILLS.md`
+- `.harness/WORKFLOW.md`
+- `.harness/GATES.md`
+- `.harness/MEMORY.md`
+- active `.harness/goals/<goal-id>/` artifacts
+
+## Session Rules
+
+- start from the target repo working directory whenever possible
+- keep prompts explicit about source pack vs target repo
+- keep one active goal per session when possible
+- preserve goal artifact updates when plan or verification state changes
+- report commands that were not run honestly
+- treat validation output as structural only
+
+## First Prompt
+
+> Read `AGENTS.md`, `docs/consume-as-pack.md`, `docs/install-to-profile-walkthrough.md`, and `docs/harness-build-usage.md`. Treat this directory as the target product repository. Do not use the `ai-engineering-harness` source repo as the product repo. Inspect `.harness/` artifacts and summarize the current harness state before making changes.
+
+## Harness-Build Prompt
+
+> Run the harness-build process for this target repository. Create or update `.harness/HARNESS.md`, `TEAM.md`, `SKILLS.md`, `WORKFLOW.md`, `GATES.md`, and `MEMORY.md`. Use the smallest sufficient skill and workflow set. Do not implement application code.
+
+## Goal Execution Prompt
+
+> Using the current `.harness/` profile and `.harness/goals/<goal-id>/` artifacts, plan and execute the next task. Keep the task scoped, update `TASKS.md` and `VERIFY.md` when state changes, and stop before shipping if verification evidence is missing.
+
+## Validation Prompt
+
+> Run or ask me to run: `node validate.js --target <path> --profile-only` and `node validate.js --target <path> --goal <goal-id>`. Treat validation as structural only, not proof of application correctness. Fix exact missing paths and headings.
+
+## Safety Boundaries
+
+- keep markdown as the source of truth
+- keep `.harness/` artifacts in the target repository
+- do not invent OpenCode integration behavior
+- do not treat structural validation as proof that the application is correct
+
+## Common Mistakes
+
+- running OpenCode in the source pack repo and treating it as the product repo
+- leaving prompts ambiguous about source pack vs target repo
+- skipping the read-first pass over installed docs and `.harness/` artifacts
+- forgetting to update goal artifacts when plan or verification state changes
+
+## Completion Checklist
+
+- OpenCode is pointed at the target repository, not the source pack
+- installed `AGENTS.md` and supporting docs were read first
+- `.harness/` profile artifacts exist or were updated intentionally
+- active goal artifacts were read before execution
+- validation flow is understood as structural-only
