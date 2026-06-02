@@ -36,6 +36,7 @@ const requiredFiles = [
   "docs/v0.3.0-plan.md",
   "docs/system-positioning.md",
   "docs/adoption-guide.md",
+  "docs/install-output-example.md",
   "docs/adoption-smoke-test.md",
   "docs/usage-examples.md",
   "docs/host-repo-checklist.md",

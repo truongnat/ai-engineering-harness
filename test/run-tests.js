@@ -5,7 +5,13 @@ const path = require("node:path");
 const childProcess = require("node:child_process");
 
 const repoRoot = path.resolve(__dirname, "..");
-const { installHarness, parseArgs } = require(path.join(repoRoot, "install.js"));
+const {
+  formatNextSteps,
+  formatSummary,
+  installHarness,
+  parseArgs,
+  summarizeResults
+} = require(path.join(repoRoot, "install.js"));
 const {
   parseValidateArgs,
   validateRepository,
@@ -41,6 +47,50 @@ runTest("install.js dry-run reports files without writing them", () => {
 
   assert.ok(results.some((result) => result.action === "WOULD COPY" && result.relativePath === "AGENTS.md"));
   assert.equal(fs.existsSync(path.join(targetDir, "AGENTS.md")), false);
+});
+
+runTest("install.js summary helper counts copied and skipped actions", () => {
+  const summary = summarizeResults([
+    { action: "WOULD COPY", relativePath: "AGENTS.md" },
+    { action: "WOULD SKIP", relativePath: "docs/adoption-guide.md" },
+    { action: "COPY", relativePath: "commands/harness-start.md" }
+  ]);
+
+  assert.deepEqual(summary, {
+    copied: 2,
+    skipped: 1,
+    failed: 0
+  });
+});
+
+runTest("install.js next steps helper explains dry-run follow-up", () => {
+  const text = formatNextSteps({
+    target: "/tmp/example-target",
+    dryRun: true
+  });
+
+  assert.match(text, /Next steps:/);
+  assert.match(text, /Review the files marked WOULD COPY/);
+  assert.match(text, /node install\.js --target \/tmp\/example-target/);
+});
+
+runTest("install.js summary helper formats compact install summary", () => {
+  const text = formatSummary(
+    {
+      target: "/tmp/example-target",
+      dryRun: false
+    },
+    {
+      copied: 5,
+      skipped: 2,
+      failed: 0
+    }
+  );
+
+  assert.match(text, /Install summary:/);
+  assert.match(text, /- mode: write/);
+  assert.match(text, /- copied: 5/);
+  assert.match(text, /- skipped: 2/);
 });
 
 runTest("install.js skips existing files unless --force is passed", () => {

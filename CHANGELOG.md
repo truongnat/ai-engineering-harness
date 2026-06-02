@@ -11,6 +11,11 @@
 - tiny-repo adoption example
 - lightweight memory conventions for small repositories
 
+### Added
+
+- post-install next-step guidance
+- install output examples
+
 ## [0.3.1] - 2026-06-02
 
 ### Added

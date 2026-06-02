@@ -196,6 +196,20 @@ node validate.js
 
 If you copied the full repository surface, this confirms the required structure and key document contracts are present.
 
+## After Running `install.js`
+
+After install, follow the printed next-step guidance and then review:
+
+- [docs/install-output-example.md](install-output-example.md)
+- [docs/harness-build-usage.md](harness-build-usage.md)
+- [docs/target-repo-validation.md](target-repo-validation.md)
+
+Recommended first follow-up validation:
+
+```bash
+node validate.js --target ../my-project --profile-only
+```
+
 ## Smoke Test
 
 Before using the harness in a real repository, run the local-only [Adoption Smoke Test](adoption-smoke-test.md).

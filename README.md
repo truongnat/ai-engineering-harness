@@ -97,8 +97,10 @@ Then:
 
 1. Read [AGENTS.md](AGENTS.md).
 2. Create or review `.harness/` artifacts in the host repo.
-3. Start with [`commands/harness-start.md`](commands/harness-start.md).
-4. Move through the loop with evidence at each phase.
+3. Follow the printed next steps after install.
+4. Run `node validate.js --target ../my-project --profile-only`.
+5. Start with [`commands/harness-start.md`](commands/harness-start.md).
+6. Move through the loop with evidence at each phase.
 
 ## 🗂️ Start Here
 

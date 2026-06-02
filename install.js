@@ -125,14 +125,63 @@ function formatResults(results) {
   return results.map((result) => `${result.action} ${result.relativePath}`).join("\n");
 }
 
+function summarizeResults(results) {
+  return results.reduce(
+    (summary, result) => {
+      if (result.action.endsWith("COPY")) {
+        summary.copied += 1;
+      } else if (result.action.endsWith("SKIP")) {
+        summary.skipped += 1;
+      }
+      return summary;
+    },
+    {
+      copied: 0,
+      skipped: 0,
+      failed: 0
+    }
+  );
+}
+
+function formatSummary(options, summary) {
+  return [
+    "Install summary:",
+    `- target: ${options.target}`,
+    `- mode: ${options.dryRun ? "dry-run" : "write"}`,
+    `- copied: ${summary.copied}`,
+    `- skipped: ${summary.skipped}`,
+    `- failed: ${summary.failed}`
+  ].join("\n");
+}
+
+function formatNextSteps(options) {
+  if (options.dryRun) {
+    return [
+      "Next steps:",
+      "1. Review the files marked WOULD COPY.",
+      `2. Run: node install.js --target ${options.target}`,
+      "3. After install, create .harness/ profile artifacts."
+    ].join("\n");
+  }
+
+  return [
+    "Next steps:",
+    "1. Open the target repository.",
+    "2. Read AGENTS.md.",
+    "3. Create .harness/HARNESS.md, TEAM.md, SKILLS.md, WORKFLOW.md, GATES.md, and MEMORY.md.",
+    "4. Use docs/harness-build-usage.md for the profile creation flow.",
+    `5. Validate: node validate.js --target ${options.target} --profile-only`
+  ].join("\n");
+}
+
 function main(argv = process.argv.slice(2)) {
   const options = parseArgs(argv);
   const results = installHarness(options);
+  const summary = summarizeResults(results);
 
   console.log(formatResults(results));
-  console.log(
-    `Install summary: ${results.filter((result) => result.action.endsWith("COPY")).length} file operations, target ${options.target}`
-  );
+  console.log(formatSummary(options, summary));
+  console.log(formatNextSteps(options));
 
   return results;
 }
@@ -149,8 +198,11 @@ if (require.main === module) {
 module.exports = {
   exportPaths,
   formatResults,
+  formatNextSteps,
+  formatSummary,
   installHarness,
   listFiles,
   main,
-  parseArgs
+  parseArgs,
+  summarizeResults
 };
