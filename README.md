@@ -100,7 +100,7 @@ Then:
 | Runtime-specific usage | [docs/runtimes/README.md](docs/runtimes/README.md) |
 | Quality gates | [docs/quality-gates-matrix.md](docs/quality-gates-matrix.md) |
 | Session startup | [docs/session-start-checklist.md](docs/session-start-checklist.md) |
-| Examples | [examples/demo-project/](examples/demo-project/) and [examples/workflows/](examples/workflows/) |
+| Examples | [examples/demo-project/](examples/demo-project/), [examples/workflows/](examples/workflows/), and [examples/harness-build/flutter-google-login/](examples/harness-build/flutter-google-login/) |
 
 ## 🛠️ Adoption
 

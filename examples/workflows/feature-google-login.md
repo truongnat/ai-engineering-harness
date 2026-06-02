@@ -44,3 +44,5 @@ When adding optional authentication, preserve guest mode as an explicit acceptan
 
 - do not store provider secrets or tokens in harness artifacts
 - keep backend auth redesign out of scope unless it is discussed and planned explicitly
+
+See also: [Demo harness build example](../harness-build/flutter-google-login/README.md)
