@@ -2,6 +2,8 @@
 
 The harness uses simple gates to prevent low-discipline execution.
 
+For phase-by-phase entry, evidence, completion, and escalation criteria, use [Quality Gates Matrix](quality-gates-matrix.md).
+
 ## Planning Gate
 
 - active goal is explicit

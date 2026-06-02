@@ -54,6 +54,10 @@ Example prompt:
 
 > Run `harness-verify`. Use the checks defined in `.harness/PLAN.md`, record what was run and what was not run in `.harness/VERIFY.md`, and do not assume success without evidence.
 
+Quality gate example:
+
+> Before saying this phase is done, check `docs/quality-gates-matrix.md` and report which gate passed or failed.
+
 ## `harness-ship`
 
 Use after verification to summarize the result and prepare handoff.

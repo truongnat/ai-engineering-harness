@@ -9,6 +9,7 @@ const requiredFiles = [
   "docs/usage-examples.md",
   "docs/host-repo-checklist.md",
   "docs/session-start-checklist.md",
+  "docs/quality-gates-matrix.md",
   "docs/runtime-compatibility.md",
   "docs/runtimes/README.md",
   "docs/runtimes/claude-code.md",

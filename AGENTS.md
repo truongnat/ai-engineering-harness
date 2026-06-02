@@ -97,6 +97,8 @@ Rules:
 
 Work is not complete until all of the following are true:
 
+Use `docs/quality-gates-matrix.md` when deciding whether a phase is complete.
+
 - the goal and scope are explicit
 - the plan exists or the change is genuinely trivial and still planned in writing
 - the requested work is implemented in scope
