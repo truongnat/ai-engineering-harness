@@ -4,7 +4,9 @@
 
 ### Added
 
-- runtime-native install via [install-runtime.js](install-runtime.js) for Claude, Codex, Cursor, Windsurf, Gemini, OpenCode, generic, and `all`
+- runtime-native install audit and dogfood plan ([runtime-native-install-audit.md](docs/runtime-native-install-audit.md), [runtime-native-install-dogfood-plan.md](docs/runtime-native-install-dogfood-plan.md))
+
+- runtime-native install via [install-runtime.js](install-runtime.js) for Claude, Codex, Cursor, Windsurf, Gemini, OpenCode, generic, and `all` (**experimental** until dogfooded)
 - runtime payloads under [runtime/](runtime/) (rules, plugins, extensions, AGENTS.md, `.claude/` hints)
 - [runtime-native-install.md](docs/runtime-native-install.md)
 

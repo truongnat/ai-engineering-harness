@@ -81,7 +81,7 @@ Start with [`commands/`](commands/) and treat the loop as the default operating 
 
 ## 🚀 Install
 
-**Runtime-native install** (no root pack copy): [runtime-native-install](docs/runtime-native-install.md)
+**Runtime-native install** (experimental, no root pack copy): [runtime-native-install](docs/runtime-native-install.md) · [audit](docs/runtime-native-install-audit.md) · [dogfood plan](docs/runtime-native-install-dogfood-plan.md)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install.sh | sh -s -- \

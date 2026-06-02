@@ -4,6 +4,8 @@
 
 Document what `install.sh` + `install-runtime.js` install per runtime **without** copying the full pack to the product repo root.
 
+**Status:** Experimental until dogfooded. See [runtime-native-install-audit.md](runtime-native-install-audit.md) and [runtime-native-install-dogfood-plan.md](runtime-native-install-dogfood-plan.md). Do not claim stable support in production adoption guides yet.
+
 ## Commands
 
 ```bash

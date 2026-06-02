@@ -58,10 +58,13 @@ See:
 
 [install.sh](../install.sh) + [install-runtime.js](../install-runtime.js) install **per runtime** without copying `commands/`, `skills/`, etc. to the product root. See [runtime-native-install.md](runtime-native-install.md).
 
-| Runtime | Status |
+| Capability | Status |
 |---|---|
-| opencode, cursor, windsurf, claude, codex, gemini, generic, all | **implemented** (payloads in `runtime/`) |
-| manual / `--legacy-root` | legacy root copy via `install.js` (fallback) |
+| `manual` / `--legacy-root` | **Implemented** — root copy via `install.js`; dogfooded (Scenario C); fallback only |
+| `.harness/` init (`--init-harness`) | **Implemented** — project scope; automated tests |
+| Runtime-native modes | **Implemented, audit/dogfood pending** — see [runtime-native-install-audit.md](runtime-native-install-audit.md) |
+
+Do **not** treat runtime-native modes as stable until dogfood reports exist per [runtime-native-install-dogfood-plan.md](runtime-native-install-dogfood-plan.md).
 
 ## Supported User Flows (interim)
 

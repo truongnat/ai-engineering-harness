@@ -86,7 +86,7 @@ pick_runtime_interactive() {
   printf '%s\n' \
     '  1) Claude Code' \
     '  2) Codex CLI' \
-    '  3) Cursor' \
+    '  3) Cursor / Windsurf (or --runtime windsurf)' \
     '  4) Gemini CLI' \
     '  5) OpenCode' \
     '  6) Generic AGENTS.md bootstrap' \

@@ -24,9 +24,10 @@ Treat frozen docs as **pre-v1 contract candidates**—accurate for structural be
 | Runtime consumption | docs-only runtimes | **pre-v1 candidate** — [frozen-runtime-consumption-contract.md](frozen-runtime-consumption-contract.md) |
 | Packaging / release | manual packaging | **pre-v1 candidate** — [frozen-packaging-release-contract.md](frozen-packaging-release-contract.md) |
 | Source vs target boundary | pack vs product repo | **pre-v1 candidate** — [frozen-source-target-boundary-contract.md](frozen-source-target-boundary-contract.md) |
-| Runtime install matrix | per-runtime paths and scopes | **implemented** — [runtime-native-install.md](runtime-native-install.md), [runtime-install-matrix-research.md](runtime-install-matrix-research.md) |
-| Interactive installer | runtime + scope wizard | **implemented** — [interactive-installer-design.md](interactive-installer-design.md), [install-runtime.js](../install-runtime.js) |
-| Project state policy | `.harness/` per repo vs global plugin | **implemented** — [project-state-policy.md](project-state-policy.md), [harness-init-usage.md](harness-init-usage.md) |
+| Runtime install matrix | per-runtime paths and scopes | **experimental** — [runtime-native-install-audit.md](runtime-native-install-audit.md) |
+| Interactive installer | runtime + scope wizard | **implemented** — [interactive-installer-design.md](interactive-installer-design.md) |
+| Runtime-native writes | `install-runtime.js` | **experimental** — dogfood pending — [runtime-native-install-dogfood-plan.md](runtime-native-install-dogfood-plan.md) |
+| Project state policy | `.harness/` per repo vs global plugin | **implemented** (scaffold) — [harness-init-usage.md](harness-init-usage.md) |
 | Plugin install UX (fallback) | one-line `install.sh` + `install.js` copy | **dogfooded; fallback only** — [install.sh](../install.sh), [install-sh-usage.md](install-sh-usage.md), [scenario-c-one-line-installer.md](pack-dogfood-reports/scenario-c-one-line-installer.md) |
 
 Breaking changes: [breaking-change-policy.md](breaking-change-policy.md).

@@ -24,12 +24,16 @@ Target UX: choose **runtime** + **scope** → install to runtime-correct locatio
 | `--legacy-root` | Alias for `--runtime manual` |
 | `--yes` | Skip confirmation prompt |
 
-**Only `--runtime manual` writes files today** (legacy `install.js` root copy). Other runtimes are **plan-only** until runtime-specific steps land:
+**Experimental:** Non-`manual` runtimes call [install-runtime.js](../install-runtime.js). They are **implemented but not stable** until dogfooded — see [runtime-native-install-audit.md](runtime-native-install-audit.md).
 
-- **Dry-run:** exits 0 after printing plan (no download)
-- **Write:** exits non-zero with not-implemented message
+**Only `--runtime manual`** performs legacy root copy (`install.js`). Other runtimes write runtime-specific paths only (no `commands/`/`skills/` at repo root):
+
+- **Dry-run:** prints `WOULD CREATE` / `UPDATE` lines; no root pack copy (uses local pack when `install.sh` is run from clone)
+- **Write:** creates runtime-specific files only
 
 Non-interactive install without `--runtime` defaults to `manual` and prints a **fallback warning**.
+
+Windsurf: use `--runtime windsurf` (alias for cursor) or interactive option 3 (Cursor / Windsurf).
 
 See [interactive-installer-design.md](interactive-installer-design.md), [runtime-install-matrix-research.md](runtime-install-matrix-research.md), [project-state-policy.md](project-state-policy.md).
 

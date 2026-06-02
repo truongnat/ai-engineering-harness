@@ -71,6 +71,8 @@ const requiredFiles = [
   "install-runtime.js",
   "runtime/README.md",
   "docs/runtime-native-install.md",
+  "docs/runtime-native-install-audit.md",
+  "docs/runtime-native-install-dogfood-plan.md",
   "docs/one-line-installer-design.md",
   "docs/plugin-install-security.md",
   "docs/install-sh-usage.md",

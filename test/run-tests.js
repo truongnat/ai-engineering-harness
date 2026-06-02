@@ -429,6 +429,33 @@ runTest("install-runtime.js exists at repository root", () => {
   assert.ok(fs.existsSync(path.join(repoRoot, "install-runtime.js")));
 });
 
+runTest("runtime payload directories exist", () => {
+  for (const dir of ["bootstrap", "cursor", "claude", "gemini", "opencode"]) {
+    assert.ok(fs.existsSync(path.join(repoRoot, "runtime", dir)), `missing runtime/${dir}`);
+  }
+  assert.ok(fs.existsSync(path.join(repoRoot, "runtime", "README.md")));
+});
+
+runTest("install-runtime.js does not reference root pack copy", () => {
+  const script = fs.readFileSync(path.join(repoRoot, "install-runtime.js"), "utf8");
+  assert.equal(script.includes("commands/"), false);
+  assert.equal(script.includes("skills/"), false);
+  assert.equal(script.includes("installHarness"), false);
+});
+
+runTest("install-runtime.js supports expected runtimes", () => {
+  const { ALL_RUNTIMES, RUNTIME_ALIASES, resolveRuntime } = require(path.join(repoRoot, "install-runtime.js"));
+  assert.deepEqual(ALL_RUNTIMES, ["opencode", "cursor", "claude", "codex", "gemini", "generic"]);
+  assert.equal(resolveRuntime("windsurf"), "cursor");
+  assert.equal(RUNTIME_ALIASES.windsurf, "cursor");
+});
+
+runTest("install.sh documents windsurf alias", () => {
+  const script = fs.readFileSync(installShPath, "utf8");
+  assert.match(script, /windsurf/);
+  assert.match(script, /Windsurf/);
+});
+
 runTest("install.sh legacy-root aliases manual fallback", () => {
   const script = fs.readFileSync(installShPath, "utf8");
 
