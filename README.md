@@ -83,7 +83,9 @@ To adopt the harness in another repository, start with:
 - [Adoption Guide](docs/adoption-guide.md)
 - [Usage Examples](docs/usage-examples.md)
 - [Host Repo Checklist](docs/host-repo-checklist.md)
+- [Session Start Checklist](docs/session-start-checklist.md)
 - [Runtime Compatibility](docs/runtime-compatibility.md)
+- [Runtime Guides](docs/runtimes/README.md)
 
 The adoption layer stays lightweight: copy markdown assets, create `.harness/`, and use the command loop without adding a runtime service.
 

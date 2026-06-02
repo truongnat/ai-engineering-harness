@@ -11,6 +11,18 @@ Across tools, the operating model stays the same:
 - follow the command loop
 - treat markdown as the source of truth
 
+The runtime-specific documents under `docs/runtimes/` are usage guides, not adapters, installers, or runtime integrations.
+
+## Runtime Guides
+
+- [Runtime Guides Index](runtimes/README.md)
+- [Session Start Checklist](session-start-checklist.md)
+- [Claude Code](runtimes/claude-code.md)
+- [Codex](runtimes/codex.md)
+- [Cursor](runtimes/cursor.md)
+- [Gemini CLI](runtimes/gemini-cli.md)
+- [OpenCode](runtimes/opencode.md)
+
 ## Claude Code
 
 Use the harness as repository guidance:

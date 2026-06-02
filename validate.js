@@ -8,7 +8,14 @@ const requiredFiles = [
   "docs/adoption-guide.md",
   "docs/usage-examples.md",
   "docs/host-repo-checklist.md",
-  "docs/runtime-compatibility.md"
+  "docs/session-start-checklist.md",
+  "docs/runtime-compatibility.md",
+  "docs/runtimes/README.md",
+  "docs/runtimes/claude-code.md",
+  "docs/runtimes/cursor.md",
+  "docs/runtimes/codex.md",
+  "docs/runtimes/gemini-cli.md",
+  "docs/runtimes/opencode.md"
 ];
 
 const commandFiles = [
