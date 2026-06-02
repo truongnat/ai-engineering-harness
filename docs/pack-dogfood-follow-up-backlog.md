@@ -2,6 +2,11 @@
 
 Triage dogfood findings from [pack-dogfood-friction-log.md](pack-dogfood-friction-log.md) and completed [pack-dogfood reports](pack-dogfood-report-template.md).
 
+## v0.9.x Patch Candidates
+
+- One-line install: improve `install.js` next steps to mention `curl | sh` install path and validate-from-source-pack ([scenario-c-one-line-installer.md](pack-dogfood-reports/scenario-c-one-line-installer.md))
+- Repeat: install summary relative target display when invoked via `install.sh` with relative `--target`
+
 ## v0.8.x Patch Candidates
 
 Doc clarifications, scenario fixes, and small guidance updates that do not change core contracts.
@@ -28,6 +33,7 @@ Issues that must be resolved before a stable `v1.0.0` capability pack release.
 
 - **No v1 blockers found in Scenario A** (install, profile, goal validation succeeded)
 - **No v1 blockers found in Scenario B** (second repo, google-login goal, validation succeeded)
+- **No v1 blockers found in Scenario C** (one-line `curl | sh` install, profile and goal validation succeeded)
 
 ## Post-v1 Optional Work
 

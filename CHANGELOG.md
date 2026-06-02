@@ -8,6 +8,7 @@
 - one-line installer design ([one-line-installer-design.md](docs/one-line-installer-design.md))
 - install security notes ([plugin-install-security.md](docs/plugin-install-security.md))
 - `install.sh` one-line remote installer ([install-sh-usage.md](docs/install-sh-usage.md))
+- one-line installer dogfood report ([pack-dogfood-reports/scenario-c-one-line-installer.md](docs/pack-dogfood-reports/scenario-c-one-line-installer.md))
 - optional `ai-harness` CLI (`bin/ai-harness.js`)
 - one-line installer dogfood
 - re-freeze contracts after plugin UX is proven

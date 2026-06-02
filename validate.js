@@ -86,6 +86,7 @@ const requiredFiles = [
   "docs/harness-example-to-target-layout.md",
   "docs/pack-dogfood-reports/scenario-a-tiny-health-check.md",
   "docs/pack-dogfood-reports/scenario-b-frontend-mobile-feature.md",
+  "docs/pack-dogfood-reports/scenario-c-one-line-installer.md",
   "docs/packaging-model.md",
   "docs/pack-manifest-spec.md",
   "docs/pack-verification-checklist.md",
