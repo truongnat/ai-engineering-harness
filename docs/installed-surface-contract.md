@@ -67,11 +67,22 @@ Optional but useful installed files can include:
 
 These remain optional because different target repos may need different levels of guidance.
 
+## PACK.md And The Installed Surface
+
+`PACK.md` is a source-pack and release-archive manifest.
+
+- include `PACK.md` in release archives so adopters can verify pack identity and validation commands
+- do not require `PACK.md` inside every target repository by default
+- teams may copy `PACK.md` into a target repo when they want local pack metadata for vendored or audited adoption
+
+`install.js` does not need to copy `PACK.md` unless a future release explicitly adds that as an optional install flag.
+
 ## What Must Not Be Installed
 
 Do not treat these as part of the default installed surface:
 
 - release notes unless explicitly useful
+- `PACK.md` unless the target repo explicitly wants pack metadata locally
 - repository maintenance docs
 - CI-only files unless needed
 - private or local artifacts

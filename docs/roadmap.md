@@ -71,6 +71,16 @@
 - runtime comparison guide with shared prompt and validation patterns
 - no runtime adapters or integrations in this release
 
+## V7: Capability Pack Packaging
+
+- `v0.7.0`: Capability Pack Packaging
+- pack manifest (`PACK.md`) and packaging contract
+- packaging model and manifest spec
+- manual release archive packaging guidance
+- pack verification checklist
+- optional lightweight manifest validation
+- no publishing automation, marketplace automation, or runtime adapters
+
 ## Later Optional Work
 
 - optional runtime adapters
@@ -95,5 +105,6 @@
 - `v0.4.0`: Ergonomics Polish
 - `v0.5.0`: Plugin Distribution Model
 - `v0.6.0`: Runtime Consumption Guides
+- `v0.7.0`: Capability Pack Packaging (in progress)
 
 Heavy runtime systems remain out of scope for v1. Any future automation should support the markdown operating model rather than replace it.

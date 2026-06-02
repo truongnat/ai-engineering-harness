@@ -59,6 +59,7 @@ Use this when:
 ### How It Works
 
 - vendor the selected harness surface into the target repository
+- optionally include `PACK.md` in the vendored directory when the team wants local pack version and validation metadata
 - point agents at that vendored operating surface
 - keep `.harness/` artifacts in the target repository
 
@@ -117,10 +118,10 @@ Use this when:
 ### How It Works
 
 - download a release archive of the pack
-- extract the relevant installed surface
-- copy or install it into the target repository
+- extract the archive and read `PACK.md` for pack version, included surface, and validation commands
+- copy or install the installed surface into the target repository
 
-See [docs/release-archive-model.md](release-archive-model.md).
+See [docs/release-archive-model.md](release-archive-model.md) and [PACK.md](../PACK.md).
 
 ### Pros
 

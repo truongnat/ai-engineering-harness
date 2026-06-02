@@ -2,6 +2,7 @@
 
 ## Required Files
 
+- `PACK.md`
 - `AGENTS.md`
 - `install.js`
 - `validate.js`

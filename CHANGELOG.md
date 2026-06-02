@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.7.0] - Unreleased
+
+### Planned
+
+- capability pack packaging model
+- pack manifest spec
+- PACK.md manifest
+- manual release archive packaging guidance
+- pack verification checklist
+- optional lightweight manifest validation
+
 ## [0.6.0] - 2026-06-02
 
 ### Planned

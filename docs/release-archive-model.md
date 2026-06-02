@@ -14,6 +14,7 @@ They fit the plugin-like capability-pack model while staying markdown-first and 
 
 A release archive should contain the capability-pack surface needed for adoption:
 
+- `PACK.md` as the pack manifest (name, version, included surface, validation commands)
 - `AGENTS.md`
 - `commands/`
 - `skills/`
@@ -42,6 +43,7 @@ Archive generation is not implemented in this step.
 
 ```txt
 ai-engineering-harness-vX.Y.Z/
+├── PACK.md
 ├── AGENTS.md
 ├── commands/
 ├── skills/
