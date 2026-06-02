@@ -69,7 +69,7 @@ runTest("parseValidateArgs returns usage error for unsupported args", () => {
   assert.deepEqual(parsed.usageErrors, ["Unsupported argument: --wat"]);
 });
 
-runTest("parseValidateArgs returns planned-but-not-implemented error for --target", () => {
+runTest("parseValidateArgs accepts --target as target profile mode", () => {
   const parsed = parseValidateArgs(["--target", "../my-project"]);
 
   assert.equal(parsed.mode, "target-profile");

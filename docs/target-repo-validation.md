@@ -1,6 +1,6 @@
 # Target Repository Validation
 
-This document defines the future lightweight validation mode for a host repository that has adopted `ai-engineering-harness` and produced `.harness/` profile artifacts.
+This document defines the lightweight validation mode for a host repository that has adopted `ai-engineering-harness` and produced `.harness/` profile artifacts.
 
 Profile validation is the first implemented target-repository step.
 Goal-level validation comes later.
@@ -11,17 +11,17 @@ Target repo validation means checking whether a host repository contains the min
 
 The validator should focus on structural contract checks, not application correctness.
 
-## What It Should Check
+## What It Checks Now
 
-The future validation mode should check:
+The current profile validation mode checks:
 
 - required root files exist in the host repository
 - `.harness/` exists
 - required harness profile artifacts exist
-- optional project context artifacts are recognized when present
-- optional goal-level artifacts follow the expected artifact set when a goal is being reviewed
 - obvious structural gaps are reported with clear, actionable messages
 - safety boundaries are preserved during validation output
+
+Goal-level validation and optional context checks are planned for later v0.3.0 steps.
 
 ## What It Should Not Check
 
@@ -36,7 +36,7 @@ The future validation mode should not:
 
 ## Required Root Files In A Host Repo
 
-Minimum future checks at the repository root:
+Current required checks at the repository root:
 
 - `AGENTS.md` exists
 - `.harness/` exists
@@ -45,7 +45,7 @@ These are the minimum entry points for an adopted target repository.
 
 ## Required `.harness/` Profile Artifacts
 
-The future profile-level validator should check for:
+The current profile-level validator checks for:
 
 - `.harness/HARNESS.md`
 - `.harness/TEAM.md`
@@ -60,7 +60,7 @@ This profile-level check is the first implemented target validation mode.
 
 ## Optional Project Context Artifacts
 
-The validator should recognize these as optional but useful project context:
+The validator may recognize these as optional but useful project context in a later step:
 
 - `.harness/PROJECT.md`
 - `.harness/STATE.md`
@@ -132,16 +132,17 @@ Recommended warning style:
 - `Warning: optional path not found: .harness/PROJECT.md`
 - `Warning: optional path not found: .harness/ROADMAP.md`
 
-## Future CLI Shape
+## CLI Shape
 
-These CLI examples describe future design intent only. They are not implemented in this step.
-
-Possible future commands:
+Currently implemented:
 
 - `node validate.js`
 - `node validate.js --target ../my-project`
-- `node validate.js --target ../my-project --goal google-login`
 - `node validate.js --target ../my-project --profile-only`
+
+Currently deferred:
+
+- `node validate.js --target ../my-project --goal google-login`
 
 Intended meanings:
 
@@ -149,10 +150,10 @@ Intended meanings:
   - validate this harness repository itself
 - `node validate.js --target ../my-project`
   - validate a host repository that adopted the harness
-- `node validate.js --target ../my-project --goal google-login`
-  - validate the host repository and the named goal artifact set
 - `node validate.js --target ../my-project --profile-only`
   - validate only the profile-level adopted harness artifacts
+- `node validate.js --target ../my-project --goal google-login`
+  - planned for a later v0.3.0 step and currently returns a usage error
 
 ## Non-Goals
 
