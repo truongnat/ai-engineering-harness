@@ -65,12 +65,17 @@
 ## V6: Runtime Consumption Guides
 
 - `v0.6.0`: Runtime Consumption Guides
-- focus on runtime-specific usage docs
-- no runtime adapters
-- no marketplace automation
+- implemented in this release
+- docs-only usage guidance for consuming the capability pack in common runtimes
+- runtime consumption model and per-runtime guides
+- runtime comparison guide with shared prompt and validation patterns
+- no runtime adapters or integrations in this release
 
 ## Later Optional Work
 
+- optional runtime adapters
+- optional marketplace package or plugin registry distribution
+- optional package publishing automation
 - optional deeper validation ideas beyond structural harness contracts
 - optional semantic validation research
 - optional context warnings for non-required artifacts
@@ -89,5 +94,6 @@
 - `v0.3.0`: Lightweight Host Repository Validation
 - `v0.4.0`: Ergonomics Polish
 - `v0.5.0`: Plugin Distribution Model
+- `v0.6.0`: Runtime Consumption Guides
 
 Heavy runtime systems remain out of scope for v1. Any future automation should support the markdown operating model rather than replace it.

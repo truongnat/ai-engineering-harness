@@ -21,6 +21,8 @@
 - Gemini CLI capability pack consumption guide
 - OpenCode capability pack consumption guide
 - runtime comparison guide
+- v0.6.0 readiness audit
+- v0.6.0 release scope documentation
 
 ## [0.5.0] - 2026-06-02
 
