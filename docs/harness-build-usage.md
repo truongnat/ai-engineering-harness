@@ -92,6 +92,14 @@ For a full review pass, use [docs/harness-build-review-checklist.md](harness-bui
 - ask for approval when changing review burden, team structure, or verification expectations
 - stop if the repository contract conflicts with the proposed harness profile
 
+## After `harness-build`: Validate The Target Repo Profile
+
+After the profile exists, review the adopted host repository structure with:
+
+- [docs/target-repo-validation.md](target-repo-validation.md)
+- [docs/target-repo-validation-checklist.md](target-repo-validation-checklist.md)
+- [docs/target-repo-validation-prompts.md](target-repo-validation-prompts.md)
+
 ## How To Proceed After `harness-build`
 
 1. Review the output with [docs/harness-build-review-checklist.md](harness-build-review-checklist.md).

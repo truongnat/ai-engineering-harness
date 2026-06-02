@@ -1,0 +1,70 @@
+# Target Repository Validation Checklist
+
+Use this checklist to review a host repository after it has adopted the harness and produced `.harness/` profile artifacts.
+
+## Required Files
+
+- [ ] `AGENTS.md` exists at the repository root.
+- [ ] `.harness/` exists.
+- [ ] `.harness/HARNESS.md` exists.
+- [ ] `.harness/TEAM.md` exists.
+- [ ] `.harness/SKILLS.md` exists.
+- [ ] `.harness/WORKFLOW.md` exists.
+- [ ] `.harness/GATES.md` exists.
+- [ ] `.harness/MEMORY.md` exists.
+
+## Harness Profile Consistency
+
+- [ ] the six profile artifacts agree on risk level, workflow, and operating model.
+- [ ] the profile is repository-specific rather than generic filler.
+- [ ] assumptions and unknowns are recorded where needed.
+- [ ] the profile stops before implementation correctness claims.
+
+## Team Pattern
+
+- [ ] the selected team pattern is explicit.
+- [ ] the pattern still fits the repository size and risk.
+- [ ] handoff and escalation rules are clear enough to use.
+- [ ] the profile does not introduce unnecessary team complexity.
+
+## Skill Selection
+
+- [ ] the selected core skills are the smallest sufficient set.
+- [ ] selected skill packs fit the actual repository work shape.
+- [ ] excluded skills or packs are called out when omission matters.
+- [ ] the profile does not imply a large imported skill catalog.
+
+## Workflow
+
+- [ ] the workflow is explicit and matches how the team expects work to move.
+- [ ] the command sequence prevents skipping planning or verification.
+- [ ] the workflow is practical for the repository's delivery model.
+- [ ] the workflow does not drift into runtime orchestration claims.
+
+## Gates
+
+- [ ] the gates define evidence expectations clearly.
+- [ ] stop conditions are explicit.
+- [ ] verification expectations are strong enough for the repository risk.
+- [ ] the gates do not imply that a passing structural validator proves correctness.
+
+## Memory Safety
+
+- [ ] `MEMORY.md` defines durable memory boundaries clearly.
+- [ ] no profile artifact stores credentials, tokens, `.env` values, customer data, or private business data.
+- [ ] recall-before-planning and remember-after-shipping behavior are explicit.
+- [ ] memory guidance is useful without becoming a secret store.
+
+## Goal Artifacts
+
+- [ ] active goals use `.harness/goals/<goal-id>/` artifact sets consistently.
+- [ ] each active goal has `GOAL.md`, `PLAN.md`, `TASKS.md`, `VERIFY.md`, and `REMEMBER.md`.
+- [ ] goal artifacts reflect the selected profile workflow and gates.
+- [ ] missing goal artifacts are treated as structural gaps, not hidden assumptions.
+
+## Approval Decision
+
+- [ ] approve as-is
+- [ ] approve with small edits
+- [ ] request revision before use
+- [ ] reject because the adopted harness profile is incomplete, inconsistent, or unsafe

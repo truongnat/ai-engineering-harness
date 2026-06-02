@@ -23,6 +23,9 @@
 - Harness build usage guide
 - Harness build review checklist
 - Harness build prompt library
+- Target repository validation design
+- Target repository validation checklist
+- Target repository validation prompt guide
 
 ## [0.1.0] - 2026-06-02
 

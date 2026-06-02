@@ -25,6 +25,7 @@ See [TARGET.md](TARGET.md) for the long-term target.
 - [TARGET.md](TARGET.md)
 - [docs/harness-build-usage.md](docs/harness-build-usage.md)
 - [docs/harness-build-prompts.md](docs/harness-build-prompts.md)
+- [docs/target-repo-validation.md](docs/target-repo-validation.md)
 - [docs/gap-analysis.md](docs/gap-analysis.md)
 - [docs/system-positioning.md](docs/system-positioning.md)
 - [docs/team-architecture-selection.md](docs/team-architecture-selection.md)
@@ -101,6 +102,7 @@ Then:
 | Adoption guide | [docs/adoption-guide.md](docs/adoption-guide.md) |
 | Build a harness profile | [docs/harness-build-usage.md](docs/harness-build-usage.md) |
 | Copy-paste prompts | [docs/harness-build-prompts.md](docs/harness-build-prompts.md) |
+| Validate adopted profile | [docs/target-repo-validation.md](docs/target-repo-validation.md) |
 | Runtime overview | [docs/runtime-compatibility.md](docs/runtime-compatibility.md) |
 | Runtime-specific usage | [docs/runtimes/README.md](docs/runtimes/README.md) |
 | Quality gates | [docs/quality-gates-matrix.md](docs/quality-gates-matrix.md) |

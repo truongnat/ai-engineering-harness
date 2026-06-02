@@ -58,6 +58,14 @@ Validation does not prove:
 
 Structural validation is necessary, not sufficient.
 
+## Target Repository Validation
+
+Host repository validation should remain structural and profile-focused.
+
+It should confirm that an adopted repository has the expected root files, `.harness/` profile artifacts, and optional goal artifacts when requested. It should not be treated as proof that implementation work is correct or complete.
+
+See [docs/target-repo-validation.md](target-repo-validation.md) for the future lightweight target repository validation design.
+
 ## Safety Notes
 
 - do not store secrets, tokens, customer data, or private business data
