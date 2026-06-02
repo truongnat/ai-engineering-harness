@@ -1,138 +1,96 @@
 # ai-engineering-harness
 
-License: [MIT](LICENSE) | Validation: GitHub Actions `Validate`
+Markdown-first engineering discipline for AI coding agents.
 
-`ai-engineering-harness` is a markdown-first operating system for engineering agents. It is designed to give Claude Code, Codex, Cursor, Gemini, OpenCode, and similar tools a lightweight but disciplined way to explore codebases, plan changes, execute work, verify outcomes, and preserve useful decisions.
+License: [MIT](LICENSE) | Validation: GitHub Actions `Validate` | Release: [`v0.1.0`](docs/v0.1.0-release-notes.md)
+
+`ai-engineering-harness` is a markdown-first harness design system for AI-assisted engineering work. It helps agents operate with explicit plans, durable artifacts, quality gates, and memory instead of improvising from a single prompt.
 
 See [TARGET.md](TARGET.md) for the long-term project target.
 
-## What This Repo Is
+## What It Is
 
-This repository is not a framework, runtime, agent server, or orchestration platform. It is a portable engineering methodology expressed as markdown artifacts, reusable skills, command guides, workflow documents, and templates. The goal is to help agents behave more like reliable engineering partners and less like improvisational text generators.
+- A markdown-first harness design system for engineering agents.
+- A disciplined way for agents to plan, execute, verify, ship, and remember.
+- A portable model that works with Claude Code, Codex, Cursor, Gemini, OpenCode, or any agent that can read repository files.
 
-## Why Markdown-First
+## What It Is Not
 
-Markdown travels well across tools, repositories, and teams. It is readable by humans, easy for agents to ingest, friendly to version control, and simple to adapt without introducing infrastructure risk. A markdown-first system also makes process visible: plans, reviews, verification notes, and remembered decisions become inspectable artifacts instead of hidden runtime state.
+- Not a framework
+- Not a runtime
+- Not a server
+- Not an orchestration platform
+- Not a database-backed memory system
 
-## Why No Heavy Runtime In V1
+## Why It Exists
 
-Version 1 deliberately avoids a complex runtime. There is no `src/core`, no database, no Docker, no web UI, no server process, and no orchestration framework. The operating model is the product. Minimal Node scripts exist only to help install and validate the repository structure. This keeps the system easy to audit, easy to fork, and easy to use inside an existing engineering workspace.
-
-## Core Model
-
-- Skills give agents capability.
-- Memory gives agents context.
-- Workflows give agents process.
-- Harness gives agents execution discipline.
+- Agents lose context.
+- Agents code before planning.
+- Agents skip verification.
+- Agents forget previous fixes.
+- Agents need durable project-specific artifacts.
 
 ## Core Loop
 
-1. Read the current artifacts before acting.
-2. Map the codebase and current state.
-3. Discuss the goal and constraints.
-4. Write a plan before coding.
-5. Execute the plan in small, surgical changes.
-6. Verify behavior before claiming completion.
-7. Ship intentionally.
-8. Remember decisions that matter for future work.
+`Map → Start → Discuss → Plan → Run → Verify → Ship → Remember`
 
-The command equivalents for this loop live in `commands/` and the reusable process definitions live in `workflows/`.
+Start with [`commands/`](commands/) and use the loop as the default operating path.
 
-## Commands
+## Core Model
 
-- `harness-map`: understand the codebase, artifacts, and current state
-- `harness-start`: bootstrap context for a new session
-- `harness-discuss`: clarify goals, constraints, and tradeoffs
-- `harness-plan`: turn goals into a concrete implementation plan
-- `harness-run`: execute the plan with disciplined change control
-- `harness-verify`: gather evidence before completion claims
-- `harness-ship`: finalize, summarize, and hand off the work
-- `harness-remember`: capture durable decisions and lessons
+| Layer | Purpose |
+|---|---|
+| Skills | capability |
+| Memory | context |
+| Workflows | process |
+| Team Patterns | collaboration structure |
+| Quality Gates | evidence discipline |
+| Harness Profile | project-specific operating context |
 
-## Skills
+## Quick Start
 
-- `using-harness`: apply the harness discipline in each session
-- `mapping-codebase`: inspect structure, artifacts, and dependency boundaries
-- `discussing-goals`: refine requests into clear objectives and constraints
-- `writing-plans`: produce implementation plans before code changes
-- `executing-plans`: follow plans step by step without scope drift
-- `test-driven-development`: use failing checks before implementation when behavior changes
-- `code-review`: review for risk, regressions, and missing coverage
-- `verification`: prove outcomes with fresh evidence
-- `remembering`: record decisions, tradeoffs, and future guidance
-- `writing-skills`: create or improve repository skills consistently
+```bash
+git clone https://github.com/truongnat/ai-engineering-harness.git
+cd ai-engineering-harness
+node validate.js
+node install.js --target ../my-project --dry-run
+node install.js --target ../my-project
+```
 
-## Artifact Layout
+Then:
 
-- `commands/`: operator-facing command guides for the harness loop
-- `skills/`: reusable agent behaviors with clear contracts
-- `workflows/`: end-to-end process playbooks for common engineering tasks
-- `patterns/`: delegation and collaboration patterns for multi-agent work
-- `templates/`: durable artifact templates for planning, verification, review, and memory
-- `docs/`: core concepts, architecture, quality gates, and roadmap
-- `examples/demo-project/`: a placeholder area for a sample adoption target
+1. Read [AGENTS.md](AGENTS.md).
+2. Create or review `.harness/` artifacts in the host repo.
+3. Start with [`commands/harness-start.md`](commands/harness-start.md).
+4. Move through the command loop with evidence at each phase.
 
-## Repository Use
+## Start Here
 
-1. Read [AGENTS.md](AGENTS.md) and the current project artifacts first.
-2. Start with `commands/harness-start.md`.
-3. Move through the command loop as needed.
-4. Use templates to persist outputs in the host repository.
-5. Update memory artifacts after meaningful work ships.
-
-See also:
-
-- [CONTRIBUTING.md](CONTRIBUTING.md)
-- [SECURITY.md](SECURITY.md)
+| Need | Read |
+|---|---|
+| Long-term direction | [TARGET.md](TARGET.md) |
+| Agent operating contract | [AGENTS.md](AGENTS.md) |
+| Adoption into another repo | [docs/adoption-guide.md](docs/adoption-guide.md) |
+| Runtime overview | [docs/runtime-compatibility.md](docs/runtime-compatibility.md) |
+| Runtime-specific guides | [docs/runtimes/README.md](docs/runtimes/README.md) |
+| Quality gates | [docs/quality-gates-matrix.md](docs/quality-gates-matrix.md) |
+| Session startup | [docs/session-start-checklist.md](docs/session-start-checklist.md) |
+| Examples | [examples/demo-project/](examples/demo-project/) and [examples/workflows/](examples/workflows/) |
 
 ## Adoption
-
-To adopt the harness in another repository, start with:
 
 - [Adoption Guide](docs/adoption-guide.md)
 - [Adoption Smoke Test](docs/adoption-smoke-test.md)
 - [Usage Examples](docs/usage-examples.md)
 - [Host Repo Checklist](docs/host-repo-checklist.md)
-- [Session Start Checklist](docs/session-start-checklist.md)
-- [Runtime Compatibility](docs/runtime-compatibility.md)
-- [Runtime Guides](docs/runtimes/README.md)
 
-The adoption layer stays lightweight: copy markdown assets, create `.harness/`, and use the command loop without adding a runtime service.
+## Release
 
-Example:
+- [CHANGELOG.md](CHANGELOG.md)
+- [docs/v0.1.0-release-notes.md](docs/v0.1.0-release-notes.md)
+- [docs/release-checklist.md](docs/release-checklist.md)
+- [docs/versioning.md](docs/versioning.md)
 
-```bash
-node install.js --target ../my-project --dry-run
-node install.js --target ../my-project
-```
+## Contributing
 
-## Examples
-
-- [Demo Project](examples/demo-project/)
-- [Workflow Scenarios](examples/workflows/)
-
-## Release Status
-
-- current release: `v0.1.0`
-- see [CHANGELOG.md](CHANGELOG.md)
-- see [docs/v0.1.0-release-notes.md](docs/v0.1.0-release-notes.md)
-- see [docs/release-checklist.md](docs/release-checklist.md)
-- see [docs/versioning.md](docs/versioning.md)
-
-## Roadmap
-
-### V1
-
-- Deliver the markdown-first operating system
-- Standardize command contracts and skill structure
-- Provide templates for common engineering artifacts
-- Add lightweight validation for repository integrity
-
-### Later
-
-- Expand examples and adoption guides
-- Add optional editor-specific adapters
-- Add richer validation and linting for artifact quality
-- Add domain-specific skill packs without changing the core model
-
-See [`docs/roadmap.md`](docs/roadmap.md) for the longer view.
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing commands, skills, docs, or validation rules. For security concerns, use [SECURITY.md](SECURITY.md) and do not disclose sensitive details publicly.
