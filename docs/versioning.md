@@ -30,3 +30,7 @@ Major version changes are for future breaking changes to the operating contract,
 ## Scope Boundary For `v0.1.0`
 
 Heavy runtime systems are not part of `v0.1.0`. The first release is the markdown-first operating model plus lightweight install and validation helpers.
+
+## Scope Boundary For `v0.2.0`
+
+`v0.2.0` remains runtime-light and markdown-first. It expands the repository into a Harness Design System through docs, templates, examples, and lightweight validation, without adding runtime adapters, servers, databases, or automation-heavy release infrastructure.

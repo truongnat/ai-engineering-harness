@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Use this checklist to prepare a manual `v0.1.0` release without adding release automation or runtime complexity.
+Use this checklist to prepare a manual release without adding release automation or runtime complexity.
 
 ## Pre-Release Checks
 
@@ -47,7 +47,7 @@ Use this checklist to prepare a manual `v0.1.0` release without adding release a
 - confirm the repository still validates after the final release commit
 - confirm the release notes and changelog stay aligned
 
-## What Not To Add For v0.1.0
+## What Not To Add For Releases
 
 - no release automation
 - no package publishing automation
@@ -61,3 +61,11 @@ Use this checklist to prepare a manual `v0.1.0` release without adding release a
 - `git status`
 - `git tag v0.1.0`
 - `git push origin v0.1.0`
+
+## v0.2.0 Final Manual Commands
+
+- `node validate.js`
+- `npm test`
+- `git status`
+- `git tag v0.2.0`
+- `git push origin v0.2.0`
