@@ -12,6 +12,7 @@
 
 ## V2: Runtime Adapters And Richer Validation
 
+- V2-lite: adoption docs and installer helpers for copying harness assets into host repositories
 - optional editor installers and bootstrap helpers
 - stronger structural validation and markdown linting
 - optional sync helpers for copying harness assets into host repos

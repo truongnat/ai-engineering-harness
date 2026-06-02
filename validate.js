@@ -1,14 +1,11 @@
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const root = __dirname;
 
-const requiredFiles = [
-  "README.md",
-  "AGENTS.md",
-  "package.json",
-  "install.js",
-  "validate.js",
+const requiredFiles = ["AGENTS.md", "docs/adoption-guide.md", "docs/runtime-compatibility.md"];
+
+const commandFiles = [
   "commands/harness-map.md",
   "commands/harness-start.md",
   "commands/harness-discuss.md",
@@ -16,8 +13,10 @@ const requiredFiles = [
   "commands/harness-run.md",
   "commands/harness-verify.md",
   "commands/harness-ship.md",
-  "commands/harness-remember.md",
-  "skills/README.md",
+  "commands/harness-remember.md"
+];
+
+const skillFiles = [
   "skills/using-harness/SKILL.md",
   "skills/mapping-codebase/SKILL.md",
   "skills/discussing-goals/SKILL.md",
@@ -27,40 +26,7 @@ const requiredFiles = [
   "skills/code-review/SKILL.md",
   "skills/verification/SKILL.md",
   "skills/remembering/SKILL.md",
-  "skills/writing-skills/SKILL.md",
-  "workflows/README.md",
-  "workflows/core-loop.md",
-  "workflows/feature.md",
-  "workflows/bugfix.md",
-  "workflows/refactor.md",
-  "workflows/code-review.md",
-  "workflows/incident.md",
-  "patterns/README.md",
-  "patterns/pipeline.md",
-  "patterns/producer-reviewer.md",
-  "patterns/fan-out-fan-in.md",
-  "patterns/expert-pool.md",
-  "patterns/supervisor.md",
-  "patterns/hierarchical-delegation.md",
-  "templates/PROJECT.md",
-  "templates/REQUIREMENTS.md",
-  "templates/ROADMAP.md",
-  "templates/STATE.md",
-  "templates/CONTEXT.md",
-  "templates/GOAL.md",
-  "templates/DISCUSSION.md",
-  "templates/PLAN.md",
-  "templates/TASKS.md",
-  "templates/REVIEW.md",
-  "templates/VERIFY.md",
-  "templates/SHIP.md",
-  "templates/REMEMBER.md",
-  "docs/concepts.md",
-  "docs/architecture.md",
-  "docs/command-loop.md",
-  "docs/artifact-layout.md",
-  "docs/quality-gates.md",
-  "docs/roadmap.md"
+  "skills/writing-skills/SKILL.md"
 ];
 
 const commandHeadings = [
@@ -83,16 +49,39 @@ const skillHeadings = [
   "## Checklist Before Done"
 ];
 
-function assertExists(relativePath, failures) {
-  const fullPath = path.join(root, relativePath);
+const templateFiles = [
+  "templates/PROJECT.md",
+  "templates/REQUIREMENTS.md",
+  "templates/ROADMAP.md",
+  "templates/STATE.md",
+  "templates/CONTEXT.md",
+  "templates/GOAL.md",
+  "templates/DISCUSSION.md",
+  "templates/PLAN.md",
+  "templates/TASKS.md",
+  "templates/REVIEW.md",
+  "templates/VERIFY.md",
+  "templates/SHIP.md",
+  "templates/REMEMBER.md"
+];
+
+function assertExists(baseDir, relativePath, failures) {
+  const fullPath = path.join(baseDir, relativePath);
   if (!fs.existsSync(fullPath)) {
     failures.push(`Missing required path: ${relativePath}`);
   }
 }
 
-function assertHeadings(relativePath, headings, failures) {
-  const fullPath = path.join(root, relativePath);
-  const content = fs.readFileSync(fullPath, "utf8");
+function readFile(baseDir, relativePath) {
+  return fs.readFileSync(path.join(baseDir, relativePath), "utf8");
+}
+
+function assertHeadings(baseDir, relativePath, headings, failures) {
+  const fullPath = path.join(baseDir, relativePath);
+  if (!fs.existsSync(fullPath)) {
+    return;
+  }
+  const content = readFile(baseDir, relativePath);
   for (const heading of headings) {
     if (!content.includes(heading)) {
       failures.push(`${relativePath} is missing heading: ${heading}`);
@@ -100,28 +89,78 @@ function assertHeadings(relativePath, headings, failures) {
   }
 }
 
-const failures = [];
-
-for (const relativePath of requiredFiles) {
-  assertExists(relativePath, failures);
-}
-
-if (failures.length === 0) {
-  for (const relativePath of requiredFiles.filter((file) => file.startsWith("commands/"))) {
-    assertHeadings(relativePath, commandHeadings, failures);
+function assertNonEmpty(baseDir, relativePath, failures) {
+  const fullPath = path.join(baseDir, relativePath);
+  if (!fs.existsSync(fullPath)) {
+    return;
   }
-
-  for (const relativePath of requiredFiles.filter((file) => file.endsWith("/SKILL.md"))) {
-    assertHeadings(relativePath, skillHeadings, failures);
+  const content = readFile(baseDir, relativePath).trim();
+  if (content.length === 0) {
+    failures.push(`${relativePath} is empty`);
   }
 }
 
-if (failures.length > 0) {
-  console.error("Harness validation failed:");
-  for (const failure of failures) {
-    console.error(`- ${failure}`);
+function assertAgentsContent(baseDir, failures) {
+  const fullPath = path.join(baseDir, "AGENTS.md");
+  if (!fs.existsSync(fullPath)) {
+    return;
   }
-  process.exit(1);
+  const content = readFile(baseDir, "AGENTS.md");
+  for (const heading of ["## Completion Gate", "## Memory Discipline"]) {
+    if (!content.includes(heading)) {
+      failures.push(`AGENTS.md is missing heading: ${heading}`);
+    }
+  }
 }
 
-console.log(`Harness validation passed. Checked ${requiredFiles.length} required files.`);
+function validateRepository(baseDir = root) {
+  const failures = [];
+
+  for (const relativePath of requiredFiles) {
+    assertExists(baseDir, relativePath, failures);
+  }
+
+  for (const relativePath of commandFiles) {
+    assertHeadings(baseDir, relativePath, commandHeadings, failures);
+  }
+
+  for (const relativePath of skillFiles) {
+    assertHeadings(baseDir, relativePath, skillHeadings, failures);
+  }
+
+  for (const relativePath of templateFiles) {
+    assertNonEmpty(baseDir, relativePath, failures);
+  }
+
+  assertAgentsContent(baseDir, failures);
+
+  return failures;
+}
+
+function main() {
+  const failures = validateRepository(root);
+
+  if (failures.length > 0) {
+    console.error("Harness validation failed:");
+    for (const failure of failures) {
+      console.error(`- ${failure}`);
+    }
+    process.exit(1);
+  }
+
+  console.log(`Harness validation passed. Checked ${requiredFiles.length} required files.`);
+}
+
+if (require.main === module) {
+  main();
+}
+
+module.exports = {
+  commandFiles,
+  commandHeadings,
+  requiredFiles,
+  skillFiles,
+  skillHeadings,
+  templateFiles,
+  validateRepository
+};

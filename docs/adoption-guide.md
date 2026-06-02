@@ -1,0 +1,158 @@
+# Adoption Guide
+
+This guide explains how to adopt `ai-engineering-harness` inside another repository without introducing a runtime platform.
+
+## Goals
+
+- keep markdown as the source of truth
+- copy only the harness assets you need
+- use `.harness/` for active project artifacts
+- avoid storing secrets, credentials, customer data, or private business data
+
+## Manual Install
+
+Copy these assets into the target repository:
+
+- `AGENTS.md`
+- `commands/`
+- `skills/`
+- `workflows/`
+- `patterns/`
+- `templates/`
+- `docs/`
+
+Recommended manual steps:
+
+1. Copy the files into the target repository root.
+2. Read `AGENTS.md` and confirm it fits the target repository's operating rules.
+3. Create a `.harness/` directory in the target repository.
+4. Populate `.harness/` using the files in `templates/`.
+5. Start using the command loop with `commands/harness-start.md`.
+
+## Installer Usage
+
+The repository includes a dependency-free installer.
+
+### Basic Copy
+
+```bash
+node install.js --target ../my-project
+```
+
+### Dry Run
+
+```bash
+node install.js --target ../my-project --dry-run
+```
+
+Use this first to see exactly which files would be copied and which files would be skipped.
+
+### Force Overwrite
+
+```bash
+node install.js --target ../my-project --force
+```
+
+The installer will not overwrite existing files unless `--force` is passed.
+
+### Installer Rules
+
+- every file operation is printed as `COPY`, `SKIP`, `WOULD COPY`, or `WOULD SKIP`
+- existing files are preserved by default
+- `--force` overwrites existing files in the target path
+- the installer copies the markdown operating surface only
+
+## Recommended `.harness/` Layout
+
+Use this structure in the target repository:
+
+```text
+.harness/
+  PROJECT.md
+  REQUIREMENTS.md
+  ROADMAP.md
+  STATE.md
+  CONTEXT.md
+  GOAL.md
+  DISCUSSION.md
+  PLAN.md
+  TASKS.md
+  REVIEW.md
+  VERIFY.md
+  SHIP.md
+  REMEMBER.md
+```
+
+Typical usage:
+
+- `PROJECT.md` and `ROADMAP.md` store stable context
+- `GOAL.md`, `DISCUSSION.md`, and `PLAN.md` drive active work
+- `TASKS.md`, `VERIFY.md`, and `SHIP.md` track execution and completion
+- `REMEMBER.md` stores durable, sanitized lessons
+
+## Using The Command Loop
+
+Run the harness as a working loop, not as static documentation:
+
+1. `Map`
+2. `Start`
+3. `Discuss`
+4. `Plan`
+5. `Run`
+6. `Verify`
+7. `Ship`
+8. `Remember`
+
+Recommended adoption pattern:
+
+- start a task by creating or updating `.harness/GOAL.md`
+- clarify scope in `.harness/DISCUSSION.md` when needed
+- write `.harness/PLAN.md` before implementation
+- update `.harness/TASKS.md`, `.harness/VERIFY.md`, and `.harness/SHIP.md` as work progresses
+- save only durable lessons in `.harness/REMEMBER.md`
+
+## What Should And Should Not Be Committed
+
+Usually commit:
+
+- `AGENTS.md`
+- `commands/`, `skills/`, `workflows/`, `patterns/`, `templates/`
+- shared `.harness/` artifacts that describe active project context or durable operating state
+
+Usually do not commit:
+
+- transient local-only notes
+- `.harness/*.local.md`
+- local event logs
+- secrets or debugging scraps
+
+If the team wants shared planning history, commit the relevant `.harness/` artifacts. If a note is only useful for one local session, keep it local or delete it.
+
+## Safety Rules For Company Or Private Repositories
+
+Use the harness as process documentation, not as a secret store.
+
+Never write any of the following into harness artifacts:
+
+- credentials
+- tokens
+- API keys
+- `.env` values
+- customer data
+- private business data
+
+If a memory or plan depends on sensitive context, summarize the pattern without recording the sensitive material itself.
+
+Memory-specific rule:
+
+- secrets must never be stored in memory artifacts such as `.harness/REMEMBER.md`
+
+## Validation
+
+After adoption, run:
+
+```bash
+node validate.js
+```
+
+If you copied the full repository surface, this confirms the required structure and key document contracts are present.

@@ -76,6 +76,15 @@ The command equivalents for this loop live in `commands/` and the reusable proce
 4. Use templates to persist outputs in the host repository.
 5. Update memory artifacts after meaningful work ships.
 
+## Adoption
+
+To adopt the harness in another repository, start with:
+
+- [Adoption Guide](docs/adoption-guide.md)
+- [Runtime Compatibility](docs/runtime-compatibility.md)
+
+The adoption layer stays lightweight: copy markdown assets, create `.harness/`, and use the command loop without adding a runtime service.
+
 ## Roadmap
 
 ### V1
