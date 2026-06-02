@@ -10,8 +10,11 @@ Define how **global plugin/capability install** relates to **per-repository `.ha
 |---|---|---|---|
 | Global capability | Runtime plugin, extension, rules, or bootstrap | `~/.claude/`, `~/.config/opencode/`, `~/.gemini/extensions/`, etc. | Yes (same machine / user) |
 | Project state | Harness profile + goals for one product | `<repo>/.harness/` | No (one repo only) |
+| Runtime bootstrap | Agent/tool entry files (e.g. `AGENTS.md`, `.cursor/rules/`) | Repo root or runtime paths | Per runtime; not `.harness/` state |
 
 **Global install never substitutes for project state.**
+
+**`.harness/` init does not create runtime bootstrap files.** For example, `AGENTS.md` is owned by `generic`/`codex` project install or `manual` fallback, not by `--init-harness` alone.
 
 ## Why .harness Is Project-local
 

@@ -2,6 +2,10 @@
 
 ## [0.9.1] - Unreleased
 
+### Fixed
+
+- AGENTS.md ownership between `.harness/` init and `generic`/`codex` runtime bootstrap — init no longer writes minimal `AGENTS.md` that blocked `runtime/bootstrap/AGENTS.project.md`
+
 ### Added
 
 - runtime-native install audit and dogfood plan ([runtime-native-install-audit.md](docs/runtime-native-install-audit.md), [runtime-native-install-dogfood-plan.md](docs/runtime-native-install-dogfood-plan.md))

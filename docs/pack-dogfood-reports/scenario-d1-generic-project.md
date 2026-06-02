@@ -126,3 +126,9 @@ Confirmed **not** present in target after write install:
 ## Verdict
 
 **experimental PASS** — generic project runtime-native install + `.harness/` init validated structurally. **Stable claim remains No** per [runtime-native-install-audit.md](../runtime-native-install-audit.md) until additional runtimes dogfood and optional manual agent check is recorded.
+
+## Post-D2 Patch Note
+
+Original dogfood observed harness init **CREATE** minimal `AGENTS.md`, then generic runtime **SKIP** — full `AGENTS.project.md` was not applied.
+
+**Patch:** `.harness/` init no longer creates `AGENTS.md`; `generic`/`codex` runtime owns `runtime/bootstrap/AGENTS.project.md`. Re-run or spot-check D1 on a fresh target before treating generic project as stable.

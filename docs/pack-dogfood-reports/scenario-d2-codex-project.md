@@ -135,3 +135,9 @@ Do **not** claim stable Codex support until a successful interactive or `codex e
 ## Verdict
 
 **experimental PASS** — codex project runtime-native install + `.harness/` init validated structurally (same evidence bar as D1). **Stable claim remains No** — manual Codex instruction-load check **BLOCKED** (API usage limit); re-run `codex exec` or interactive session before promoting confidence beyond file/install behavior.
+
+## Post-D2 Patch Note
+
+Original dogfood observed harness init **CREATE** minimal `AGENTS.md`, then codex runtime **SKIP** — full `AGENTS.project.md` was not applied.
+
+**Patch:** `.harness/` init no longer creates `AGENTS.md`; `codex`/`generic` runtime owns `runtime/bootstrap/AGENTS.project.md`. Re-run or spot-check D2 on a fresh target before treating codex project as stable.

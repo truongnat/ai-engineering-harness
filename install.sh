@@ -26,7 +26,7 @@ Options:
   --init-harness        Scaffold project-local .harness/ profile files
   --legacy-root         Alias for --runtime manual (root copy fallback)
   --dry-run             Show plan or preview without writing
-  --force               Overwrite existing .harness/ files (and manual fallback files)
+  --force               Overwrite existing .harness/ files; runtime/manual may overwrite their files
   --ref <git-ref>       GitHub ref to install (branch or tag, default: main)
   --yes                 Skip interactive confirmation
   --help                Show this help
@@ -149,7 +149,7 @@ print_harness_init_plan() {
     '  - Initialize project-local .harness/ (minimal structural skeletons)' \
     "  - Target: ${TARGET_ABS}/.harness/" \
     '  - Files: HARNESS.md, TEAM.md, SKILLS.md, WORKFLOW.md, GATES.md, MEMORY.md, goals/.gitkeep' \
-    '  - Optional: AGENTS.md at repo root if missing (for profile validation)' \
+    '  - Does not create runtime bootstrap files (e.g. AGENTS.md); runtime or manual fallback owns those' \
     '  - Fill profile content after init; run validate.js --target <repo> --profile-only'
 }
 
@@ -438,16 +438,6 @@ harness_skeleton_memory_md() {
 EOF
 }
 
-harness_skeleton_agents_md() {
-  cat <<'EOF'
-# AGENTS.md
-
-Minimal project agent contract. Extend with team rules and harness workflow references.
-
-Read `.harness/` profile artifacts before starting work.
-EOF
-}
-
 init_harness_profile() {
   printf '%s\n' '' '--- .harness/ init ---'
   write_target_file '.harness/HARNESS.md' "$(harness_skeleton_harness_md)"
@@ -457,13 +447,6 @@ init_harness_profile() {
   write_target_file '.harness/GATES.md' "$(harness_skeleton_gates_md)"
   write_target_file '.harness/MEMORY.md' "$(harness_skeleton_memory_md)"
   write_target_file '.harness/goals/.gitkeep' ''
-  if [ ! -f "${TARGET_ABS}/AGENTS.md" ]; then
-    write_target_file 'AGENTS.md' "$(harness_skeleton_agents_md)"
-  elif [ "$DRY_RUN" -eq 1 ]; then
-    printf 'WOULD SKIP AGENTS.md\n'
-  else
-    printf 'SKIP AGENTS.md\n'
-  fi
   printf '%s\n' '--- .harness/ init complete ---'
 }
 

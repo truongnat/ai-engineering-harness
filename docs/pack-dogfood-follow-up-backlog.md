@@ -6,8 +6,6 @@ Triage dogfood findings from [pack-dogfood-friction-log.md](pack-dogfood-frictio
 
 - One-line install: improve `install.js` next steps to mention `curl | sh` install path and validate-from-source-pack ([scenario-c-one-line-installer.md](pack-dogfood-reports/scenario-c-one-line-installer.md))
 - Repeat: install summary relative target display when invoked via `install.sh` with relative `--target`
-- D1: clarify harness-init vs generic runtime `AGENTS.md` CREATE/SKIP in install output ([scenario-d1-generic-project.md](pack-dogfood-reports/scenario-d1-generic-project.md))
-- D2: `--init-harness` + codex/generic should apply `AGENTS.project.md` or skip init AGENTS when runtime will write ([scenario-d2-codex-project.md](pack-dogfood-reports/scenario-d2-codex-project.md))
 - D2: document `codex exec --skip-git-repo-check` for non-git throwaway targets
 
 ## v0.8.x Patch Candidates
@@ -15,6 +13,10 @@ Triage dogfood findings from [pack-dogfood-friction-log.md](pack-dogfood-frictio
 Doc clarifications, scenario fixes, and small guidance updates that do not change core contracts.
 
 - Optional: Scenario A quick-path doc linking plan, install walkthrough, and scenarios
+
+## Addressed In v0.9.x Patch (D2 AGENTS.md ownership)
+
+- D1/D2: `--init-harness` no longer creates `AGENTS.md`; `generic`/`codex` runtime writes `AGENTS.project.md` ([install.sh](../install.sh) patch; see Post-D2 Patch Note in D1/D2 reports)
 
 ## Addressed In v0.8.0 Fix Pass
 

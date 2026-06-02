@@ -45,7 +45,18 @@ Minimal structural skeletons (required `##` headings only):
 | `.harness/GATES.md` | Quality gates |
 | `.harness/MEMORY.md` | Memory policy |
 | `.harness/goals/.gitkeep` | Goals directory placeholder |
-| `AGENTS.md` | Created **only if missing** (minimal stub for profile validation) |
+
+Init does **not** create runtime bootstrap files such as `AGENTS.md`. Those belong to runtime modes (e.g. `generic`, `codex`) or `manual` fallback via `install.js`.
+
+To get both `.harness/` and `AGENTS.md` from `runtime/bootstrap/AGENTS.project.md`:
+
+```bash
+sh install.sh --runtime generic --scope project --target . --init-harness --yes
+# or
+sh install.sh --runtime codex --scope project --target . --init-harness --yes
+```
+
+Runtimes that do not write `AGENTS.md` (e.g. `cursor`, `claude`, `opencode`) require `AGENTS.md` from another runtime or `manual` install before `--profile-only` validation passes.
 
 Fill content after init. Do not store secrets in `.harness/`.
 
@@ -63,7 +74,7 @@ Prints `WOULD CREATE`, `WOULD SKIP`, or `WOULD OVERWRITE` per file. No filesyste
 
 ## Force
 
-`--force` applies to `.harness/` profile files and `AGENTS.md` when created by init. Manual `install.js` fallback respects `--force` separately.
+`--force` applies to `.harness/` profile files only. Runtime installers and manual `install.js` fallback respect `--force` for their own files (including `AGENTS.md` when the runtime writes it).
 
 ## Global Scope Rejection
 

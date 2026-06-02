@@ -29,7 +29,7 @@ Use a **disposable external repo** (not committed to this pack), same pattern as
 
 ## 1. Generic (project) — completed (Scenario D1)
 
-**Status:** **experimental PASS** — [scenario-d1-generic-project.md](pack-dogfood-reports/scenario-d1-generic-project.md) (2026-06-02). Stable claim remains **No** until full matrix and manual agent checks.
+**Status:** **experimental PASS** — [scenario-d1-generic-project.md](pack-dogfood-reports/scenario-d1-generic-project.md) (2026-06-02). Post-D2 patch fixed init/runtime `AGENTS.md` conflict — spot-check recommended. Stable claim remains **No** until full matrix and manual agent checks.
 
 **Command:**
 
@@ -61,7 +61,7 @@ node validate.js --target <repo> --profile-only
 
 ## 2. Codex (project) — completed (Scenario D2)
 
-**Status:** **experimental PASS** (structural) — [scenario-d2-codex-project.md](pack-dogfood-reports/scenario-d2-codex-project.md) (2026-06-02). Manual `codex exec` **BLOCKED** (API usage limit). With `--init-harness`, runtime codex SKIP leaves minimal init `AGENTS.md` (not full `AGENTS.project.md`). Stable claim **No**.
+**Status:** **experimental PASS** (structural) — [scenario-d2-codex-project.md](pack-dogfood-reports/scenario-d2-codex-project.md) (2026-06-02). Manual `codex exec` **BLOCKED** (API usage limit). Post-D2 patch fixed init/runtime `AGENTS.md` conflict — spot-check recommended. Stable claim **No**.
 
 **Command:**
 

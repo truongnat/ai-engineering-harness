@@ -504,6 +504,9 @@ runTest("install.sh project init-harness dry-run prints WOULD CREATE HARNESS.md"
 
   assert.equal(result.status, 0, result.stderr || result.stdout);
   assert.match(result.stdout, /WOULD CREATE \.harness\/HARNESS\.md/);
+  const initSection = result.stdout.split("--- .harness/ init ---")[1]?.split("--- .harness/ init complete ---")[0] ?? "";
+  assert.doesNotMatch(initSection, /WOULD CREATE AGENTS\.md/);
+  assert.doesNotMatch(initSection, /WOULD SKIP AGENTS\.md/);
 });
 
 runTest("install.sh project init-harness writes profile files", () => {
@@ -516,7 +519,99 @@ runTest("install.sh project init-harness writes profile files", () => {
   assert.equal(result.status, 0, result.stderr || result.stdout);
   assert.ok(fs.existsSync(path.join(tmp, ".harness", "HARNESS.md")));
   assert.ok(fs.existsSync(path.join(tmp, ".opencode", "plugins", "ai-engineering-harness.js")));
-  assert.ok(fs.existsSync(path.join(tmp, "AGENTS.md")));
+  assert.equal(fs.existsSync(path.join(tmp, "AGENTS.md")), false);
+});
+
+const agentsProjectBootstrapMarker = "ai-engineering-harness";
+
+runTest("install.sh generic init-harness dry-run init does not plan AGENTS.md", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-generic-dry-"));
+  const result = runInstallSh(
+    ["--runtime", "generic", "--scope", "project", "--init-harness", "--dry-run", "--yes", "--target", tmp],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  const initSection = result.stdout.split("--- .harness/ init ---")[1]?.split("--- .harness/ init complete ---")[0] ?? "";
+  assert.doesNotMatch(initSection, /AGENTS\.md/);
+  assert.match(result.stdout, /WOULD CREATE AGENTS\.md/);
+});
+
+runTest("install.sh generic init-harness writes AGENTS.project.md bootstrap", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-generic-write-"));
+  const bootstrap = fs.readFileSync(
+    path.join(repoRoot, "runtime", "bootstrap", "AGENTS.project.md"),
+    "utf8"
+  );
+  const result = runInstallSh(
+    ["--runtime", "generic", "--scope", "project", "--init-harness", "--yes", "--target", tmp],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.ok(fs.existsSync(path.join(tmp, ".harness", "HARNESS.md")));
+  const agents = fs.readFileSync(path.join(tmp, "AGENTS.md"), "utf8");
+  assert.equal(agents, bootstrap);
+  assert.match(agents, new RegExp(agentsProjectBootstrapMarker));
+  assert.match(result.stdout, /CREATE AGENTS\.md/);
+  assert.doesNotMatch(result.stdout.split("--- .harness/ init ---")[1]?.split("--- .harness/ init complete ---")[0] ?? "", /CREATE AGENTS\.md/);
+});
+
+runTest("install.sh codex init-harness writes AGENTS.project.md bootstrap", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-codex-write-"));
+  const bootstrap = fs.readFileSync(
+    path.join(repoRoot, "runtime", "bootstrap", "AGENTS.project.md"),
+    "utf8"
+  );
+  const result = runInstallSh(
+    ["--runtime", "codex", "--scope", "project", "--init-harness", "--yes", "--target", tmp],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.equal(fs.readFileSync(path.join(tmp, "AGENTS.md"), "utf8"), bootstrap);
+});
+
+runTest("install.sh generic init-harness skips existing AGENTS.md without force", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-generic-skip-agents-"));
+  fs.writeFileSync(path.join(tmp, "AGENTS.md"), "# team custom\n");
+
+  const result = runInstallSh(
+    ["--runtime", "generic", "--scope", "project", "--init-harness", "--yes", "--target", tmp],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stdout, /SKIP AGENTS\.md/);
+  assert.equal(fs.readFileSync(path.join(tmp, "AGENTS.md"), "utf8"), "# team custom\n");
+});
+
+runTest("install.sh generic init-harness force overwrites AGENTS.md via runtime", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-generic-force-agents-"));
+  const bootstrap = fs.readFileSync(
+    path.join(repoRoot, "runtime", "bootstrap", "AGENTS.project.md"),
+    "utf8"
+  );
+  fs.writeFileSync(path.join(tmp, "AGENTS.md"), "# old\n");
+
+  const result = runInstallSh(
+    [
+      "--runtime",
+      "generic",
+      "--scope",
+      "project",
+      "--init-harness",
+      "--force",
+      "--yes",
+      "--target",
+      tmp
+    ],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stdout, /OVERWRITE AGENTS\.md/);
+  assert.equal(fs.readFileSync(path.join(tmp, "AGENTS.md"), "utf8"), bootstrap);
 });
 
 runTest("install.sh init-harness target passes profile validation", () => {

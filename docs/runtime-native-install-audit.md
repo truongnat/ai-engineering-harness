@@ -6,6 +6,10 @@ Audit the current `install-runtime.js` implementation **before** dogfooding or c
 
 Step 5 delivered project `.harness/` init. A subsequent commit added runtime-native payloads earlier than the original step sequence. This document records what the code actually does, confidence levels, and what evidence is still required.
 
+### Post-D2 patch (AGENTS.md ownership)
+
+D1/D2 dogfood found `--init-harness` creating a minimal `AGENTS.md` before `generic`/`codex` runtime, causing runtime SKIP and skipping `runtime/bootstrap/AGENTS.project.md`. **Fixed:** `.harness/` init no longer writes `AGENTS.md`; `generic`/`codex` project runtime owns that bootstrap. Re-run or spot-check D1/D2 before stable claims.
+
 ## Current Implementation Summary
 
 | Component | Role |
@@ -59,7 +63,7 @@ Automated tests cover file creation and dry-run for several paths. **Scenarios D
 
 ## Known Risks
 
-1. **Codex / generic project `AGENTS.md`:** Installer uses SKIP unless `--force`; existing team `AGENTS.md` is preserved but harness bootstrap may be missing.
+1. **Codex / generic project `AGENTS.md`:** Runtime writes `AGENTS.project.md` when missing; SKIP unless `--force` if team `AGENTS.md` already exists (init no longer blocks runtime).
 2. **Claude `settings.json` merge:** Deep-merge only; conflicting keys are not resolved intelligently; marketplace plugin is **not** installed automatically.
 3. **Gemini project extension path:** Official docs emphasize `~/.gemini/extensions`; repo-local `.gemini/extensions/` may not load — installer prints `gemini extensions install` as fallback.
 4. **Cursor global:** Writes `~/.cursor/rules/` if home dir exists; Cursor User Rules in app UI may still be separate.
