@@ -105,6 +105,7 @@ const requiredFiles = [
   "docs/runtime-dogfood-summary.md",
   "docs/v0.9.x-readiness.md",
   "docs/v0.9.x-release-scope.md",
+  "docs/v0.9.1-release-notes.md",
   "docs/runtime-aware-validation.md",
   "docs/packaging-model.md",
   "docs/pack-manifest-spec.md",

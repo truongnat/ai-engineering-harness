@@ -1,6 +1,6 @@
 {
   "name": "ai-engineering-harness",
-  "version": "0.1.0",
+  "version": "0.9.1",
   "private": false,
   "description": "A markdown-first operating system for engineering agents.",
   "license": "MIT",

@@ -4,7 +4,7 @@
 
 ### Markdown-first engineering discipline for AI coding agents
 
-![Version](https://img.shields.io/badge/version-v0.9.0-2563eb)
+![Version](https://img.shields.io/badge/version-v0.9.1%20(experimental)-2563eb)
 ![License](https://img.shields.io/badge/license-MIT-16a34a)
 ![Validation](https://img.shields.io/badge/validation-passing-22c55e)
 ![Markdown First](https://img.shields.io/badge/markdown-first-7c3aed)
@@ -81,11 +81,20 @@ Start with [`commands/`](commands/) and treat the loop as the default operating 
 
 ## 🚀 Install
 
-**Runtime-native installer: experimental** — dogfooded for `generic`, `codex`, `cursor`, `opencode`, `gemini`, `claude` (file/install). **Stable runtime support: not yet.** Summary: [runtime-dogfood-summary](docs/runtime-dogfood-summary.md) · [readiness](docs/v0.9.x-readiness.md) · [audit](docs/runtime-native-install-audit.md)
+**Current release: `v0.9.1` experimental** — runtime-native installer dogfooded (file/install) for `generic`, `codex`, `cursor`, `opencode`, `gemini`, `claude`. **Stable runtime support: No.** [Dogfood summary](docs/runtime-dogfood-summary.md) · [Readiness](docs/v0.9.x-readiness.md) · [Release notes](docs/v0.9.1-release-notes.md)
+
+Preview then install (local pack):
+
+```bash
+sh install.sh --runtime cursor --scope project --init-harness --dry-run --yes
+sh install.sh --runtime cursor --scope project --init-harness --yes
+```
+
+Remote (pin tag):
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install.sh | sh -s -- \
-  --runtime opencode --scope project --init-harness --yes
+  --ref v0.9.1 --runtime opencode --scope project --init-harness --yes
 ```
 
 Validate from source pack: `node validate.js --target <repo> --runtime opencode --profile-only` ([runtime-aware-validation](docs/runtime-aware-validation.md)).
@@ -115,7 +124,7 @@ curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/ma
 
 See [harness-init-usage](docs/harness-init-usage.md).
 
-Pin a release tag: `--ref v0.9.0` ([install security](docs/plugin-install-security.md)).
+Pin a release tag: `--ref v0.9.1` ([install security](docs/plugin-install-security.md)).
 
 ## 🛠️ Maintainer quick start (source pack)
 
@@ -181,10 +190,11 @@ Then:
 
 ## 🎯 Release Status
 
-- Current release: [`v0.9.0`](docs/v0.9.0-release-notes.md) — contract docs shipped; **active work:** [Plugin Install UX](docs/v0.9.0-plan.md)
-- Next: `install.sh` + dogfood → `v1.0.0` Stable Plugin-like Capability Pack
-- [Plugin install UX](docs/plugin-install-ux.md) · [contracts (pre-v1)](docs/stable-contract-index.md) · [PACK.md](PACK.md)
-- `v0.9.0` docs: [notes](docs/v0.9.0-release-notes.md) · [readiness](docs/v0.9.0-readiness.md) · [scope](docs/v0.9.0-release-scope.md)
+- Current release: [`v0.9.1`](docs/v0.9.1-release-notes.md) — **experimental** runtime-native installer; stable runtime support: **No**
+- Next: manual runtime verification sprint or `v0.10.x` narrowing — not immediate `v1.0.0`
+- [Plugin install UX](docs/plugin-install-ux.md) · [runtime dogfood](docs/runtime-dogfood-summary.md) · [contracts (pre-v1)](docs/stable-contract-index.md) · [PACK.md](PACK.md)
+- `v0.9.1` docs: [notes](docs/v0.9.1-release-notes.md) · [readiness](docs/v0.9.x-readiness.md) · [scope](docs/v0.9.x-release-scope.md)
+- `v0.9.0` docs: [notes](docs/v0.9.0-release-notes.md) · [readiness](docs/v0.9.0-readiness.md) · [scope](docs/v0.9.0-release-scope.md) · [plan](docs/v0.9.0-plan.md)
 - `v0.8.0` docs: [notes](docs/v0.8.0-release-notes.md) · [readiness](docs/v0.8.0-readiness.md) · [scope](docs/v0.8.0-release-scope.md) · [dogfood](docs/pack-dogfood-scenarios.md)
 - `v0.7.0` docs: [notes](docs/v0.7.0-release-notes.md) · [readiness](docs/v0.7.0-readiness.md) · [scope](docs/v0.7.0-release-scope.md) · [package](docs/manual-packaging-guide.md)
 - `v0.6.0` docs: [notes](docs/v0.6.0-release-notes.md) · [readiness](docs/v0.6.0-readiness.md) · [scope](docs/v0.6.0-release-scope.md) · [model](docs/runtime-consumption-model.md)

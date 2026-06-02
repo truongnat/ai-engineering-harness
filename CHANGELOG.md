@@ -1,6 +1,8 @@
 # Changelog
 
-## [0.9.1] - Unreleased
+## [0.9.1] - 2026-06-02
+
+**Experimental Runtime-Native Installer** — runtime-native modes are experimental; stable per-runtime support is **not** claimed. See [v0.9.1-release-notes.md](docs/v0.9.1-release-notes.md).
 
 ### Fixed
 
@@ -8,45 +10,20 @@
 
 ### Added
 
-- runtime dogfood summary ([runtime-dogfood-summary.md](docs/runtime-dogfood-summary.md)) — Scenarios C, D1–D6
-- v0.9.x readiness audit ([v0.9.x-readiness.md](docs/v0.9.x-readiness.md)) and release scope ([v0.9.x-release-scope.md](docs/v0.9.x-release-scope.md))
-- runtime-aware target validation ([runtime-aware-validation.md](docs/runtime-aware-validation.md)) — `node validate.js --target <repo> --runtime <name> --profile-only`
-- Cursor profile validation no longer requires `AGENTS.md` when `--runtime cursor` is used
-- runtime-native install audit and dogfood plan ([runtime-native-install-audit.md](docs/runtime-native-install-audit.md), [runtime-native-install-dogfood-plan.md](docs/runtime-native-install-dogfood-plan.md))
-- generic project runtime dogfood report ([pack-dogfood-reports/scenario-d1-generic-project.md](docs/pack-dogfood-reports/scenario-d1-generic-project.md)) — experimental PASS
-- Codex project runtime dogfood report ([pack-dogfood-reports/scenario-d2-codex-project.md](docs/pack-dogfood-reports/scenario-d2-codex-project.md)) — experimental PASS
-- Cursor project runtime dogfood report ([pack-dogfood-reports/scenario-d3-cursor-project.md](docs/pack-dogfood-reports/scenario-d3-cursor-project.md)) — experimental PASS (file/install); profile validation gap documented
-- OpenCode project runtime dogfood report ([pack-dogfood-reports/scenario-d4-opencode-project.md](docs/pack-dogfood-reports/scenario-d4-opencode-project.md)) — experimental PASS
-- Gemini runtime dogfood report ([pack-dogfood-reports/scenario-d5-gemini.md](docs/pack-dogfood-reports/scenario-d5-gemini.md)) — experimental PASS (project + global file/install)
-- Claude runtime dogfood report ([pack-dogfood-reports/scenario-d6-claude.md](docs/pack-dogfood-reports/scenario-d6-claude.md)) — experimental PASS (project file/install)
+- experimental runtime-native installer ([install-runtime.js](install-runtime.js), [runtime/](runtime/)) with runtime + scope selector in [install.sh](install.sh)
+- project `.harness/` init (`--scope project --init-harness`) — [harness-init-usage.md](docs/harness-init-usage.md)
+- runtime-aware target validation — [runtime-aware-validation.md](docs/runtime-aware-validation.md); `node validate.js --target <repo> --runtime <name> --profile-only`
+- runtime payloads for `generic`, `codex`, `cursor`, `opencode`, `gemini`, `claude` (plus `windsurf` alias, `all` sequential — **experimental**, `all` not dogfooded)
+- dogfood reports Scenario C and D1–D6 — [runtime-dogfood-summary.md](docs/runtime-dogfood-summary.md)
+- v0.9.x readiness and release scope — [v0.9.x-readiness.md](docs/v0.9.x-readiness.md), [v0.9.x-release-scope.md](docs/v0.9.x-release-scope.md)
+- Plugin Install UX pivot docs: [plugin-install-ux.md](docs/plugin-install-ux.md), [install-sh-usage.md](docs/install-sh-usage.md), [runtime-native-install-audit.md](docs/runtime-native-install-audit.md), one-line installer dogfood ([scenario-c-one-line-installer.md](docs/pack-dogfood-reports/scenario-c-one-line-installer.md))
 
-- runtime-native install via [install-runtime.js](install-runtime.js) for Claude, Codex, Cursor, Windsurf, Gemini, OpenCode, generic, and `all` (**experimental** until dogfooded)
-- runtime payloads under [runtime/](runtime/) (rules, plugins, extensions, AGENTS.md, `.claude/` hints)
-- [runtime-native-install.md](docs/runtime-native-install.md)
+### Not included
 
-- project `.harness/` init via [install.sh](install.sh) (`--scope project --init-harness`) with dry-run, skip, and `--force` overwrite
-- global scope + `--init-harness` rejection (no shared `.harness` state)
-- [harness-init-usage.md](docs/harness-init-usage.md)
-
-- runtime and scope selector plumbing in [install.sh](install.sh) (`--runtime`, `--scope`, `--yes`, `--init-harness`, `--legacy-root`)
-- manual fallback warning when non-interactive install defaults to root copy
-- planned-runtime dry-run (no network) and not-implemented message on write
-
-- runtime install matrix research ([runtime-install-matrix-research.md](docs/runtime-install-matrix-research.md))
-- interactive installer design ([interactive-installer-design.md](docs/interactive-installer-design.md))
-- project state policy — global plugin vs per-repo `.harness/` ([project-state-policy.md](docs/project-state-policy.md))
-- root-copy `install.sh` / `install.js` path documented as fallback/manual only ([install-sh-usage.md](docs/install-sh-usage.md), [plugin-install-ux.md](docs/plugin-install-ux.md))
-
-### Planned
-
-- pivot to Plugin Install UX ([plugin-install-ux.md](docs/plugin-install-ux.md))
-- one-line installer design ([one-line-installer-design.md](docs/one-line-installer-design.md))
-- install security notes ([plugin-install-security.md](docs/plugin-install-security.md))
-- `install.sh` one-line remote installer ([install-sh-usage.md](docs/install-sh-usage.md))
-- one-line installer dogfood report ([pack-dogfood-reports/scenario-c-one-line-installer.md](docs/pack-dogfood-reports/scenario-c-one-line-installer.md))
-- optional `ai-harness` CLI (`bin/ai-harness.js`)
-- one-line installer dogfood
-- re-freeze contracts after plugin UX is proven
+- stable runtime-native support claims
+- npm publishing, marketplace automation, semantic validation
+- verified manual IDE/CLI sessions for every runtime
+- `--runtime all` as stable
 
 ## [0.9.0] - 2026-06-02
 
