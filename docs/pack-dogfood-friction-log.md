@@ -8,7 +8,9 @@ Do not paste secrets, tokens, customer data, or private business details. Summar
 
 | Date | Scenario | Friction | Severity | Evidence | Proposed Fix | Classification |
 |---|---|---|---|---|---|---|
-| | | | low / medium / high | | | |
+| 2026-06-02 | A | Install summary prints absolute target path | low | Scenario A install output | Prefer relative path in summary or document redaction for reports | v0.8.x fix |
+| 2026-06-02 | A | validate.js runs from source pack only, not installed into target | low | Scenario A validation flow | Add prominent callout in install next-steps and target-repo-validation | v0.8.x fix |
+| 2026-06-02 | A | No blocking friction beyond minor doc/output clarity | none | Profile and goal validation passed | No action required | no action |
 
 ### Severity
 
@@ -22,9 +24,3 @@ Do not paste secrets, tokens, customer data, or private business details. Summar
 - **v0.9 contract candidate**: may require contract freeze or validator change in `v0.9.0`
 - **v1 blocker**: must resolve before `v1.0.0`
 - **later optional work**: automation, adapters, marketplace—explicitly deferred
-
-## Example Entry (delete when real entries exist)
-
-| Date | Scenario | Friction | Severity | Evidence | Proposed Fix | Classification |
-|---|---|---|---|---|---|---|
-| YYYY-MM-DD | A | Agent opened source pack instead of target repo | medium | report link | Strengthen runtime guide read-first prompt | v0.8.x fix |
