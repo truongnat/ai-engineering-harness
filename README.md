@@ -1,5 +1,7 @@
 # ai-engineering-harness
 
+License: [MIT](LICENSE) | Validation: GitHub Actions `Validate`
+
 `ai-engineering-harness` is a markdown-first operating system for engineering agents. It is designed to give Claude Code, Codex, Cursor, Gemini, OpenCode, and similar tools a lightweight but disciplined way to explore codebases, plan changes, execute work, verify outcomes, and preserve useful decisions.
 
 ## What This Repo Is
@@ -75,6 +77,11 @@ The command equivalents for this loop live in `commands/` and the reusable proce
 3. Move through the command loop as needed.
 4. Use templates to persist outputs in the host repository.
 5. Update memory artifacts after meaningful work ships.
+
+See also:
+
+- [CONTRIBUTING.md](CONTRIBUTING.md)
+- [SECURITY.md](SECURITY.md)
 
 ## Adoption
 

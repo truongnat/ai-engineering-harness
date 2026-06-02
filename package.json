@@ -1,9 +1,9 @@
 {
   "name": "ai-engineering-harness",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "description": "A markdown-first operating system for engineering agents.",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "type": "commonjs",
   "scripts": {
     "install:harness": "node install.js",
