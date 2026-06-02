@@ -58,3 +58,11 @@ Heavy runtime systems are not part of `v0.1.0`. The first release is the markdow
 ## Scope Boundary For `v0.8.0`
 
 `v0.8.0` is a Real Capability Pack Dogfood release and remains runtime-light and manual. It adds executed dogfood scenarios, reports, friction tracking, dogfood-driven doc fixes, and an example-to-target layout guide without adding Scenario C as a requirement, runtime adapters, distribution automation, semantic validation, minimal install tiers, or deep scanning.
+
+## Scope Boundary For `v0.9.0`
+
+`v0.9.0` is a Stable Contract Freeze release and remains runtime-light and manual. It freezes eight core contracts (PACK.md, installed surface, target profile, goal artifacts, validation behavior, runtime consumption, packaging/release, source-vs-target boundary) documented in `docs/stable-contract-index.md` and `docs/frozen-*.md` without adding runtime adapters, distribution automation, semantic validation, minimal install tiers, or changes to frozen validator behavior unless a release blocker is found.
+
+## Scope Boundary For `v1.0.0`
+
+`v1.0.0` should be the first stable capability pack release using the `v0.9.0` frozen contracts. Prefer release hardening and documentation finalization over new contract surface. Expand contracts only if a documented blocker appears; follow [breaking-change-policy.md](breaking-change-policy.md).

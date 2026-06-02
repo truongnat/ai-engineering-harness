@@ -4,7 +4,7 @@
 
 ### Markdown-first engineering discipline for AI coding agents
 
-![Version](https://img.shields.io/badge/version-v0.8.0-2563eb)
+![Version](https://img.shields.io/badge/version-v0.9.0-2563eb)
 ![License](https://img.shields.io/badge/license-MIT-16a34a)
 ![Validation](https://img.shields.io/badge/validation-passing-22c55e)
 ![Markdown First](https://img.shields.io/badge/markdown-first-7c3aed)
@@ -143,8 +143,9 @@ Then:
 
 ## 🎯 Release Status
 
-- Current release: [`v0.8.0`](docs/v0.8.0-release-notes.md) — Real Capability Pack Dogfood · [PACK.md](PACK.md)
-- Next planned: `v0.9.0` Stable Contract Freeze ([plan](docs/v0.9.0-plan.md) · [readiness](docs/v0.9.0-readiness.md) · [scope](docs/v0.9.0-release-scope.md) · [contracts](docs/stable-contract-index.md))
+- Current release: [`v0.9.0`](docs/v0.9.0-release-notes.md) — Stable Contract Freeze · [contracts](docs/stable-contract-index.md) · [PACK.md](PACK.md)
+- Next planned: `v1.0.0` Stable Capability Pack Release
+- `v0.9.0` docs: [notes](docs/v0.9.0-release-notes.md) · [readiness](docs/v0.9.0-readiness.md) · [scope](docs/v0.9.0-release-scope.md)
 - `v0.8.0` docs: [notes](docs/v0.8.0-release-notes.md) · [readiness](docs/v0.8.0-readiness.md) · [scope](docs/v0.8.0-release-scope.md) · [dogfood](docs/pack-dogfood-scenarios.md)
 - `v0.7.0` docs: [notes](docs/v0.7.0-release-notes.md) · [readiness](docs/v0.7.0-readiness.md) · [scope](docs/v0.7.0-release-scope.md) · [package](docs/manual-packaging-guide.md)
 - `v0.6.0` docs: [notes](docs/v0.6.0-release-notes.md) · [readiness](docs/v0.6.0-readiness.md) · [scope](docs/v0.6.0-release-scope.md) · [model](docs/runtime-consumption-model.md)
