@@ -26,6 +26,8 @@ const requiredFiles = [
   "docs/v0.2.0-readiness.md",
   "docs/v0.2.0-release-notes.md",
   "docs/v0.2.0-release-scope.md",
+  "docs/v0.3.0-readiness.md",
+  "docs/v0.3.0-release-scope.md",
   "docs/v0.3.0-plan.md",
   "docs/system-positioning.md",
   "docs/adoption-guide.md",

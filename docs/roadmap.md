@@ -34,16 +34,20 @@
 ## V3: Lightweight Host Repository Validation
 
 - `v0.3.0`: Lightweight Host Repository Validation
-- implement minimal `node validate.js --target <path>`
-- support `--profile-only`
-- support optional `--goal <goal-id>`
-- validate only structural `.harness/` contracts
-- reuse existing heading contracts where practical
-- keep validation dependency-free and safe
-- keep target validation structural rather than semantic
+- implemented in this release
+- supports `node validate.js --target <path>`
+- supports `--profile-only`
+- supports `--goal <goal-id>`
+- validates only structural `.harness/` contracts
+- reuses existing heading contracts where practical
+- keeps validation dependency-free and safe
+- keeps target validation structural rather than semantic
 
 ## Later Optional Work
 
+- optional deeper validation ideas beyond structural harness contracts
+- optional semantic validation research
+- optional context warnings for non-required artifacts
 - optional memory backend integrations
 - optional remote skill or template registry
 - optional automation layers for artifact lifecycle management

@@ -15,6 +15,8 @@
 
 - implemented target profile validation mode
 - implemented target goal validation mode
+- v0.3.0 readiness audit
+- v0.3.0 release scope documentation
 
 ## [0.2.0] - 2026-06-02
 
