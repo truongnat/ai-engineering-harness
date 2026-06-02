@@ -1,31 +1,93 @@
 # Codex
 
-## `AGENTS.md`
+## Purpose
 
-Keep `AGENTS.md` at the repository root so Codex can use it as the main operating contract for artifact-first work.
+Explain how Codex should consume `ai-engineering-harness` as a capability pack inside a target repository.
 
-## `commands/`
+## Runtime Fit
 
-Use `commands/` to anchor the operating loop. Ask Codex to run the command that matches the current phase instead of jumping directly into implementation.
+Codex is a good fit when tasks can be scoped through repo-local markdown instructions and target artifacts.
 
-## `skills/`
+Codex should use the target repository's installed `AGENTS.md`, commands, skills, templates, and `.harness/` artifacts.
 
-Use `skills/` as process references for mapping, planning, execution, verification, and memory capture. They help keep Codex aligned to the same operating model across sessions.
+Codex should not treat the `ai-engineering-harness` source repo as the product repo unless maintaining the harness itself.
 
-## `.harness/` Artifacts
+## Consumption Model
 
-Keep the working state in `.harness/`, especially `GOAL.md`, `DISCUSSION.md`, `PLAN.md`, `TASKS.md`, `VERIFY.md`, and `REMEMBER.md`. Codex should update them as the task evolves.
+Use Codex against the target repository after the harness operating surface has been installed or copied there.
 
-## Recommended First Prompt
+The source pack is only the canonical source. Product work happens in the target repository.
 
-> Read `AGENTS.md` and the active `.harness/` artifacts first. Use the harness loop, keep tasks small, and do not code before the goal and plan are clear.
+## Recommended Setup
 
-## Known Limitations
+Use the current setup flow:
 
-- no Codex-specific installer or package is added here
-- the runtime guide does not assume any hidden memory outside repository artifacts
-- artifact quality still depends on keeping `.harness/` current
+```bash
+node install.js --target ../my-project --dry-run
+node install.js --target ../my-project
+node validate.js --target ../my-project --profile-only
+```
 
-## Safety Reminder
+Run these commands from the source pack repo, then open or run Codex against the target repo for product work, and keep `.harness/` artifacts in the target repo.
 
-Do not store secrets, tokens, customer data, or private business data in harness artifacts.
+## What Codex Should Read
+
+Inside the target repository, Codex should read:
+
+- `AGENTS.md`
+- `docs/consume-as-pack.md`
+- `docs/install-to-profile-walkthrough.md`
+- `docs/harness-build-usage.md`
+- `.harness/HARNESS.md`
+- `.harness/TEAM.md`
+- `.harness/SKILLS.md`
+- `.harness/WORKFLOW.md`
+- `.harness/GATES.md`
+- `.harness/MEMORY.md`
+- active `.harness/goals/<goal-id>/` artifacts
+
+## Session Rules
+
+- start each task by reading target-repo harness artifacts
+- keep the task scoped to one active goal when possible
+- update goal artifacts when plan or verification state changes
+- do not skip validation because the code change looks small
+- report not-run verification honestly
+
+## First Prompt
+
+> Read `AGENTS.md`, `docs/consume-as-pack.md`, `docs/install-to-profile-walkthrough.md`, and `docs/harness-build-usage.md`. Treat this repository as the target product repository. Do not use the `ai-engineering-harness` source repo as the product repo. Inspect `.harness/` artifacts and summarize the current harness state before making any changes.
+
+## Harness-Build Prompt
+
+> Run the harness-build process for this target repository. Create or update `.harness/HARNESS.md`, `TEAM.md`, `SKILLS.md`, `WORKFLOW.md`, `GATES.md`, and `MEMORY.md`. Use the smallest sufficient skill and workflow set. Do not implement application code.
+
+## Goal Execution Prompt
+
+> Using the current `.harness/` profile and `.harness/goals/<goal-id>/` artifacts, plan and execute the next task. Keep the task scoped, update `TASKS.md` and `VERIFY.md` when state changes, and stop before shipping if verification evidence is missing.
+
+## Validation Prompt
+
+> Run or ask me to run: `node validate.js --target <path> --profile-only` and `node validate.js --target <path> --goal <goal-id>`. Treat validation as structural only, not proof of application correctness. Fix exact missing paths and headings.
+
+## Safety Boundaries
+
+- keep markdown as the source of truth
+- keep `.harness/` artifacts in the target repository
+- do not invent Codex integration behavior
+- do not treat structural validation as proof that the application is correct
+
+## Common Mistakes
+
+- running Codex in the source pack repo and treating it as the product repo
+- skipping the read-first pass over installed docs and `.harness/` artifacts
+- letting one session drift across multiple active goals without explicit scope control
+- claiming verification completeness when commands or checks were not actually run
+
+## Completion Checklist
+
+- Codex is pointed at the target repository, not the source pack
+- installed `AGENTS.md` and supporting docs were read first
+- `.harness/` profile artifacts exist or were updated intentionally
+- active goal artifacts were read before execution
+- validation flow is understood as structural-only
