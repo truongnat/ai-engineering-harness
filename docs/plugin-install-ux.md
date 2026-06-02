@@ -62,9 +62,10 @@ See:
 |---|---|
 | `manual` / `--legacy-root` | **Implemented** — root copy via `install.js`; dogfooded (Scenario C); fallback only |
 | `.harness/` init (`--init-harness`) | **Implemented** — project scope; automated tests |
-| Runtime-native modes | **Implemented, audit/dogfood pending** — see [runtime-native-install-audit.md](runtime-native-install-audit.md) |
+| Runtime-native modes | **Implemented, dogfood in progress** — see [runtime-native-install-audit.md](runtime-native-install-audit.md) |
+| `generic` + `project` + `--init-harness` | **experimental PASS** (Scenario D1) — [scenario-d1-generic-project.md](pack-dogfood-reports/scenario-d1-generic-project.md) |
 
-Do **not** treat runtime-native modes as stable until dogfood reports exist per [runtime-native-install-dogfood-plan.md](runtime-native-install-dogfood-plan.md).
+Do **not** treat runtime-native modes as **stable** until per-runtime dogfood passes and audit matrix is updated. Generic project is dogfooded; other runtimes remain pending per [runtime-native-install-dogfood-plan.md](runtime-native-install-dogfood-plan.md).
 
 ## Supported User Flows (interim)
 

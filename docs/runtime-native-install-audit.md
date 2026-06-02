@@ -15,7 +15,7 @@ Step 5 delivered project `.harness/` init. A subsequent commit added runtime-nat
 | [runtime/](../runtime/) | Minimal payloads (rules, plugin JS, extension manifest, AGENTS snippets) |
 | [install.js](../install.js) | **Manual fallback only** — copies installed surface to target root |
 
-Automated tests cover file creation and dry-run for several paths. **No external-runtime dogfood reports exist yet** for Claude, Cursor, Gemini, or OpenCode in real tools.
+Automated tests cover file creation and dry-run for several paths. **Scenario D1** dogfoods **generic (project)** in an external repo. **No external dogfood reports yet** for codex, Claude, Cursor, Gemini, or OpenCode in real tools.
 
 ## Runtime Payload Inventory
 
@@ -37,7 +37,7 @@ Automated tests cover file creation and dry-run for several paths. **No external
 | Runtime | Implemented path(s) | Scope support | Confidence | Dogfood status | Stable claim allowed? |
 |---|---|---|---|---|---|
 | **manual** | `install.js` → root copy | target only | High (Scenario C) | Dogfooded (one-line) | **No** (fallback only) |
-| **generic** | `AGENTS.md` bootstrap | project | High | Not dogfooded | **No** |
+| **generic** | `AGENTS.md` bootstrap | project | High | **D1 completed** ([scenario-d1-generic-project.md](pack-dogfood-reports/scenario-d1-generic-project.md)) — experimental PASS | **No** |
 | **codex** | `AGENTS.md` or `~/.codex/AGENTS.md` | project, global | Medium–High (official AGENTS.md model) | Not dogfooded | **No** |
 | **cursor** | `.cursor/rules/ai-engineering-harness.mdc` | project, global | Medium (rules docs verified; IDE behavior not dogfooded) | Not dogfooded | **No** |
 | **windsurf** | Same as cursor (`--runtime windsurf` alias) | project, global | Medium (alias only) | Not dogfooded | **No** |

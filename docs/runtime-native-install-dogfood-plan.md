@@ -27,7 +27,9 @@ Use a **disposable external repo** (not committed to this pack), same pattern as
 
 ---
 
-## 1. Generic (project)
+## 1. Generic (project) — completed (Scenario D1)
+
+**Status:** **experimental PASS** — [scenario-d1-generic-project.md](pack-dogfood-reports/scenario-d1-generic-project.md) (2026-06-02). Stable claim remains **No** until full matrix and manual agent checks.
 
 **Command:**
 
