@@ -54,11 +54,17 @@ See:
 - [interactive-installer-design.md](interactive-installer-design.md)
 - [project-state-policy.md](project-state-policy.md)
 
+## Installer Status
+
+[install.sh](../install.sh) now **distinguishes runtime and scope** (interactive menus or `--runtime` / `--scope`). Runtime-specific file writes are implemented **one runtime at a time** (Steps 6a–6f). Today, only **`--runtime manual`** (or `--legacy-root`) performs the legacy root copy.
+
+Non-manual runtimes: safe **dry-run** prints the plan and exits; write mode fails with a clear not-implemented message.
+
 ## Supported User Flows (interim)
 
-**Current** active installer: [install.sh](../install.sh) — see [install-sh-usage.md](install-sh-usage.md).
+**Write path today:** `--runtime manual` only — see [install-sh-usage.md](install-sh-usage.md).
 
-This is a **fallback / manual** path: download pack → `install.js` copies the default installed surface into the target repo. It is **dogfooded** but **not** the final plugin UX.
+Piping `curl | sh` without flags still defaults to **manual** fallback (with a warning). That is **not** the recommended long-term default.
 
 ### Project install (default target = cwd) — interim bulk copy
 

@@ -10,9 +10,30 @@ Document the one-line remote installer for `ai-engineering-harness` into a targe
 
 It downloads the pack and runs `install.js`, which **copies** the default installed surface into the target repo root (`AGENTS.md`, `commands/`, `skills/`, `workflows/`, `patterns/`, `templates/`, `docs/`, …). That path is **fallback / manual** only until the interactive installer ships.
 
-Target UX (in progress): choose **runtime** + **scope** → install to runtime-correct locations → project-local `.harness/` only when needed. See [interactive-installer-design.md](interactive-installer-design.md), [runtime-install-matrix-research.md](runtime-install-matrix-research.md), [project-state-policy.md](project-state-policy.md).
+Target UX: choose **runtime** + **scope** → install to runtime-correct locations → project-local `.harness/` only when needed.
 
-## Quick Install
+## Runtime Selector (Step 4)
+
+`install.sh` accepts **runtime** and **scope** and prints an install plan before executing.
+
+| Flag | Purpose |
+|---|---|
+| `--runtime <name>` | `claude`, `codex`, `cursor`, `gemini`, `opencode`, `generic`, `all`, `manual` |
+| `--scope <name>` | `global` or `project` (required for non-manual when non-interactive) |
+| `--init-harness` | Request `.harness/` scaffold (planned; Step 5) |
+| `--legacy-root` | Alias for `--runtime manual` |
+| `--yes` | Skip confirmation prompt |
+
+**Only `--runtime manual` writes files today** (legacy `install.js` root copy). Other runtimes are **plan-only** until runtime-specific steps land:
+
+- **Dry-run:** exits 0 after printing plan (no download)
+- **Write:** exits non-zero with not-implemented message
+
+Non-interactive install without `--runtime` defaults to `manual` and prints a **fallback warning**.
+
+See [interactive-installer-design.md](interactive-installer-design.md), [runtime-install-matrix-research.md](runtime-install-matrix-research.md), [project-state-policy.md](project-state-policy.md).
+
+## Quick Install (manual fallback)
 
 From your **product repository** root:
 
@@ -67,14 +88,26 @@ sh install-harness.sh --ref v0.9.0 --target .
 - `curl` or `wget` for download
 - writable target directory (must exist for write install; dry-run allows missing target leaf with existing parent)
 
-## What It Does
+## Examples (selector)
 
-1. Downloads `https://github.com/truongnat/ai-engineering-harness/archive/<ref>.tar.gz`
-2. Extracts to a temporary directory
-3. Runs `node install.js --target <absolute-path>` from the extracted pack
-4. Removes the temporary directory on exit
+```bash
+sh install.sh --runtime manual --target . --dry-run
+sh install.sh --legacy-root --target . --dry-run
+sh install.sh --runtime claude --scope project --dry-run --yes
+sh install.sh --runtime cursor --scope global --dry-run --yes
+```
 
-Copy behavior is defined by [install.js](../install.js) and [frozen-installed-surface-contract.md](frozen-installed-surface-contract.md).
+## What Manual Fallback Does
+
+When `--runtime manual` (or default non-interactive fallback):
+
+1. Prints install plan and confirms (unless `--yes`)
+2. Downloads `https://github.com/truongnat/ai-engineering-harness/archive/<ref>.tar.gz`
+3. Extracts to a temporary directory
+4. Runs `node install.js --target <absolute-path>` from the extracted pack
+5. Removes the temporary directory on exit
+
+Copy behavior is defined by [install.js](../install.js). Root bulk copy is **fallback only**, not the v1 default install model.
 
 ## What It Does Not Do
 

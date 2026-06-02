@@ -4,6 +4,10 @@
 
 ### Added
 
+- runtime and scope selector plumbing in [install.sh](install.sh) (`--runtime`, `--scope`, `--yes`, `--init-harness`, `--legacy-root`)
+- manual fallback warning when non-interactive install defaults to root copy
+- planned-runtime dry-run (no network) and not-implemented message on write
+
 - runtime install matrix research ([runtime-install-matrix-research.md](docs/runtime-install-matrix-research.md))
 - interactive installer design ([interactive-installer-design.md](docs/interactive-installer-design.md))
 - project state policy — global plugin vs per-repo `.harness/` ([project-state-policy.md](docs/project-state-policy.md))

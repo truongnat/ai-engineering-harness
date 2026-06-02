@@ -4,7 +4,18 @@
 
 Design the next-generation installer: **runtime-native**, **scope-aware**, and **non-polluting** to the product repository root.
 
-Current [install.sh](../install.sh) remains a **fallback** (download archive + `install.js`). This document describes the target behavior before implementation.
+[install.sh](../install.sh) implements **Step 4 selector plumbing** (runtime/scope flags, interactive menus, install plan, confirmation). **Only `manual` runtime performs writes** via legacy `install.js` root copy. Other runtimes are plan/dry-run safe until Steps 6a–6f.
+
+## Implementation Status
+
+| Piece | Status |
+|---|---|
+| `--runtime` / `--scope` flags | **implemented** |
+| Interactive runtime + scope pickers | **implemented** (TTY stdin) |
+| Install plan + `--yes` confirm | **implemented** |
+| Non-manual runtime writes | **not implemented** (dry-run exits 0; write exits with message) |
+| `.harness/` init (`--init-harness`) | **planned** (Step 5) |
+| Per-runtime native install | **planned** (Steps 6a–6f) |
 
 ## Installer Flow
 

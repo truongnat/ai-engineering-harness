@@ -392,6 +392,75 @@ runTest("install.sh does not contain telemetry strings", () => {
   assert.equal(script.includes("analytics"), false);
 });
 
+runTest("install.sh includes runtime selector flags", () => {
+  const script = fs.readFileSync(installShPath, "utf8");
+
+  assert.match(script, /--runtime/);
+  assert.match(script, /--scope/);
+  assert.match(script, /--yes/);
+  assert.match(script, /--init-harness/);
+  assert.match(script, /--legacy-root/);
+});
+
+runTest("install.sh includes runtime option names", () => {
+  const script = fs.readFileSync(installShPath, "utf8");
+
+  for (const name of ["claude", "codex", "cursor", "gemini", "opencode", "generic", "all", "manual"]) {
+    assert.match(script, new RegExp(name));
+  }
+});
+
+runTest("install.sh warns manual root copy is fallback", () => {
+  const script = fs.readFileSync(installShPath, "utf8");
+
+  assert.match(script, /fallback/i);
+  assert.match(script, /warning/i);
+});
+
+runTest("install.sh documents non-manual runtime not implemented", () => {
+  const script = fs.readFileSync(installShPath, "utf8");
+
+  assert.match(script, /not implemented yet/i);
+  assert.match(script, /--runtime manual/i);
+});
+
+runTest("install.sh legacy-root aliases manual fallback", () => {
+  const script = fs.readFileSync(installShPath, "utf8");
+
+  assert.match(script, /--legacy-root/);
+  assert.match(script, /RUNTIME="manual"/);
+});
+
+function runInstallSh(args, options = {}) {
+  return childProcess.spawnSync("sh", [installShPath, ...args], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    env: { ...process.env, ...options.env },
+    timeout: 15000
+  });
+}
+
+runTest("install.sh claude dry-run exits 0 without network", () => {
+  const result = runInstallSh(
+    ["--runtime", "claude", "--scope", "project", "--dry-run", "--yes", "--target", "."],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stdout + result.stderr, /not implemented yet/i);
+  assert.match(result.stdout, /claude/i);
+});
+
+runTest("install.sh claude write exits non-zero with not implemented", () => {
+  const result = runInstallSh(
+    ["--runtime", "claude", "--scope", "project", "--yes", "--target", "."],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stdout + result.stderr, /not implemented yet/i);
+});
+
 if (process.exitCode) {
   process.exit(process.exitCode);
 }
