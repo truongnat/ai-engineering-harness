@@ -31,7 +31,18 @@
 - close the highest-value gaps identified in relation to [TARGET.md](../TARGET.md)
 - keep adoption, validation, and markdown-first execution lightweight
 
-## V3: Optional Memory Backend And Automation
+## V3: Lightweight Host Repository Validation
+
+- `v0.3.0`: Lightweight Host Repository Validation
+- implement minimal `node validate.js --target <path>`
+- support `--profile-only`
+- support optional `--goal <goal-id>`
+- validate only structural `.harness/` contracts
+- reuse existing heading contracts where practical
+- keep validation dependency-free and safe
+- keep target validation structural rather than semantic
+
+## Later Optional Work
 
 - optional memory backend integrations
 - optional remote skill or template registry
@@ -41,6 +52,6 @@
 
 - `v0.1.0`: markdown-first harness operating model
 - `v0.2.0`: Harness Design System
-- `v0.3.0`: optional runtime-specific helpers, still no heavy runtime by default
+- `v0.3.0`: Lightweight Host Repository Validation
 
 Heavy runtime systems remain out of scope for v1. Any future automation should support the markdown operating model rather than replace it.

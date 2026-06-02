@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.3.0] - Unreleased
+
+### Planned
+
+- Lightweight host repository validation
+- minimal `node validate.js --target <path>` mode
+- optional `--profile-only`
+- optional `--goal <goal-id>`
+- structural `.harness/` contract validation for adopted repositories
+
 ## [0.2.0] - 2026-06-02
 
 ### Planned
