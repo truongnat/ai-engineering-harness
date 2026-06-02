@@ -24,6 +24,9 @@ Breaking examples:
 - renaming `.harness/goals/<goal-id>/VERIFY.md` or other required goal files
 - removing a required heading from `.harness/goals/<goal-id>/REMEMBER.md` (or other goal files) in `validate.js`
 - making optional profile sections required in the validator without migration
+- changing `--target <path>` default mode away from profile validation without migration
+- changing existing `Missing required path:` or `is missing heading:` message shapes without migration
+- making semantic validation required for target repos that pass structural validation today
 
 ## What Does Not Count As Breaking
 
@@ -76,5 +79,8 @@ After `v1.0.0`:
 | Rename goal `VERIFY.md` to `VERIFICATION.md` in validator | Yes |
 | Drop `## Sensitive Data Check` from required REMEMBER headings | Yes |
 | Add new required `## Stakeholders` to HARNESS without migration | Yes |
+| Change `--target` alone to run goal validation by default | Yes |
+| Change failure text from `Missing required path:` to `Not found:` | Yes |
+| Require secret scanning pass for profile validation | Yes |
 
 See also [minimal-install-tier-decision.md](minimal-install-tier-decision.md) for a deferred extension that would be breaking if introduced without a major version and migration plan.

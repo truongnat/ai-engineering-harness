@@ -24,6 +24,16 @@ Install copies the markdown operating surface into the target repo; structural c
 - `--profile-only` validates the [frozen target profile contract](frozen-target-profile-contract.md)
 - `--goal <goal-id>` validates the [frozen goal artifact contract](frozen-goal-artifact-contract.md) (after profile checks)
 
+## Frozen Validation Contract
+
+Validation behavior for v1.0.0 is recorded in [frozen-validation-contract.md](frozen-validation-contract.md).
+
+Clarifications:
+
+- validation is **structural-only** (paths and headings, not body semantics)
+- target validation runs from the **source pack** with `--target <path>`
+- `node validate.js --target <path>` without `--goal` means **profile** validation (same contract as `--profile-only`)
+
 ## What Target Repo Validation Means
 
 Target repo validation means checking whether a host repository contains the minimum adopted harness structure and profile artifacts needed to operate the harness safely and consistently.

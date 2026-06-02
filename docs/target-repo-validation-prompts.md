@@ -2,6 +2,8 @@
 
 Copy and paste these prompts when asking an AI coding agent to review an adopted host repository harness profile.
 
+Before changing validation behavior, read [frozen-validation-contract.md](frozen-validation-contract.md).
+
 ## Review Current `.harness/` Profile
 
 > Read AGENTS.md, .harness/HARNESS.md, TEAM.md, SKILLS.md, WORKFLOW.md, GATES.md, and MEMORY.md. Review the current adopted harness profile for structural completeness, internal consistency, and safety. Do not judge application code correctness.

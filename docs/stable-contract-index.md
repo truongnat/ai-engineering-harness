@@ -14,7 +14,7 @@ Use this index before making changes that affect adopters, validators, or packag
 | Installed surface | v0.9.0 | **frozen for v1.0.0** — [frozen-installed-surface-contract.md](frozen-installed-surface-contract.md) |
 | Target profile | v0.9.0 | **frozen for v1.0.0** — [frozen-target-profile-contract.md](frozen-target-profile-contract.md) |
 | Goal artifacts | v0.9.0 | **frozen for v1.0.0** — [frozen-goal-artifact-contract.md](frozen-goal-artifact-contract.md) |
-| Validation behavior | v0.9.0 | indexed; Step 4+ alignment |
+| Validation behavior | v0.9.0 | **frozen for v1.0.0** — [frozen-validation-contract.md](frozen-validation-contract.md) |
 | Runtime consumption | v0.9.0 | indexed; Step 5+ alignment |
 | Packaging / release | v0.9.0 | indexed; Step 5+ alignment |
 | Source vs target boundary | v0.9.0 | indexed |
@@ -75,9 +75,10 @@ Mapping from examples: [harness-example-to-target-layout.md](harness-example-to-
 
 ## Validation Contract
 
+- **Frozen record:** [frozen-validation-contract.md](frozen-validation-contract.md)
 - **Stable source:** [target-repo-validation.md](target-repo-validation.md), `validate.js`
-- **What is frozen:** structural-only checks; run from source pack with `--target`; modes `--profile-only` and `--goal`; failure messages for missing paths/headings; repository self-check includes `PACK.md` headings
-- **May still change before v1.0.0:** additional required source-pack docs in `validate.js` file list; new fixtures if additive
+- **What is frozen:** CLI modes; structural-only checks; `--target` defaults to profile validation; failure message shapes; usage error rules
+- **May still change before v1.0.0:** additive `requiredFiles` in source pack; new fixtures
 - **Not guaranteed:** semantic validation; secret scanning; deep scanning; in-target `validate.js` copy
 
 ---

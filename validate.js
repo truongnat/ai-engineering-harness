@@ -67,6 +67,7 @@ const requiredFiles = [
   "docs/frozen-installed-surface-contract.md",
   "docs/frozen-target-profile-contract.md",
   "docs/frozen-goal-artifact-contract.md",
+  "docs/frozen-validation-contract.md",
   "docs/pack-dogfood-scenarios.md",
   "docs/pack-dogfood-report-template.md",
   "docs/pack-dogfood-friction-log.md",

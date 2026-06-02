@@ -169,34 +169,34 @@ runTest("validate.js passes for the repository", () => {
   assert.deepEqual(failures, []);
 });
 
-runTest("parseValidateArgs accepts empty args as default mode", () => {
+runTest("frozen validation contract: empty args use harness-repository mode", () => {
   const parsed = parseValidateArgs([]);
 
   assert.equal(parsed.mode, "harness-repository");
   assert.equal(parsed.baseDir, repoRoot);
 });
 
-runTest("parseValidateArgs returns usage error for unsupported args", () => {
+runTest("frozen validation contract: unsupported args return usage error", () => {
   const parsed = parseValidateArgs(["--wat"]);
 
   assert.deepEqual(parsed.usageErrors, ["Unsupported argument: --wat"]);
 });
 
-runTest("parseValidateArgs accepts --target as target profile mode", () => {
+runTest("frozen validation contract: --target only uses target-profile mode", () => {
   const parsed = parseValidateArgs(["--target", "../my-project"]);
 
   assert.equal(parsed.mode, "target-profile");
   assert.equal(parsed.baseDir, path.resolve(repoRoot, "..", "my-project"));
 });
 
-runTest("parseValidateArgs accepts --target with --profile-only as target profile mode", () => {
+runTest("frozen validation contract: --target with --profile-only uses target-profile mode", () => {
   const parsed = parseValidateArgs(["--target", "../my-project", "--profile-only"]);
 
   assert.equal(parsed.mode, "target-profile");
   assert.equal(parsed.baseDir, path.resolve(repoRoot, "..", "my-project"));
 });
 
-runTest("parseValidateArgs accepts --target with --goal as target goal mode", () => {
+runTest("frozen validation contract: --target with --goal uses target-goal mode", () => {
   const parsed = parseValidateArgs(["--target", "../my-project", "--goal", "google-login"]);
 
   assert.equal(parsed.mode, "target-goal");
@@ -204,16 +204,30 @@ runTest("parseValidateArgs accepts --target with --goal as target goal mode", ()
   assert.equal(parsed.goalId, "google-login");
 });
 
-runTest("parseValidateArgs returns usage error for missing goal id after --goal", () => {
+runTest("frozen validation contract: missing goal id after --goal is usage error", () => {
   const parsed = parseValidateArgs(["--target", "../my-project", "--goal"]);
 
   assert.deepEqual(parsed.usageErrors, ["Missing required goal id after --goal"]);
 });
 
-runTest("parseValidateArgs returns conflict usage error for --profile-only with --goal", () => {
+runTest("frozen validation contract: --profile-only cannot combine with --goal", () => {
   const parsed = parseValidateArgs(["--target", "../my-project", "--profile-only", "--goal", "google-login"]);
 
   assert.deepEqual(parsed.usageErrors, ["--profile-only cannot be combined with --goal"]);
+});
+
+runTest("frozen validation contract: missing path message shape", () => {
+  const failures = validateRepository(invalidFixture);
+
+  assert.ok(failures.some((failure) => /^Missing required path: .+$/.test(failure)));
+});
+
+runTest("frozen validation contract: missing heading message shape", () => {
+  const failures = validateTargetProfile(invalidTargetProfileFixture);
+
+  assert.ok(
+    failures.some((failure) => /^.+\.md is missing heading: ## .+$/.test(failure))
+  );
 });
 
 runTest("validate.js reports missing harness profile headings", () => {

@@ -2,6 +2,8 @@
 
 Use this checklist to review a host repository after it has adopted the harness and produced `.harness/` profile artifacts.
 
+Frozen validation behavior: [frozen-validation-contract.md](frozen-validation-contract.md).
+
 ## Required Files
 
 - [ ] `AGENTS.md` exists at the repository root.

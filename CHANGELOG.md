@@ -11,7 +11,7 @@
 - frozen installed surface contract ([frozen-installed-surface-contract.md](docs/frozen-installed-surface-contract.md))
 - frozen target profile contract ([frozen-target-profile-contract.md](docs/frozen-target-profile-contract.md))
 - frozen goal artifact contract ([frozen-goal-artifact-contract.md](docs/frozen-goal-artifact-contract.md))
-- validation behavior contract freeze
+- frozen validation behavior contract ([frozen-validation-contract.md](docs/frozen-validation-contract.md))
 - v1.0.0 readiness path
 
 ## [0.8.0] - 2026-06-02
