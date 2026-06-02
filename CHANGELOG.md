@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.8.0] - Unreleased
+
+### Planned
+
+- real capability pack dogfood plan
+- dogfood scenarios
+- dogfood report template
+- friction log
+- follow-up backlog
+- evidence-based path toward v1.0.0
+
 ## [0.7.0] - 2026-06-02
 
 ### Planned

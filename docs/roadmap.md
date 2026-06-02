@@ -81,6 +81,24 @@
 - release archive model and checklist integration with `PACK.md`
 - no publishing automation, marketplace automation, archive generation automation, or runtime adapters in this release
 
+## V8: Real Capability Pack Dogfood
+
+- `v0.8.0`: Real Capability Pack Dogfood
+- prove the capability pack in real or semi-real target repositories
+- evidence from install/copy, runtime usage, profile and goal artifacts, and structural validation
+- friction log and follow-up backlog toward `v0.9` contract freeze and `v1.0.0`
+- no runtime adapter work and no distribution automation in this release
+
+## V9: Stable Contract Freeze (planned)
+
+- `v0.9.0`: Stable Contract Freeze
+- lock PACK.md, installed surface, harness profile, goal artifacts, validation, and packaging flow before `v1.0.0`
+
+## V10: Stable Capability Pack Release (planned)
+
+- `v1.0.0`: Stable Capability Pack Release
+- first stable release after dogfood evidence and contract freeze
+
 ## Later Optional Work
 
 - optional archive generation automation
@@ -109,5 +127,6 @@
 - `v0.5.0`: Plugin Distribution Model
 - `v0.6.0`: Runtime Consumption Guides
 - `v0.7.0`: Capability Pack Packaging
+- `v0.8.0`: Real Capability Pack Dogfood (in progress)
 
 Heavy runtime systems remain out of scope for v1. Any future automation should support the markdown operating model rather than replace it.
