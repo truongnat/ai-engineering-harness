@@ -1,6 +1,12 @@
 # Runtime Guides
 
-These guides explain how to use the markdown-first harness with specific agent tools without adding adapters, plugins, or runtime code.
+These guides explain how to consume the plugin-like markdown capability pack inside specific agent runtimes without adding adapters, plugins, or runtime code.
+
+## Start Here
+
+- [Runtime Consumption Model](../runtime-consumption-model.md)
+- [Plugin Model](../plugin-model.md)
+- [Consume As Pack](../consume-as-pack.md)
 
 ## Included Guides
 
@@ -15,8 +21,8 @@ These guides explain how to use the markdown-first harness with specific agent t
 
 Across runtimes:
 
-- keep `AGENTS.md` at the repository root
-- keep active project artifacts in `.harness/`
+- keep `AGENTS.md` in the target repository root
+- keep active project artifacts in the target repository `.harness/`
 - treat `commands/` as the operating loop
 - treat `skills/` as reusable behavior references
 - keep markdown as the source of truth

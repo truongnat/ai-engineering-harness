@@ -62,6 +62,13 @@
 - focus on conceptual and distribution clarification rather than packaging automation
 - keep runtime adapters and marketplace automation out of scope for now
 
+## V6: Runtime Consumption Guides
+
+- `v0.6.0`: Runtime Consumption Guides
+- focus on runtime-specific usage docs
+- no runtime adapters
+- no marketplace automation
+
 ## Later Optional Work
 
 - optional deeper validation ideas beyond structural harness contracts

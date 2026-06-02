@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.6.0] - Unreleased
+
+### Planned
+
+- runtime consumption model
+- Claude Code capability pack usage guide
+- Cursor capability pack usage guide
+- Codex capability pack usage guide
+- Gemini CLI capability pack usage guide
+- OpenCode capability pack usage guide
+- runtime comparison guidance
+- docs-only runtime consumption polish
+
 ## [0.5.0] - 2026-06-02
 
 ### Planned

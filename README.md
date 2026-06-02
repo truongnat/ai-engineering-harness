@@ -143,6 +143,8 @@ Then:
 ## 🎯 Release Status
 
 - Current release: [`v0.5.0`](docs/v0.5.0-release-notes.md)
+- Next planned release: `v0.6.0` Runtime Consumption Guides
+  ([plan](docs/v0.6.0-plan.md) · [model](docs/runtime-consumption-model.md))
 - `v0.5.0` docs: [notes](docs/v0.5.0-release-notes.md) · [readiness](docs/v0.5.0-readiness.md) · [scope](docs/v0.5.0-release-scope.md)
 - `v0.4.0` docs: [notes](docs/v0.4.0-release-notes.md) · [readiness](docs/v0.4.0-readiness.md) · [scope](docs/v0.4.0-release-scope.md)
 - Previous releases: [`v0.3.0`](docs/v0.3.0-release-notes.md), [`v0.2.0`](docs/v0.2.0-release-notes.md), [`v0.1.0`](docs/v0.1.0-release-notes.md)
