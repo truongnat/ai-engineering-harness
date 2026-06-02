@@ -2,6 +2,9 @@
 
 This document defines the future lightweight validation mode for a host repository that has adopted `ai-engineering-harness` and produced `.harness/` profile artifacts.
 
+Profile validation is the first implemented target-repository step.
+Goal-level validation comes later.
+
 ## What Target Repo Validation Means
 
 Target repo validation means checking whether a host repository contains the minimum adopted harness structure and profile artifacts needed to operate the harness safely and consistently.
@@ -53,6 +56,8 @@ The future profile-level validator should check for:
 
 These files define the adopted operating model for the host repository.
 
+This profile-level check is the first implemented target validation mode.
+
 ## Optional Project Context Artifacts
 
 The validator should recognize these as optional but useful project context:
@@ -75,6 +80,8 @@ When a goal is present or a goal-specific mode is requested, the future validato
 - `.harness/goals/<goal-id>/REMEMBER.md`
 
 Goal-level validation should remain scoped to the requested goal and should not assume that every repository always has active goals.
+
+Goal-level validation is planned after profile validation and is not part of the first target-mode implementation step.
 
 ## Safety Checks
 

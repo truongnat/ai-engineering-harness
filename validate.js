@@ -273,6 +273,24 @@ const goalArtifactHeadings = {
     "## Sensitive Data Check"
   ]
 };
+const targetProfileFiles = [
+  "AGENTS.md",
+  ".harness/",
+  ".harness/HARNESS.md",
+  ".harness/TEAM.md",
+  ".harness/SKILLS.md",
+  ".harness/WORKFLOW.md",
+  ".harness/GATES.md",
+  ".harness/MEMORY.md"
+];
+const targetProfileHeadingContracts = [
+  [".harness/HARNESS.md", harnessHeadings],
+  [".harness/TEAM.md", teamHeadings],
+  [".harness/SKILLS.md", selectedSkillsHeadings],
+  [".harness/WORKFLOW.md", workflowHeadings],
+  [".harness/GATES.md", gatesHeadings],
+  [".harness/MEMORY.md", memoryHeadings]
+];
 
 function resolvePath(baseDir, relativePath) {
   return path.join(baseDir, relativePath);
@@ -392,6 +410,20 @@ function validateRepository(baseDir = root) {
   return validateHarnessRepository(baseDir);
 }
 
+function validateTargetProfile(baseDir) {
+  const failures = [];
+
+  for (const relativePath of targetProfileFiles) {
+    assertExists(baseDir, relativePath, failures);
+  }
+
+  for (const [relativePath, headings] of targetProfileHeadingContracts) {
+    assertHeadings(baseDir, relativePath, headings, failures);
+  }
+
+  return failures;
+}
+
 function parseValidateArgs(argv = []) {
   if (argv.length === 0) {
     return {
@@ -400,14 +432,58 @@ function parseValidateArgs(argv = []) {
     };
   }
 
-  if (argv[0] === "--target") {
+  if (argv[0] !== "--target") {
     return {
-      usageErrors: ["--target is planned for v0.3.0 but not implemented in this step"]
+      usageErrors: [`Unsupported argument: ${argv[0]}`]
     };
   }
 
+  if (argv.length < 2 || argv[1].startsWith("--")) {
+    return {
+      usageErrors: ["Missing required path after --target"]
+    };
+  }
+
+  const baseDir = path.resolve(process.cwd(), argv[1]);
+  let hasProfileOnly = false;
+  let goalId = null;
+  const usageErrors = [];
+
+  for (let index = 2; index < argv.length; index += 1) {
+    const arg = argv[index];
+
+    if (arg === "--profile-only") {
+      hasProfileOnly = true;
+      continue;
+    }
+
+    if (arg === "--goal") {
+      if (index + 1 >= argv.length || argv[index + 1].startsWith("--")) {
+        usageErrors.push("Missing required goal id after --goal");
+        break;
+      }
+      goalId = argv[index + 1];
+      index += 1;
+      continue;
+    }
+
+    usageErrors.push(`Unsupported argument: ${arg}`);
+    break;
+  }
+
+  if (hasProfileOnly && goalId) {
+    usageErrors.push("--profile-only cannot be combined with --goal");
+  } else if (goalId) {
+    usageErrors.push("--goal is planned for a later v0.3.0 step but not implemented yet");
+  }
+
+  if (usageErrors.length > 0) {
+    return { usageErrors };
+  }
+
   return {
-    usageErrors: [`Unsupported argument: ${argv[0]}`]
+    mode: "target-profile",
+    baseDir
   };
 }
 
@@ -422,14 +498,27 @@ function main() {
     process.exit(1);
   }
 
-  const failures = validateHarnessRepository(args.baseDir);
+  const validationMode = args.mode;
+  const failures =
+    validationMode === "target-profile"
+      ? validateTargetProfile(args.baseDir)
+      : validateHarnessRepository(args.baseDir);
 
   if (failures.length > 0) {
-    console.error("Harness validation failed:");
+    console.error(
+      validationMode === "target-profile"
+        ? "Target repository validation failed:"
+        : "Harness validation failed:"
+    );
     for (const failure of failures) {
       console.error(`- ${failure}`);
     }
     process.exit(1);
+  }
+
+  if (validationMode === "target-profile") {
+    console.log("Target repository validation passed. Checked profile contract.");
+    return;
   }
 
   console.log(`Harness validation passed. Checked ${countCheckedContracts()} required files/contracts.`);
@@ -458,5 +547,6 @@ module.exports = {
   teamHeadings,
   templateFiles,
   validateHarnessRepository,
+  validateTargetProfile,
   validateRepository
 };
