@@ -15,6 +15,7 @@
 
 - pack verification checklist
 - lightweight PACK.md heading validation
+- manual packaging guide
 
 ## [0.6.0] - 2026-06-02
 

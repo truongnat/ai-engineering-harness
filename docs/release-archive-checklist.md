@@ -1,5 +1,7 @@
 # Release Archive Checklist
 
+Use this checklist together with [manual-packaging-guide.md](manual-packaging-guide.md).
+
 Complete [pack-verification-checklist.md](pack-verification-checklist.md) before assembling a release archive so `PACK.md`, surface mapping, and validation commands stay aligned.
 
 ## Required Files

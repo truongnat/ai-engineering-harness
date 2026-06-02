@@ -63,6 +63,12 @@ ai-engineering-harness-vX.Y.Z/
 └── README.md
 ```
 
+## Manual Packaging Flow
+
+Maintainers preparing a release archive should follow [manual-packaging-guide.md](manual-packaging-guide.md).
+
+That guide covers `PACK.md` version updates, pack verification, validation commands, and optional manual archive assembly without archive generation automation.
+
 ## How Users Would Consume It
 
 Users would:

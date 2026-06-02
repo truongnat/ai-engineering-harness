@@ -62,6 +62,10 @@ It verifies `PACK.md`, included surface, installed surface alignment with `insta
 
 ## Manual Packaging Flow
 
+Follow [manual-packaging-guide.md](manual-packaging-guide.md) for the full maintainer workflow.
+
+Summary:
+
 1. confirm the release scope matches [v0.7.0 plan](v0.7.0-plan.md) boundaries
 2. update `PACK.md` pack version to the releasing version
 3. complete [pack-verification-checklist.md](pack-verification-checklist.md)

@@ -103,6 +103,8 @@ After install into a target repository, run target validation there as documente
 
 ## Release Decision
 
+After checks pass, follow [manual-packaging-guide.md](manual-packaging-guide.md) for tagging and optional manual archive assembly.
+
 Proceed with release or archive distribution only when:
 
 - manifest checks pass
