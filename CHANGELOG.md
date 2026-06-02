@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.7.0] - Unreleased
+## [0.7.0] - 2026-06-02
 
 ### Planned
 
@@ -18,6 +18,7 @@
 - manual packaging guide
 - v0.7.0 readiness audit
 - v0.7.0 release scope documentation
+- v0.7.0 release notes
 
 ## [0.6.0] - 2026-06-02
 

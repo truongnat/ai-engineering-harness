@@ -50,3 +50,7 @@ Heavy runtime systems are not part of `v0.1.0`. The first release is the markdow
 ## Scope Boundary For `v0.6.0`
 
 `v0.6.0` is a docs-only Runtime Consumption Guides release and remains runtime-light. It documents how common runtimes consume the capability pack in a target repository without adding runtime adapters, runtime integrations, marketplace automation, package publishing automation, semantic validation, or deep scanning.
+
+## Scope Boundary For `v0.7.0`
+
+`v0.7.0` is a Capability Pack Packaging release and remains runtime-light and manual-packaging only. It adds `PACK.md`, packaging contracts, verification checklists, heading validation, and manual packaging guidance without adding archive generation automation, package publishing automation, marketplace automation, runtime adapters, semantic manifest body validation, installed surface checksums, or deep scanning.

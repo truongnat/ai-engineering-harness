@@ -120,3 +120,13 @@ Use this checklist to prepare a manual release without adding release automation
 - `git status`
 - `git tag v0.6.0`
 - `git push origin v0.6.0`
+
+## v0.7.0 Final Manual Commands
+
+- `node validate.js`
+- `npm test`
+- `node validate.js --target test/fixtures/valid-target-profile --profile-only`
+- `node validate.js --target test/fixtures/valid-target-goal --goal google-login`
+- `git status`
+- `git tag v0.7.0`
+- `git push origin v0.7.0`
