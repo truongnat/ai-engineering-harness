@@ -187,3 +187,7 @@ node validate.js
 ```
 
 If you copied the full repository surface, this confirms the required structure and key document contracts are present.
+
+## Smoke Test
+
+Before using the harness in a real repository, run the local-only [Adoption Smoke Test](adoption-smoke-test.md).

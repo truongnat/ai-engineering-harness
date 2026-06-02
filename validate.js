@@ -6,6 +6,7 @@ const root = __dirname;
 const requiredFiles = [
   "AGENTS.md",
   "docs/adoption-guide.md",
+  "docs/adoption-smoke-test.md",
   "docs/usage-examples.md",
   "docs/host-repo-checklist.md",
   "docs/session-start-checklist.md",

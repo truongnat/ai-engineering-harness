@@ -81,6 +81,7 @@ The command equivalents for this loop live in `commands/` and the reusable proce
 To adopt the harness in another repository, start with:
 
 - [Adoption Guide](docs/adoption-guide.md)
+- [Adoption Smoke Test](docs/adoption-smoke-test.md)
 - [Usage Examples](docs/usage-examples.md)
 - [Host Repo Checklist](docs/host-repo-checklist.md)
 - [Session Start Checklist](docs/session-start-checklist.md)
