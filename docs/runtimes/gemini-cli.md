@@ -1,31 +1,93 @@
 # Gemini CLI
 
-## `AGENTS.md`
+## Purpose
 
-Keep `AGENTS.md` at the repository root so Gemini CLI can use it as the repository-level contract for the harness loop.
+Explain how Gemini CLI should consume `ai-engineering-harness` as a capability pack inside a target repository.
 
-## `commands/`
+## Runtime Fit
 
-Use `commands/` as the procedural reference for what to do next. Point Gemini CLI at the relevant command document when you want structured mapping, planning, running, or verification behavior.
+Gemini CLI is a good fit when the user wants terminal-oriented agent sessions over a target repository.
 
-## `skills/`
+Gemini CLI should use the target repository's installed `AGENTS.md`, commands, skills, templates, and `.harness/` artifacts.
 
-Use `skills/` as concise operating references. They help keep Gemini CLI aligned with the same planning and verification discipline as other tools.
+Gemini CLI should not treat the `ai-engineering-harness` source repo as the product repo unless maintaining the harness itself.
 
-## `.harness/` Artifacts
+## Consumption Model
 
-Keep active state in `.harness/` and have Gemini CLI read those files first. The important part is not the CLI itself, but that the repository artifacts remain the source of truth.
+Use Gemini CLI against the target repository after the harness operating surface has been installed or copied there.
 
-## Recommended First Prompt
+The source pack is only the canonical source. Product work happens in the target repository.
 
-> Read `AGENTS.md` and the current `.harness/` artifacts before doing anything else. Use the harness command loop to choose the next step and keep markdown as the source of truth.
+## Recommended Setup
 
-## Known Limitations
+Use the current setup flow:
 
-- no Gemini-specific adapter is included
-- no special runtime integration is required
-- command discipline still depends on the repository artifacts being accurate
+```bash
+node install.js --target ../my-project --dry-run
+node install.js --target ../my-project
+node validate.js --target ../my-project --profile-only
+```
 
-## Safety Reminder
+Run these commands from the source pack repo, then run Gemini CLI from or against the target repo for product work, and keep `.harness/` artifacts in the target repo.
 
-Do not store secrets, tokens, customer data, or private business data in harness artifacts.
+## What Gemini CLI Should Read
+
+Inside the target repository, Gemini CLI should read:
+
+- `AGENTS.md`
+- `docs/consume-as-pack.md`
+- `docs/install-to-profile-walkthrough.md`
+- `docs/harness-build-usage.md`
+- `.harness/HARNESS.md`
+- `.harness/TEAM.md`
+- `.harness/SKILLS.md`
+- `.harness/WORKFLOW.md`
+- `.harness/GATES.md`
+- `.harness/MEMORY.md`
+- active `.harness/goals/<goal-id>/` artifacts
+
+## CLI Session Rules
+
+- start from the target repo working directory whenever possible
+- keep prompts explicit about which repo is the source pack and which repo is the target product repo
+- keep one active goal per session when possible
+- ask the user to run validation commands if the runtime cannot run them directly
+- report not-run commands honestly
+
+## First Prompt
+
+> Read `AGENTS.md`, `docs/consume-as-pack.md`, `docs/install-to-profile-walkthrough.md`, and `docs/harness-build-usage.md`. Treat this directory as the target product repository. Do not use the `ai-engineering-harness` source repo as the product repo. Inspect `.harness/` artifacts and summarize the current harness state before making changes.
+
+## Harness-Build Prompt
+
+> Run the harness-build process for this target repository. Create or update `.harness/HARNESS.md`, `TEAM.md`, `SKILLS.md`, `WORKFLOW.md`, `GATES.md`, and `MEMORY.md`. Use the smallest sufficient skill and workflow set. Do not implement application code.
+
+## Goal Execution Prompt
+
+> Using the current `.harness/` profile and `.harness/goals/<goal-id>/` artifacts, plan and execute the next task. Keep the task scoped, update `TASKS.md` and `VERIFY.md` when state changes, and stop before shipping if verification evidence is missing.
+
+## Validation Prompt
+
+> Run or ask me to run: `node validate.js --target <path> --profile-only` and `node validate.js --target <path> --goal <goal-id>`. Treat validation as structural only, not proof of application correctness. Fix exact missing paths and headings.
+
+## Safety Boundaries
+
+- keep markdown as the source of truth
+- keep `.harness/` artifacts in the target repository
+- do not invent Gemini CLI integration behavior
+- do not treat structural validation as proof that the application is correct
+
+## Common Mistakes
+
+- running Gemini CLI from the source pack repo and treating it as the product repo
+- leaving the current working directory ambiguous between source pack and target repo
+- skipping the read-first pass over installed docs and `.harness/` artifacts
+- claiming commands were run when they were only proposed
+
+## Completion Checklist
+
+- Gemini CLI is pointed at the target repository, not the source pack
+- installed `AGENTS.md` and supporting docs were read first
+- `.harness/` profile artifacts exist or were updated intentionally
+- active goal artifacts were read before execution
+- validation flow is understood as structural-only

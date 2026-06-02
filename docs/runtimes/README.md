@@ -14,7 +14,7 @@ These guides explain how to consume the plugin-like markdown capability pack ins
 - [Claude Code](claude-code.md) - updated for capability-pack consumption
 - [Cursor](cursor.md) - updated for capability-pack consumption
 - [Codex](codex.md) - updated for capability-pack consumption
-- [Gemini CLI](gemini-cli.md)
+- [Gemini CLI](gemini-cli.md) - updated for capability-pack consumption
 - [OpenCode](opencode.md)
 
 ## Shared Model
