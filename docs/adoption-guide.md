@@ -99,6 +99,12 @@ Why use dry-run first:
 - it helps detect collisions with an existing repository contract
 - it keeps adoption reviewable and predictable
 
+## Installed Surface
+
+Use [docs/installed-surface-contract.md](installed-surface-contract.md) to understand the default installed boundary.
+
+The installed surface is a deliberate subset of the source pack, not a copy of the entire repository.
+
 ## Recommended `.harness/` Layout
 
 Use this structure in the target repository:

@@ -52,8 +52,12 @@ runTest("install.js dry-run reports files without writing them", () => {
 });
 
 runTest("install.js export surface includes post-install docs", () => {
+  assert.ok(exportPaths.includes("docs/adoption-guide.md"));
   assert.ok(exportPaths.includes("docs/harness-build-usage.md"));
   assert.ok(exportPaths.includes("docs/target-repo-validation.md"));
+  assert.ok(exportPaths.includes("docs/install-to-profile-walkthrough.md"));
+  assert.ok(exportPaths.includes("docs/validation-troubleshooting.md"));
+  assert.ok(exportPaths.includes("docs/small-repo-memory.md"));
 });
 
 runTest("install.js summary helper counts copied and skipped actions", () => {

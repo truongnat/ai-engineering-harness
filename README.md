@@ -116,6 +116,7 @@ Then:
 | Adoption guide | [docs/adoption-guide.md](docs/adoption-guide.md) |
 | Plugin model | [docs/plugin-model.md](docs/plugin-model.md) |
 | Distribution model | [docs/distribution-model.md](docs/distribution-model.md) |
+| Installed surface | [docs/installed-surface-contract.md](docs/installed-surface-contract.md) |
 | Build a harness profile | [docs/harness-build-usage.md](docs/harness-build-usage.md) |
 | Copy-paste prompts | [docs/harness-build-prompts.md](docs/harness-build-prompts.md) |
 | Validate adopted profile | [docs/target-repo-validation.md](docs/target-repo-validation.md) |

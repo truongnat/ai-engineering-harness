@@ -39,6 +39,7 @@ const requiredFiles = [
   "docs/v0.4.0-ideas.md",
   "docs/plugin-model.md",
   "docs/distribution-model.md",
+  "docs/installed-surface-contract.md",
   "docs/v0.5.0-strategy.md",
   "docs/v0.5.0-plan.md",
   "docs/v0.3.0-plan.md",

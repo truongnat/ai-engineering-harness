@@ -7,6 +7,7 @@
 - plugin-like capability pack positioning
 - plugin model documentation
 - distribution model documentation
+- installed surface contract
 - clearer source repo vs target repo distinction
 - future plugin or registry boundary documentation
 

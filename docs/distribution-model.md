@@ -23,6 +23,8 @@ The installed surface is the subset copied or vendored into a target repository 
 
 That surface should stay focused on the operating materials the target repository actually needs.
 
+Use [docs/installed-surface-contract.md](installed-surface-contract.md) for the explicit installed-surface boundary.
+
 ## Target Repository Artifacts
 
 The target repository is where product work happens.
@@ -49,6 +51,8 @@ Usually copy:
 - validation docs
 
 Copy only the surface the target repository needs.
+
+The installed surface is a deliberate subset, not the whole source repository.
 
 ## What Should Not Be Copied
 

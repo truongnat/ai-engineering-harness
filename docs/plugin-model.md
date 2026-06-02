@@ -39,6 +39,8 @@ Recommended current mode:
 - validate profile and goal artifacts there
 - do not treat this harness repository as the working app repository
 
+Plugin-like consumption depends on a clear installed surface contract so agents know exactly what belongs in the target repository.
+
 ## Future Modes
 
 Possible later modes:
