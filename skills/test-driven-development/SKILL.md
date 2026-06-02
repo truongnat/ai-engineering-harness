@@ -6,15 +6,15 @@ Introduce or change behavior by defining evidence first, then implementing the s
 
 ## When To Use
 
-- For feature work that changes behavior
-- For bug fixes
-- For refactors that need regression protection
+- for feature work that changes behavior
+- for bug fixes
+- for refactors that need regression protection
 
 ## When Not To Use
 
-- For pure documentation changes
-- For structure-only repository scaffolding with no behavioral code path
-- When verification is inherently manual and cannot be automated yet
+- for pure documentation changes
+- for structure-only repository scaffolding with no behavioral code path
+- when verification is inherently manual and cannot be automated yet
 
 ## Workflow
 
@@ -43,3 +43,4 @@ Introduce or change behavior by defining evidence first, then implementing the s
 - [ ] The initial failure was observed when applicable
 - [ ] The minimal change was made
 - [ ] The relevant checks now pass
+- [ ] Regression protection exists for the changed behavior

@@ -2,19 +2,21 @@
 
 ## Purpose
 
-Finalize the work, summarize the outcome, and prepare a clean handoff after verification has succeeded.
+Finalize verified work, summarize the result, and prepare clean handoff notes.
 
 ## When To Use
 
-- After verification is complete
-- Before merging, submitting, or closing the task
-- When a clean summary and handoff are required
+- after `harness-verify`
+- before merge, PR submission, or task closure
+- when a reliable handoff summary is required
 
 ## Required Reads
 
-- active plan, review, and verification artifacts
-- state and remember artifacts if present
-- any relevant roadmap or release notes
+- `.harness/PLAN.md`
+- `.harness/VERIFY.md`
+- `.harness/REVIEW.md` if present
+- `.harness/STATE.md`
+- `.harness/REMEMBER.md` if present
 
 ## Skills To Use
 
@@ -25,18 +27,43 @@ Finalize the work, summarize the outcome, and prepare a clean handoff after veri
 
 ## Step-By-Step Workflow
 
-1. Confirm that verification evidence is current and sufficient.
-2. Summarize what changed and why it changed.
-3. Note any residual risks, follow-ups, or deferred work.
-4. Prepare the final handoff or submission summary.
-5. Trigger memory capture for durable lessons and decisions.
+1. Confirm that `.harness/VERIFY.md` supports the current status.
+2. Summarize what changed, why it changed, and what was verified.
+3. Record follow-ups, deferred work, and residual risk honestly.
+4. Write the handoff summary into `.harness/SHIP.md`.
+5. Transition to `harness-remember` for durable lessons.
 
 ## Output Artifacts
 
-- ship summary
-- handoff notes
+- `.harness/SHIP.md`
+- updated `.harness/STATE.md`
 - follow-up list if needed
 
 ## Completion Gate
 
-The command is complete when the work is verified, summarized, and handed off with no hidden assumptions about status, risk, or next steps.
+The command is complete when the work is verified, summarized, and handed off without hidden assumptions about status, risk, or next steps.
+
+## Artifact Paths
+
+- Read: `.harness/PLAN.md`, `.harness/VERIFY.md`, `.harness/REVIEW.md`, `.harness/STATE.md`
+- Write: `.harness/SHIP.md`, `.harness/STATE.md`
+
+## Stop Conditions
+
+- the summary matches the evidence
+- follow-ups are explicit
+- the work is ready for memory capture
+
+## Failure Modes
+
+- shipping with stale verification
+- hiding residual risk
+- writing a summary that overstates confidence
+
+## Human Approval
+
+Ask for approval if shipping requires accepting residual risk, deferred verification, or an incomplete scope.
+
+## Notes
+
+`harness-ship` depends on `harness-verify`. It should not be used to upgrade an unverified implementation into a claimed success.

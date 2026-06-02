@@ -1,23 +1,43 @@
 # Quality Gates
 
-The harness uses simple but firm gates.
+The harness uses simple gates to prevent low-discipline execution.
 
-## Gate 1: Context
+## Planning Gate
 
-Read artifacts before acting.
+- active goal is explicit
+- relevant artifacts were read
+- scope is understood
+- a plan exists before implementation starts
 
-## Gate 2: Planning
+## Execution Gate
 
-Do not code before planning.
+- work follows the approved plan
+- tasks stay small
+- scope drift is surfaced instead of hidden
+- unrelated changes are avoided
 
-## Gate 3: Scope Control
+## Review Gate
 
-Prefer surgical changes and document deviations.
+- findings are captured when risk or ambiguity exists
+- missing tests or missing evidence are treated as real issues
+- unresolved questions are explicit
 
-## Gate 4: Verification
+## Verification Gate
 
-Run fresh checks before claiming completion.
+- fresh checks were run
+- evidence supports the claim being made
+- anything not run is documented
+- residual risk is stated honestly
 
-## Gate 5: Memory
+## Shipping Gate
 
-Capture durable lessons after shipping.
+- work is implemented in scope
+- verification exists
+- summary matches reality
+- follow-ups are listed if needed
+
+## Remembering Gate
+
+- the lesson is durable
+- the memory is useful for future work
+- the artifact does not contain secrets, credentials, customer data, or private business data

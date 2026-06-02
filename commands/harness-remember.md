@@ -2,20 +2,21 @@
 
 ## Purpose
 
-Capture durable decisions, constraints, and lessons so later sessions start with context instead of rediscovery.
+Capture durable, reusable, non-sensitive lessons after verified work ships.
 
 ## When To Use
 
-- After shipping meaningful work
-- After resolving a non-obvious tradeoff
-- After discovering a durable repository constraint
-- When repeated confusion suggests missing memory
+- after verified work ships
+- after root causes or tradeoffs become clear
+- when future sessions would benefit from a durable note
 
 ## Required Reads
 
-- plan, review, verification, and ship artifacts
-- existing memory or state artifacts
-- relevant roadmap or architecture notes
+- `.harness/PLAN.md`
+- `.harness/VERIFY.md`
+- `.harness/SHIP.md`
+- `.harness/REMEMBER.md` if present
+- `.harness/STATE.md`
 
 ## Skills To Use
 
@@ -25,18 +26,43 @@ Capture durable decisions, constraints, and lessons so later sessions start with
 
 ## Step-By-Step Workflow
 
-1. Review the completed work and the decisions that shaped it.
-2. Filter out transient details that will age badly.
-3. Capture only durable guidance, constraints, and lessons.
-4. Link the memory to the artifacts or areas it affects.
-5. Keep the memory concise enough to load quickly in later sessions.
+1. Review the verified outcome, not just the implementation steps.
+2. Extract the durable lesson, decision, root cause, or hazard.
+3. Remove transient details and anything sensitive.
+4. Write the memory into `.harness/REMEMBER.md`.
+5. Confirm the note is safe, durable, and reusable.
 
 ## Output Artifacts
 
-- remember artifact
-- updated state or context notes
+- `.harness/REMEMBER.md`
+- updated `.harness/STATE.md`
 - durable decision summary
 
 ## Completion Gate
 
-The command is complete when the future operator can recover the important decisions and constraints from memory without replaying the whole session.
+The command is complete when a future operator can recover the important lesson without replaying the whole session and without exposing sensitive information.
+
+## Artifact Paths
+
+- Read: `.harness/PLAN.md`, `.harness/VERIFY.md`, `.harness/SHIP.md`, `.harness/STATE.md`
+- Write: `.harness/REMEMBER.md`, `.harness/STATE.md`
+
+## Stop Conditions
+
+- the lesson is durable
+- the note contains no secrets or private business data
+- the memory is useful for future sessions
+
+## Failure Modes
+
+- saving transient execution noise
+- storing credentials, tokens, customer data, or private business data
+- writing memory before the outcome is verified
+
+## Human Approval
+
+Ask for approval if the only useful lesson depends on sensitive business context that cannot be safely generalized.
+
+## Notes
+
+`harness-remember` is not a transcript archive. It is a durable knowledge filter.

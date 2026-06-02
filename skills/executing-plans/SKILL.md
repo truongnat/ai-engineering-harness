@@ -2,27 +2,27 @@
 
 ## Purpose
 
-Execute an approved plan step by step without drifting scope or skipping verification intent.
+Execute an approved plan step by step without drifting scope or skipping state updates.
 
 ## When To Use
 
-- After a plan has been approved
-- When resuming planned implementation work
-- When progress must stay tightly aligned to documented steps
+- after a plan has been approved
+- when resuming planned implementation work
+- when progress must stay tightly aligned to documented steps
 
 ## When Not To Use
 
-- Before a plan exists
-- When the request is still being clarified
-- When the work is a pure review with no implementation
+- before a plan exists
+- when the request is still being clarified
+- when the work is a pure review with no implementation
 
 ## Workflow
 
 1. Re-read the current plan before editing.
-2. Execute the next smallest step.
+2. Execute the next smallest planned task.
 3. Keep the change surgical and in scope.
-4. Update task or state artifacts as needed.
-5. Stop and re-plan if assumptions change materially.
+4. Update task and state artifacts as progress changes.
+5. Stop and re-plan if assumptions or scope change materially.
 
 ## Operating Principles
 
@@ -35,7 +35,7 @@ Execute an approved plan step by step without drifting scope or skipping verific
 
 - completed step summary
 - updated tasks or state notes
-- documented deviations if any
+- documented deviations or blockers
 
 ## Checklist Before Done
 
@@ -43,3 +43,4 @@ Execute an approved plan step by step without drifting scope or skipping verific
 - [ ] Work stayed within scope
 - [ ] State or task tracking was updated
 - [ ] Deviations were documented or re-planned
+- [ ] Verification notes were prepared where relevant

@@ -1,14 +1,45 @@
 # Command Loop
 
-The command loop gives agents a predictable sequence:
+The harness loop is:
 
-1. `harness-start`
-2. `harness-map`
-3. `harness-discuss`
-4. `harness-plan`
-5. `harness-run`
-6. `harness-verify`
-7. `harness-ship`
-8. `harness-remember`
+`Map -> Start -> Discuss -> Plan -> Run -> Verify -> Ship -> Remember`
 
-Not every task requires every command, but the loop defines the default progression and prevents coding before planning.
+Not every task needs every command, but skipping a command should be deliberate, not accidental.
+
+## Map
+
+Understand the workspace, active artifacts, affected areas, and constraints.
+
+## Start
+
+Load context for the session and confirm the next step.
+
+## Discuss
+
+Clarify scope, constraints, success criteria, and tradeoffs.
+
+## Plan
+
+Write the implementation plan and stop before making changes.
+
+## Run
+
+Execute the approved plan in small, surgical steps.
+
+## Verify
+
+Run fresh checks and collect evidence. Never infer success from confidence.
+
+## Ship
+
+Summarize the verified outcome, note follow-ups, and prepare handoff.
+
+## Remember
+
+Capture only durable, non-sensitive lessons for future sessions.
+
+## Loop Discipline
+
+- `Plan` blocks `Run` until scope is clear.
+- `Verify` blocks `Ship` until evidence exists.
+- `Remember` happens after meaningful, verified work.

@@ -6,20 +6,20 @@ Create or revise skills so they remain clear, bounded, and consistent with the h
 
 ## When To Use
 
-- When adding a new skill
-- When refining an existing skill
-- When a skill is too vague or too broad
+- when adding a new skill
+- when refining an existing skill
+- when a skill is too vague, too broad, or too abstract
 
 ## When Not To Use
 
-- When the task does not involve skill authoring
-- When only workflows or commands are changing
+- when the task does not involve skill authoring
+- when only workflows or templates are changing
 
 ## Workflow
 
 1. Define the capability the skill should provide.
 2. Set clear boundaries for when it should and should not apply.
-3. Write a short workflow that is easy to execute.
+3. Write a short repeatable workflow.
 4. State the operating principles that guide behavior.
 5. Standardize the output contract and completion checklist.
 
@@ -42,3 +42,4 @@ Create or revise skills so they remain clear, bounded, and consistent with the h
 - [ ] When to use and not use are explicit
 - [ ] The workflow is actionable
 - [ ] The output contract is clear
+- [ ] The skill is compact enough to be reused

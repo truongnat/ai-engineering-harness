@@ -1,17 +1,47 @@
 # Architecture
 
-This repository uses document architecture rather than runtime architecture.
+This repository uses markdown-first architecture rather than runtime orchestration.
 
-## Layers
+## Why Markdown First
 
-1. `AGENTS.md` sets mandatory behavior.
-2. `commands/` defines operator-facing entry points.
-3. `skills/` defines reusable capabilities.
-4. `workflows/` defines end-to-end process sequences.
-5. `patterns/` defines coordination shapes.
-6. `templates/` defines persistent artifact structures.
-7. `docs/` explains the system and its intent.
+Markdown is portable across editors, repos, and agent tools. It keeps plans, reviews, verification, and memory visible in version control instead of hiding state inside prompts or runtime services.
 
-## Runtime Stance
+## Why No Heavy Runtime In V1
 
-The only executable layer in v1 is lightweight Node-based installation and validation. There is no process manager, no task engine, and no hidden state machine.
+Version 1 is intentionally light:
+
+- no `src/core`
+- no agent server
+- no LangGraph
+- no database
+- no Redis
+- no Neo4j
+- no Meilisearch
+- no Docker
+- no web UI
+
+The goal of v1 is to standardize engineering behavior, not to introduce a platform dependency. The only code layer is lightweight install and validation helpers plus CI.
+
+## System Layers
+
+1. `AGENTS.md` sets the operating contract.
+2. `commands/` provides command-level runbooks.
+3. `skills/` provides reusable capabilities.
+4. `workflows/` provides task-class sequences.
+5. `patterns/` provides coordination decisions.
+6. `templates/` provides durable artifact formats.
+7. `docs/` explains the system and host-repo adoption.
+8. `examples/demo-project/` shows how a host repo can use `.harness/`.
+
+## Host Repository Model
+
+Host repositories are expected to keep active engineering artifacts under `.harness/`.
+
+Typical flow:
+
+1. The host repo carries application code and tests.
+2. `.harness/` stores the goal, plan, tasks, verification notes, and memory.
+3. Agents read `.harness/` first, then inspect code.
+4. Agents update `.harness/` as work progresses.
+
+This keeps the harness close to the work without creating a separate service or storage system.

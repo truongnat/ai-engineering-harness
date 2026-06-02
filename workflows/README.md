@@ -1,16 +1,13 @@
 # Workflows
 
-Workflows combine commands, skills, and artifacts into repeatable end-to-end processes. They are broader than a skill and more situational than a template.
+Workflows combine commands, skills, and `.harness/` artifacts into practical end-to-end operating sequences.
 
-## Included Workflows
+Each workflow should answer:
 
-- `core-loop`
-- `feature`
-- `bugfix`
-- `refactor`
-- `code-review`
-- `incident`
+- when to use it
+- which commands to run
+- which artifacts to read and write
+- what verification is required
+- what failure or stop conditions apply
 
-## Workflow Rule
-
-A workflow should tell an agent what sequence to follow, what evidence to gather, and what artifacts to update without requiring a runtime system.
+Workflows are decision guides, not runtime orchestration.

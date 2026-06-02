@@ -2,46 +2,48 @@
 
 ## Purpose
 
-Establish the default harness discipline for every engineering session.
+Apply the harness operating contract to the current session.
 
 ## When To Use
 
-- At the beginning of any task
-- When resuming paused work
-- When process drift is likely
+- at the beginning of a task
+- when resuming work
+- when process drift or scope drift is likely
 
 ## When Not To Use
 
-- When the session is purely informational and no engineering action will follow
-- When another repository defines a stricter mandatory process that must override this one
+- when no engineering action will follow
+- when a stricter repository contract overrides this harness
 
 ## Workflow
 
-1. Read the active artifacts first.
-2. Confirm the current goal and constraints.
-3. Choose the next command in the harness loop.
-4. Keep work aligned to the active plan.
-5. Require verification before any completion claim.
-6. Capture memory after meaningful work ships.
+1. Read the active `.harness/` artifacts before acting.
+2. Confirm the current goal, scope, and next command.
+3. Check whether a plan exists for any non-trivial change.
+4. Keep work aligned to the active plan and update state as needed.
+5. Block completion claims until verification exists.
+6. Capture only durable, safe memory after shipping.
 
 ## Operating Principles
 
 - Artifacts outrank assumptions.
+- Do not invent project facts.
 - Plans precede implementation.
-- Small changes beat broad rewrites.
+- Small surgical changes beat broad rewrites.
 - Evidence outranks confidence.
-- Durable decisions should be remembered.
+- Durable decisions should be remembered safely.
 
 ## Output Format
 
-- session summary
+- current state summary
 - chosen next command
-- explicit note of missing artifacts or risks
+- missing artifact or risk list
 
 ## Checklist Before Done
 
 - [ ] Relevant artifacts were read first
-- [ ] The current goal is explicit
+- [ ] The current goal and scope are explicit
 - [ ] The next command is clear
-- [ ] The plan exists or has been requested
+- [ ] A plan exists before implementation
 - [ ] Verification expectations are known
+- [ ] No sensitive data is being written to memory

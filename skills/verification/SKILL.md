@@ -6,14 +6,14 @@ Prove the current state of the work with fresh evidence before any completion or
 
 ## When To Use
 
-- After implementation changes
-- Before handoff, merge, or completion claims
-- After bug fixes, refactors, or risky content updates
+- after implementation changes
+- before handoff, merge, or completion claims
+- after bug fixes, refactors, or risky content updates
 
 ## When Not To Use
 
-- Before any relevant work has been done
-- When only discussing possible future approaches
+- before any relevant work has been done
+- when only discussing possible future approaches
 
 ## Workflow
 
@@ -42,3 +42,4 @@ Prove the current state of the work with fresh evidence before any completion or
 - [ ] The check was run fresh
 - [ ] The result was read fully
 - [ ] Any gaps were stated explicitly
+- [ ] The final claim matches the evidence

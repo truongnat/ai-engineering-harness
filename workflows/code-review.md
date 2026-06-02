@@ -1,9 +1,41 @@
 # Code Review Workflow
 
-Use this workflow when inspecting work before acceptance or merge.
+## When To Use
 
-1. Read the goal, plan, and changed artifacts.
-2. Review for correctness, regression risk, and missing evidence.
-3. Check whether verification is sufficient for the claims being made.
-4. Record findings in severity order.
-5. If the change is acceptable, summarize residual risk or testing gaps.
+Use this when reviewing an implementation, plan, or set of changed artifacts before acceptance or merge.
+
+## Command Sequence
+
+`harness-start -> harness-map -> harness-verify`
+
+Review work usually feeds into `.harness/REVIEW.md`, then returns to `harness-run` or proceeds to `harness-ship`.
+
+## Required Artifacts
+
+- `.harness/GOAL.md`
+- `.harness/PLAN.md`
+- `.harness/VERIFY.md` if verification already exists
+- `.harness/REVIEW.md`
+
+## Recommended Skills
+
+- `using-harness`
+- `mapping-codebase`
+- `code-review`
+- `verification`
+
+## Verification Expectations
+
+- review findings reference concrete risks
+- missing tests or missing evidence are recorded as findings
+- if there are no findings, residual risk is still stated
+
+## Failure Handling
+
+- return to `harness-run` if findings require fixes
+- return to `harness-plan` if findings expose a plan defect
+- stop shipping if review identifies unverified risk
+
+## Completion Criteria
+
+The code review workflow is complete when findings or an explicit no-findings result are written clearly enough for the next action to be obvious.

@@ -2,20 +2,22 @@
 
 ## Purpose
 
-Gather fresh evidence that the work behaves as intended before any completion claim, handoff, or ship step.
+Gather fresh evidence that the implemented work meets the goal before any completion or shipping claim.
 
 ## When To Use
 
-- After implementation changes
-- Before summarizing work as complete
-- Before shipping or merging
-- After bug fixes or refactors with risk of regression
+- after implementation changes
+- before any completion claim
+- before merge, handoff, or release
+- after bugfixes, refactors, and risky documentation changes
 
 ## Required Reads
 
-- active plan and task artifacts
-- review notes if present
-- prior verification expectations and success criteria
+- `.harness/PLAN.md`
+- `.harness/GOAL.md`
+- `.harness/TASKS.md` if present
+- `.harness/REVIEW.md` if present
+- `.harness/VERIFY.md` if present
 
 ## Skills To Use
 
@@ -25,19 +27,44 @@ Gather fresh evidence that the work behaves as intended before any completion cl
 
 ## Step-By-Step Workflow
 
-1. Identify the commands or checks that prove the work.
-2. Run the relevant validation, tests, or manual checks fresh.
-3. Compare the results against the planned success criteria.
-4. Record failures, gaps, or residual risk explicitly.
-5. Update the verification artifact with evidence and status.
-6. Only proceed to ship when the evidence supports the claim.
+1. Identify the exact checks that prove the claim.
+2. Run the checks fresh.
+3. Record command output summaries, manual checks, and anything not run.
+4. Compare the evidence against the goal and plan.
+5. Write pass, fail, or partial status into `.harness/VERIFY.md`.
+6. Stop if evidence is missing, contradictory, or failed.
 
 ## Output Artifacts
 
-- verification notes
-- command results summary
-- residual risk statement if needed
+- `.harness/VERIFY.md`
+- updated `.harness/STATE.md`
+- optional `.harness/REVIEW.md` if review findings were required
 
 ## Completion Gate
 
-The command is complete when the current evidence supports the claimed outcome or when any remaining verification gaps are documented clearly enough that no one mistakes them for a pass.
+The command is complete when the evidence clearly supports the claimed outcome or the exact verification gaps are documented so no one can mistake them for a pass.
+
+## Artifact Paths
+
+- Read: `.harness/PLAN.md`, `.harness/GOAL.md`, `.harness/TASKS.md`, `.harness/REVIEW.md`
+- Write: `.harness/VERIFY.md`, `.harness/STATE.md`
+
+## Stop Conditions
+
+- evidence supports the claim
+- evidence disproves the claim
+- verification is partial and the gap is documented
+
+## Failure Modes
+
+- assuming success because the change looks correct
+- reporting only passing checks and hiding skipped checks
+- claiming done with stale verification
+
+## Human Approval
+
+Ask for approval if a known verification gap must be accepted for shipping or if a failing result suggests changing scope or rollback strategy.
+
+## Notes
+
+`harness-verify` is evidence collection, not optimism. Partial verification must be labeled as partial.

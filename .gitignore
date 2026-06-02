@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+.env.*
+.DS_Store
+*.log
+
+# Local harness runtime data
+.harness/goals/
+.harness/memory/local.md
+.harness/*.local.md
+events.jsonl

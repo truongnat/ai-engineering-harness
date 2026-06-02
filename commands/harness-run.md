@@ -2,19 +2,22 @@
 
 ## Purpose
 
-Execute the approved plan with disciplined scope control, small changes, and continuous awareness of verification needs.
+Execute the approved plan in small, surgical steps without silent scope drift.
 
 ## When To Use
 
-- After a plan has been written
-- When implementation or artifact updates are ready to begin
-- When planned work must be resumed
+- after `.harness/PLAN.md` is approved
+- when implementation is ready to begin
+- when resuming planned work
 
 ## Required Reads
 
-- active plan and task artifacts
-- relevant goal, context, and state artifacts
-- applicable workflow and skill documents
+- `.harness/PLAN.md`
+- `.harness/TASKS.md` if present
+- `.harness/GOAL.md`
+- `.harness/CONTEXT.md`
+- `.harness/STATE.md`
+- `.harness/VERIFY.md` if verification expectations already exist
 
 ## Skills To Use
 
@@ -25,19 +28,47 @@ Execute the approved plan with disciplined scope control, small changes, and con
 
 ## Step-By-Step Workflow
 
-1. Re-read the approved plan before editing.
-2. Execute the next smallest viable step only.
-3. Keep changes surgical and aligned with the plan.
-4. Update tasks or state artifacts as progress changes.
-5. Stop and re-plan if scope, evidence, or constraints change materially.
-6. Prepare verification inputs as execution progresses.
+1. Re-read `.harness/PLAN.md` before making changes.
+2. Execute the next smallest approved task only.
+3. Keep changes tightly aligned to the recorded scope.
+4. Update `.harness/TASKS.md` and `.harness/STATE.md` as status changes.
+5. Record deviations or blockers instead of improvising around them.
+6. Prepare verification notes in `.harness/VERIFY.md` as evidence is gathered.
+7. Stop and return to `harness-discuss` or `harness-plan` if scope changes materially.
 
 ## Output Artifacts
 
-- implemented changes
-- updated task or state artifacts
-- execution notes for any deviations
+- implemented repository changes
+- `.harness/TASKS.md`
+- `.harness/STATE.md`
+- optional `.harness/VERIFY.md` draft notes
 
 ## Completion Gate
 
-The command is complete when the planned execution scope is implemented or explicitly paused, and any deviations from plan are documented instead of implied.
+The command is complete when the approved planned scope is implemented or explicitly paused, and any deviations are documented rather than hidden.
+
+## Artifact Paths
+
+- Read: `.harness/PLAN.md`, `.harness/TASKS.md`, `.harness/GOAL.md`, `.harness/CONTEXT.md`, `.harness/STATE.md`
+- Write: `.harness/TASKS.md`, `.harness/STATE.md`, `.harness/VERIFY.md`
+
+## Stop Conditions
+
+- the next planned task is complete
+- a blocker requires re-planning
+- scope drift is detected
+- verification must run before further work
+
+## Failure Modes
+
+- implementing unplanned work
+- expanding scope because a nearby cleanup looks tempting
+- failing to update task or state artifacts
+
+## Human Approval
+
+Ask for approval before taking destructive actions, widening scope, or adopting a materially different implementation approach than the one in `.harness/PLAN.md`.
+
+## Notes
+
+`harness-run` follows the plan. It does not authorize new scope by itself.
