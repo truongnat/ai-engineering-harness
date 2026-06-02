@@ -4,12 +4,15 @@ const path = require("node:path");
 const root = __dirname;
 
 const requiredFiles = [
+  "CHANGELOG.md",
   "AGENTS.md",
   "docs/adoption-guide.md",
   "docs/adoption-smoke-test.md",
   "docs/usage-examples.md",
   "docs/host-repo-checklist.md",
+  "docs/release-checklist.md",
   "docs/session-start-checklist.md",
+  "docs/versioning.md",
   "docs/quality-gates-matrix.md",
   "docs/runtime-compatibility.md",
   "docs/runtimes/README.md",

@@ -24,4 +24,10 @@
 - optional remote skill or template registry
 - optional automation layers for artifact lifecycle management
 
+## Release Milestones
+
+- `v0.1.0`: markdown-first harness operating model
+- `v0.2.0`: richer validation and adoption polish
+- `v0.3.0`: optional runtime-specific helpers, still no heavy runtime by default
+
 Heavy runtime systems remain out of scope for v1. Any future automation should support the markdown operating model rather than replace it.

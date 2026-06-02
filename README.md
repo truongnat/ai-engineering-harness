@@ -102,6 +102,13 @@ node install.js --target ../my-project
 - [Demo Project](examples/demo-project/)
 - [Workflow Scenarios](examples/workflows/)
 
+## Release Status
+
+- current planned release: `v0.1.0`
+- see [CHANGELOG.md](CHANGELOG.md)
+- see [docs/release-checklist.md](docs/release-checklist.md)
+- see [docs/versioning.md](docs/versioning.md)
+
 ## Roadmap
 
 ### V1

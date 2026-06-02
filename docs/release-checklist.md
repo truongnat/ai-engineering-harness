@@ -1,0 +1,56 @@
+# Release Checklist
+
+## Purpose
+
+Use this checklist to prepare a manual `v0.1.0` release without adding release automation or runtime complexity.
+
+## Pre-Release Checks
+
+- confirm the intended release scope is documentation-first
+- confirm no runtime layer or dependency creep was introduced
+- confirm the repository still reflects the markdown-first operating model
+
+## Documentation Checks
+
+- review `README.md`
+- review `AGENTS.md`
+- review `docs/adoption-guide.md`
+- review `CHANGELOG.md`
+- review any newly added adoption or workflow docs for clarity and consistency
+
+## Validation Checks
+
+- run `node validate.js`
+- confirm the validation result is a clean pass
+- inspect any updated example files for obvious broken links or contradictions
+
+## Safety Checks
+
+- confirm no secrets, tokens, customer data, or private business data exist in artifacts
+- confirm no generated runtime state was added to the repository
+- confirm no automation or packaging work slipped into the release
+
+## Manual Release Steps
+
+1. Run `node validate.js`
+2. Inspect `git status`
+3. Review `README.md`
+4. Review `AGENTS.md`
+5. Review `docs/adoption-guide.md`
+6. Update the `CHANGELOG.md` release date when releasing
+7. Create the git tag manually
+8. Push the tag manually
+
+## Post-Release Checks
+
+- confirm the tag points to the intended commit
+- confirm the repository still validates after the final release commit
+- confirm the release notes and changelog stay aligned
+
+## What Not To Add For v0.1.0
+
+- no release automation
+- no package publishing automation
+- no runtime adapters
+- no heavy runtime systems
+- no server, database, Docker, LangGraph, or orchestration framework
