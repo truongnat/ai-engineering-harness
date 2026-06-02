@@ -14,6 +14,13 @@ const exportPaths = [
   "docs/artifact-layout.md",
   "docs/quality-gates.md",
   "docs/adoption-guide.md",
+  "docs/install-output-example.md",
+  "docs/harness-build-usage.md",
+  "docs/harness-build-review-checklist.md",
+  "docs/harness-build-prompts.md",
+  "docs/target-repo-validation.md",
+  "docs/target-repo-validation-checklist.md",
+  "docs/target-repo-validation-prompts.md",
   "docs/usage-examples.md",
   "docs/host-repo-checklist.md",
   "docs/runtime-compatibility.md"

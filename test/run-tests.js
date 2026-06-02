@@ -6,6 +6,7 @@ const childProcess = require("node:child_process");
 
 const repoRoot = path.resolve(__dirname, "..");
 const {
+  exportPaths,
   formatNextSteps,
   formatSummary,
   installHarness,
@@ -46,7 +47,13 @@ runTest("install.js dry-run reports files without writing them", () => {
   const results = installHarness(options);
 
   assert.ok(results.some((result) => result.action === "WOULD COPY" && result.relativePath === "AGENTS.md"));
+  assert.ok(results.some((result) => result.action === "WOULD COPY" && result.relativePath === "docs/harness-build-usage.md"));
   assert.equal(fs.existsSync(path.join(targetDir, "AGENTS.md")), false);
+});
+
+runTest("install.js export surface includes post-install docs", () => {
+  assert.ok(exportPaths.includes("docs/harness-build-usage.md"));
+  assert.ok(exportPaths.includes("docs/target-repo-validation.md"));
 });
 
 runTest("install.js summary helper counts copied and skipped actions", () => {
