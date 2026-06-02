@@ -114,3 +114,7 @@ The source repository remains the canonical pack source, not the product work tr
 - install only the surface the target repo actually needs
 - do not copy maintenance-only or private artifacts into target repos
 - do not introduce runtime code, generated state, or automation-heavy distribution behavior
+
+## Frozen Contract
+
+The v1.0.0-stable default installed surface is recorded in [frozen-installed-surface-contract.md](frozen-installed-surface-contract.md).

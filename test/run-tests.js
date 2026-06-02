@@ -15,6 +15,7 @@ const {
   summarizeResults
 } = require(path.join(repoRoot, "install.js"));
 const {
+  packRequiredHeadings,
   parseValidateArgs,
   validateRepository,
   validateTargetGoal,
@@ -60,6 +61,32 @@ runTest("install.js export surface includes post-install docs", () => {
   assert.ok(exportPaths.includes("docs/install-to-profile-walkthrough.md"));
   assert.ok(exportPaths.includes("docs/validation-troubleshooting.md"));
   assert.ok(exportPaths.includes("docs/small-repo-memory.md"));
+});
+
+runTest("install.js exportPaths includes core required installed surface", () => {
+  assert.ok(exportPaths.includes("AGENTS.md"));
+  assert.ok(exportPaths.includes("commands"));
+  assert.ok(exportPaths.includes("skills"));
+  assert.ok(exportPaths.includes("workflows"));
+  assert.ok(exportPaths.includes("patterns"));
+  assert.ok(exportPaths.includes("templates"));
+});
+
+runTest("install.js exportPaths does not include PACK.md", () => {
+  assert.equal(exportPaths.includes("PACK.md"), false);
+});
+
+runTest("install.js exportPaths does not include validate.js", () => {
+  assert.equal(exportPaths.includes("validate.js"), false);
+});
+
+runTest("PACK.md frozen headings match packRequiredHeadings", () => {
+  const packText = fs.readFileSync(path.join(repoRoot, "PACK.md"), "utf8");
+
+  for (const heading of packRequiredHeadings) {
+    assert.ok(packText.includes(heading), `PACK.md must include ${heading}`);
+  }
+  assert.equal(packRequiredHeadings.length, 10);
 });
 
 runTest("install.js summary helper counts copied and skipped actions", () => {

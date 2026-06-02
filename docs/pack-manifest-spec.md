@@ -14,7 +14,7 @@ Do not use JSON unless a future release has a strong justification. Keep manifes
 
 ## Required Sections
 
-Every `PACK.md` must include these sections in order:
+Every `PACK.md` must include these sections (presence required; order not validated):
 
 ### Pack Name
 
@@ -87,3 +87,7 @@ Current validation is heading-only:
 - it does not validate release archive file lists
 
 Maintainers should complete [pack-verification-checklist.md](pack-verification-checklist.md) before each release or manual archive distribution to confirm manifest content matches installed surface, release archive, and runtime docs.
+
+## Frozen Contract
+
+The v1.0.0-stable `PACK.md` heading contract is recorded in [frozen-pack-contract.md](frozen-pack-contract.md).

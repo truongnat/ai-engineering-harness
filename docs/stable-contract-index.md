@@ -10,8 +10,8 @@ Use this index before making changes that affect adopters, validators, or packag
 
 | Contract | Freeze target | Status in v0.9.0 planning |
 |---|---|---|
-| `PACK.md` | v0.9.0 | indexed; Step 2+ alignment |
-| Installed surface | v0.9.0 | indexed; Step 2+ alignment |
+| `PACK.md` | v0.9.0 | **frozen for v1.0.0** — [frozen-pack-contract.md](frozen-pack-contract.md) |
+| Installed surface | v0.9.0 | **frozen for v1.0.0** — [frozen-installed-surface-contract.md](frozen-installed-surface-contract.md) |
 | Target profile | v0.9.0 | indexed; Step 3+ alignment |
 | Goal artifacts | v0.9.0 | indexed; Step 3+ alignment |
 | Validation behavior | v0.9.0 | indexed; Step 4+ alignment |
@@ -25,8 +25,9 @@ Breaking changes: [breaking-change-policy.md](breaking-change-policy.md).
 
 ## PACK.md Contract
 
+- **Frozen record:** [frozen-pack-contract.md](frozen-pack-contract.md)
 - **Stable source:** [pack-manifest-spec.md](pack-manifest-spec.md), [PACK.md](../PACK.md)
-- **What is frozen:** required `##` section headings; markdown-first manifest (no JSON requirement); manifest at source pack and release archive roots
+- **What is frozen:** required `##` section headings; markdown-first manifest; manifest at source pack and release archive roots; target repos do not require `PACK.md` by default
 - **May still change before v1.0.0:** non-heading body wording; pack version string; optional future manifest sections if additive and non-breaking
 - **Not guaranteed:** manifest body semantic validation; version value enforcement; archive file list hashing
 
@@ -36,12 +37,13 @@ Enforced by: `node validate.js` (`packRequiredHeadings` in `validate.js`).
 
 ## Installed Surface Contract
 
+- **Frozen record:** [frozen-installed-surface-contract.md](frozen-installed-surface-contract.md)
 - **Stable source:** [installed-surface-contract.md](installed-surface-contract.md), `install.js` `exportPaths`
-- **What is frozen:** required installed files and directories; default install does not copy full source repo; `PACK.md` not required in target repos by default; `validate.js` not in default install
-- **May still change before v1.0.0:** optional installed docs list if additive; install summary display strings
+- **What is frozen:** default `exportPaths` install surface; required files and directories; `PACK.md` and `validate.js` not installed by default; target validation from source pack with `--target`
+- **May still change before v1.0.0:** additive paths in `exportPaths`; install summary display strings
 - **Not guaranteed:** minimal install tier (deferred post-v1 — [minimal-install-tier-decision.md](minimal-install-tier-decision.md))
 
-Enforced by: `install.js` behavior + adoption docs; not a separate manifest diff yet.
+Enforced by: `install.js` `exportPaths` + tests; structural target validation from source pack.
 
 ---
 

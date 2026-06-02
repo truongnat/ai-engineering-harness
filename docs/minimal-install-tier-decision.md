@@ -20,6 +20,8 @@ From `v0.8.0` Scenario A and B:
 
 The default installed surface remains the only supported install contract for v1.
 
+This decision supports freezing one default installed surface in [frozen-installed-surface-contract.md](frozen-installed-surface-contract.md) for v1.0.0.
+
 ## Rationale
 
 - default install works end-to-end in dogfood evidence
