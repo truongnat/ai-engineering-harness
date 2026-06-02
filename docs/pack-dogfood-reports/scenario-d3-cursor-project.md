@@ -131,4 +131,16 @@ Do **not** claim stable Cursor support until manual check confirms rule visibili
 
 ## Verdict
 
-**experimental PASS** — Cursor project runtime-native install + `.harness/` init validated for file/install behavior. **Stable claim remains No** — manual Cursor check not run; `--profile-only` **FAIL** due to missing `AGENTS.md` (contract gap, not install failure).
+**experimental PASS** — Cursor project runtime-native install + `.harness/` init validated for file/install behavior. **Stable claim remains No** — manual Cursor check not run; legacy `--profile-only` **FAIL** due to missing `AGENTS.md` (contract gap, not install failure).
+
+## Post-D3 Patch Note (runtime-aware validation)
+
+Original dogfood used `node validate.js --target ../harness-dogfood-cursor --profile-only`, which failed because the legacy validator required `AGENTS.md`.
+
+**Patch:** `validate.js` supports `--runtime cursor` for target validation. Re-check with:
+
+```bash
+node validate.js --target ../harness-dogfood-cursor --runtime cursor --profile-only
+```
+
+See [runtime-aware-validation.md](../runtime-aware-validation.md).

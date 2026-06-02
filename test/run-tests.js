@@ -26,6 +26,12 @@ const invalidFixture = path.join(repoRoot, "test", "fixtures", "invalid-harness"
 const invalidPackManifestFixture = path.join(repoRoot, "test", "fixtures", "invalid-pack-manifest");
 const invalidHarnessProfileFixture = path.join(repoRoot, "test", "fixtures", "invalid-harness-profile");
 const validTargetProfileFixture = path.join(repoRoot, "test", "fixtures", "valid-target-profile");
+const validTargetProfileCursorFixture = path.join(
+  repoRoot,
+  "test",
+  "fixtures",
+  "valid-target-profile-cursor"
+);
 const invalidTargetProfileFixture = path.join(repoRoot, "test", "fixtures", "invalid-target-profile");
 const validTargetGoalFixture = path.join(repoRoot, "test", "fixtures", "valid-target-goal");
 const invalidTargetGoalFixture = path.join(repoRoot, "test", "fixtures", "invalid-target-goal");
@@ -215,6 +221,83 @@ runTest("frozen validation contract: --profile-only cannot combine with --goal",
   const parsed = parseValidateArgs(["--target", "../my-project", "--profile-only", "--goal", "google-login"]);
 
   assert.deepEqual(parsed.usageErrors, ["--profile-only cannot be combined with --goal"]);
+});
+
+runTest("frozen validation contract: --target with --runtime cursor sets runtime on profile mode", () => {
+  const parsed = parseValidateArgs([
+    "--target",
+    "../my-project",
+    "--runtime",
+    "cursor",
+    "--profile-only"
+  ]);
+
+  assert.equal(parsed.mode, "target-profile");
+  assert.equal(parsed.runtime, "cursor");
+});
+
+runTest("frozen validation contract: invalid --runtime returns usage error", () => {
+  const parsed = parseValidateArgs(["--target", "../my-project", "--runtime", "not-a-runtime"]);
+
+  assert.ok(parsed.usageErrors.some((error) => /Unsupported runtime: not-a-runtime/.test(error)));
+});
+
+runTest("runtime-aware validation: cursor fixture passes without AGENTS.md", () => {
+  assert.equal(fs.existsSync(path.join(validTargetProfileCursorFixture, "AGENTS.md")), false);
+  const failures = validateTargetProfile(validTargetProfileCursorFixture, "cursor");
+
+  assert.deepEqual(failures, []);
+});
+
+runTest("runtime-aware validation: cursor fixture fails missing mdc", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "rt-cursor-missing-mdc-"));
+  for (const name of ["HARNESS.md", "TEAM.md", "SKILLS.md", "WORKFLOW.md", "GATES.md", "MEMORY.md"]) {
+    fs.mkdirSync(path.join(tmp, ".harness"), { recursive: true });
+    fs.copyFileSync(
+      path.join(validTargetProfileCursorFixture, ".harness", name),
+      path.join(tmp, ".harness", name)
+    );
+  }
+
+  const failures = validateTargetProfile(tmp, "cursor");
+
+  assert.ok(failures.includes("Missing required path: .cursor/rules/ai-engineering-harness.mdc"));
+});
+
+runTest("runtime-aware validation: default profile fails without AGENTS.md", () => {
+  const failures = validateTargetProfile(validTargetProfileCursorFixture);
+
+  assert.ok(failures.includes("Missing required path: AGENTS.md"));
+});
+
+runTest("runtime-aware validation: generic runtime passes with AGENTS.md and harness", () => {
+  const failures = validateTargetProfile(validTargetProfileFixture, "generic");
+
+  assert.deepEqual(failures, []);
+});
+
+runTest("runtime-aware validation: codex runtime passes with AGENTS.md and harness", () => {
+  const failures = validateTargetProfile(validTargetProfileFixture, "codex");
+
+  assert.deepEqual(failures, []);
+});
+
+runTest("runtime-aware validation: opencode runtime passes with plugin paths", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "rt-opencode-validate-"));
+  for (const name of ["HARNESS.md", "TEAM.md", "SKILLS.md", "WORKFLOW.md", "GATES.md", "MEMORY.md"]) {
+    fs.mkdirSync(path.join(tmp, ".harness"), { recursive: true });
+    fs.copyFileSync(
+      path.join(validTargetProfileFixture, ".harness", name),
+      path.join(tmp, ".harness", name)
+    );
+  }
+  fs.mkdirSync(path.join(tmp, ".opencode", "plugins"), { recursive: true });
+  fs.writeFileSync(path.join(tmp, "opencode.json"), "{}");
+  fs.writeFileSync(path.join(tmp, ".opencode", "plugins", "ai-engineering-harness.js"), "// plugin");
+
+  const failures = validateTargetProfile(tmp, "opencode");
+
+  assert.deepEqual(failures, []);
 });
 
 runTest("frozen validation contract: missing path message shape", () => {

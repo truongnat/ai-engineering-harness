@@ -8,6 +8,8 @@
 
 ### Added
 
+- runtime-aware target validation ([runtime-aware-validation.md](docs/runtime-aware-validation.md)) — `node validate.js --target <repo> --runtime <name> --profile-only`
+- Cursor profile validation no longer requires `AGENTS.md` when `--runtime cursor` is used
 - runtime-native install audit and dogfood plan ([runtime-native-install-audit.md](docs/runtime-native-install-audit.md), [runtime-native-install-dogfood-plan.md](docs/runtime-native-install-dogfood-plan.md))
 - generic project runtime dogfood report ([pack-dogfood-reports/scenario-d1-generic-project.md](docs/pack-dogfood-reports/scenario-d1-generic-project.md)) — experimental PASS
 - Codex project runtime dogfood report ([pack-dogfood-reports/scenario-d2-codex-project.md](docs/pack-dogfood-reports/scenario-d2-codex-project.md)) — experimental PASS

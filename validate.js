@@ -99,6 +99,7 @@ const requiredFiles = [
   "docs/pack-dogfood-reports/scenario-d1-generic-project.md",
   "docs/pack-dogfood-reports/scenario-d2-codex-project.md",
   "docs/pack-dogfood-reports/scenario-d3-cursor-project.md",
+  "docs/runtime-aware-validation.md",
   "docs/packaging-model.md",
   "docs/pack-manifest-spec.md",
   "docs/pack-verification-checklist.md",
@@ -384,8 +385,22 @@ const goalArtifactHeadings = {
     "## Sensitive Data Check"
   ]
 };
-const targetProfileFiles = [
-  "AGENTS.md",
+const VALID_TARGET_RUNTIMES = [
+  "generic",
+  "codex",
+  "cursor",
+  "windsurf",
+  "opencode",
+  "gemini",
+  "claude",
+  "manual"
+];
+
+const RUNTIME_VALIDATION_ALIASES = {
+  windsurf: "cursor"
+};
+
+const targetHarnessProfileFiles = [
   ".harness/",
   ".harness/HARNESS.md",
   ".harness/TEAM.md",
@@ -394,6 +409,39 @@ const targetProfileFiles = [
   ".harness/GATES.md",
   ".harness/MEMORY.md"
 ];
+
+const targetProfileFiles = ["AGENTS.md", ...targetHarnessProfileFiles];
+
+function normalizeTargetRuntime(runtime) {
+  return RUNTIME_VALIDATION_ALIASES[runtime] || runtime;
+}
+
+function getRuntimeBootstrapPaths(runtime) {
+  const normalized = normalizeTargetRuntime(runtime);
+  switch (normalized) {
+    case "generic":
+    case "codex":
+    case "manual":
+      return ["AGENTS.md"];
+    case "cursor":
+      return [".cursor/rules/ai-engineering-harness.mdc"];
+    case "opencode":
+      return ["opencode.json", ".opencode/plugins/ai-engineering-harness.js"];
+    case "gemini":
+      return [
+        ".gemini/extensions/ai-engineering-harness/gemini-extension.json",
+        ".gemini/extensions/ai-engineering-harness/GEMINI.md"
+      ];
+    case "claude":
+      return [".claude/CLAUDE.md", ".claude/settings.json"];
+    default:
+      return null;
+  }
+}
+
+function isValidTargetRuntime(runtime) {
+  return VALID_TARGET_RUNTIMES.includes(runtime);
+}
 const targetProfileHeadingContracts = [
   [".harness/HARNESS.md", harnessHeadings],
   [".harness/TEAM.md", teamHeadings],
@@ -535,10 +583,10 @@ function validateRepository(baseDir = root) {
   return validateHarnessRepository(baseDir);
 }
 
-function validateTargetProfile(baseDir) {
+function validateTargetHarnessProfile(baseDir) {
   const failures = [];
 
-  for (const relativePath of targetProfileFiles) {
+  for (const relativePath of targetHarnessProfileFiles) {
     assertExists(baseDir, relativePath, failures);
   }
 
@@ -549,8 +597,36 @@ function validateTargetProfile(baseDir) {
   return failures;
 }
 
-function validateTargetGoal(baseDir, goalId) {
-  const failures = validateTargetProfile(baseDir);
+function validateRuntimeBootstrap(baseDir, runtime) {
+  const failures = [];
+  const bootstrapPaths = getRuntimeBootstrapPaths(runtime);
+
+  if (!bootstrapPaths) {
+    failures.push(`Unsupported runtime: ${runtime}`);
+    return failures;
+  }
+
+  for (const relativePath of bootstrapPaths) {
+    assertExists(baseDir, relativePath, failures);
+  }
+
+  return failures;
+}
+
+function validateTargetProfile(baseDir, runtime) {
+  const failures = validateTargetHarnessProfile(baseDir);
+
+  if (runtime) {
+    failures.push(...validateRuntimeBootstrap(baseDir, runtime));
+  } else {
+    assertExists(baseDir, "AGENTS.md", failures);
+  }
+
+  return failures;
+}
+
+function validateTargetGoal(baseDir, goalId, runtime) {
+  const failures = validateTargetProfile(baseDir, runtime);
   const goalDir = `.harness/goals/${goalId}`;
 
   for (const [fileName, headings] of Object.entries(goalTemplateHeadings)) {
@@ -585,6 +661,7 @@ function parseValidateArgs(argv = []) {
   const baseDir = path.resolve(process.cwd(), argv[1]);
   let hasProfileOnly = false;
   let goalId = null;
+  let runtime = null;
   const usageErrors = [];
 
   for (let index = 2; index < argv.length; index += 1) {
@@ -592,6 +669,16 @@ function parseValidateArgs(argv = []) {
 
     if (arg === "--profile-only") {
       hasProfileOnly = true;
+      continue;
+    }
+
+    if (arg === "--runtime") {
+      if (index + 1 >= argv.length || argv[index + 1].startsWith("--")) {
+        usageErrors.push("Missing required runtime name after --runtime");
+        break;
+      }
+      runtime = argv[index + 1];
+      index += 1;
       continue;
     }
 
@@ -613,6 +700,12 @@ function parseValidateArgs(argv = []) {
     usageErrors.push("--profile-only cannot be combined with --goal");
   }
 
+  if (runtime && !isValidTargetRuntime(runtime)) {
+    usageErrors.push(
+      `Unsupported runtime: ${runtime} (expected: ${VALID_TARGET_RUNTIMES.join(", ")})`
+    );
+  }
+
   if (usageErrors.length > 0) {
     return { usageErrors };
   }
@@ -621,13 +714,15 @@ function parseValidateArgs(argv = []) {
     return {
       mode: "target-goal",
       baseDir,
-      goalId
+      goalId,
+      runtime
     };
   }
 
   return {
     mode: "target-profile",
-    baseDir
+    baseDir,
+    runtime
   };
 }
 
@@ -646,9 +741,9 @@ function main() {
   let failures;
 
   if (validationMode === "target-profile") {
-    failures = validateTargetProfile(args.baseDir);
+    failures = validateTargetProfile(args.baseDir, args.runtime);
   } else if (validationMode === "target-goal") {
-    failures = validateTargetGoal(args.baseDir, args.goalId);
+    failures = validateTargetGoal(args.baseDir, args.goalId, args.runtime);
   } else {
     failures = validateHarnessRepository(args.baseDir);
   }
@@ -666,12 +761,24 @@ function main() {
   }
 
   if (validationMode === "target-profile") {
-    console.log("Target repository validation passed. Checked profile contract.");
+    if (args.runtime) {
+      console.log(
+        `Target repository validation passed. Checked profile contract (runtime: ${args.runtime}).`
+      );
+    } else {
+      console.log("Target repository validation passed. Checked profile contract.");
+    }
     return;
   }
 
   if (validationMode === "target-goal") {
-    console.log(`Target repository validation passed. Checked goal contract: ${args.goalId}.`);
+    if (args.runtime) {
+      console.log(
+        `Target repository validation passed. Checked goal contract: ${args.goalId} (runtime: ${args.runtime}).`
+      );
+    } else {
+      console.log(`Target repository validation passed. Checked goal contract: ${args.goalId}.`);
+    }
     return;
   }
 
@@ -702,7 +809,12 @@ module.exports = {
   teamHeadings,
   templateFiles,
   validateHarnessRepository,
+  getRuntimeBootstrapPaths,
+  isValidTargetRuntime,
+  validateRuntimeBootstrap,
   validateTargetGoal,
+  validateTargetHarnessProfile,
   validateTargetProfile,
-  validateRepository
+  validateRepository,
+  VALID_TARGET_RUNTIMES
 };

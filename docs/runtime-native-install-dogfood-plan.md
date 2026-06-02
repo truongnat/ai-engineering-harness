@@ -48,7 +48,7 @@ sh install.sh --runtime generic --scope project --target <repo> --init-harness -
 **Validation:**
 
 ```bash
-node validate.js --target <repo> --profile-only
+node validate.js --target <repo> --runtime generic --profile-only
 ```
 
 **Manual:** Open repo in any AGENTS.md-capable agent; confirm it mentions `.harness/`.
@@ -71,6 +71,12 @@ sh install.sh --runtime codex --scope project --target <repo> --init-harness --y
 
 **Expected:** Same as generic for files (codex uses same bootstrap).
 
+**Validation:**
+
+```bash
+node validate.js --target <repo> --runtime codex --profile-only
+```
+
 **Manual:** Run `codex` in target; ask it to summarize loaded instructions.
 
 **Rollback:** Same as step 1.
@@ -81,7 +87,7 @@ sh install.sh --runtime codex --scope project --target <repo> --init-harness --y
 
 ## 3. Cursor (project) — completed (Scenario D3)
 
-**Status:** **experimental PASS** (file/install) — [scenario-d3-cursor-project.md](pack-dogfood-reports/scenario-d3-cursor-project.md) (2026-06-02). `--profile-only` **FAIL** (missing `AGENTS.md` — contract gap). Manual Cursor IDE check **not run**. Stable claim **No**.
+**Status:** **experimental PASS** (file/install) — [scenario-d3-cursor-project.md](pack-dogfood-reports/scenario-d3-cursor-project.md) (2026-06-02). Validate with `--runtime cursor`. Manual Cursor IDE check **not run**. Stable claim **No**.
 
 **Command:**
 
@@ -93,6 +99,12 @@ sh install.sh --runtime cursor --scope project --target <repo> --init-harness --
 
 ```txt
 <repo>/.cursor/rules/ai-engineering-harness.mdc
+```
+
+**Validation:**
+
+```bash
+node validate.js --target <repo> --runtime cursor --profile-only
 ```
 
 **Manual:** Cursor → check Rules; run Agent chat; confirm rule applies.
@@ -116,6 +128,12 @@ sh install.sh --runtime opencode --scope project --target <repo> --init-harness 
 ```txt
 <repo>/.opencode/plugins/ai-engineering-harness.js
 <repo>/opencode.json
+```
+
+**Validation:**
+
+```bash
+node validate.js --target <repo> --runtime opencode --profile-only
 ```
 
 **Manual:** Start OpenCode in repo; confirm plugin loads (console bootstrap message).
@@ -149,6 +167,12 @@ sh install.sh --runtime gemini --scope project --target <repo> --yes
 
 Document whether project-local path loads.
 
+**Validation (project):**
+
+```bash
+node validate.js --target <repo> --runtime gemini --profile-only
+```
+
 **Evidence:** `scenario-d5-gemini.md`
 
 ---
@@ -166,6 +190,12 @@ sh install.sh --runtime claude --scope project --target <repo> --init-harness --
 ```txt
 <repo>/.claude/CLAUDE.md
 <repo>/.claude/settings.json   # merged marketplace entry
+```
+
+**Validation:**
+
+```bash
+node validate.js --target <repo> --runtime claude --profile-only
 ```
 
 **Manual:** Open Claude Code; run `/plugin install ai-engineering-harness@ai-engineering-harness`; confirm plugin or document failure.

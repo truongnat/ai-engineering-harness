@@ -7,13 +7,16 @@ Triage dogfood findings from [pack-dogfood-friction-log.md](pack-dogfood-frictio
 - One-line install: improve `install.js` next steps to mention `curl | sh` install path and validate-from-source-pack ([scenario-c-one-line-installer.md](pack-dogfood-reports/scenario-c-one-line-installer.md))
 - Repeat: install summary relative target display when invoked via `install.sh` with relative `--target`
 - D2: document `codex exec --skip-git-repo-check` for non-git throwaway targets
-- D3: runtime-aware `validate.js --profile-only` or document Cursor-only repos without `AGENTS.md` ([scenario-d3-cursor-project.md](pack-dogfood-reports/scenario-d3-cursor-project.md))
 
 ## v0.8.x Patch Candidates
 
 Doc clarifications, scenario fixes, and small guidance updates that do not change core contracts.
 
 - Optional: Scenario A quick-path doc linking plan, install walkthrough, and scenarios
+
+## Addressed In v0.9.x Patch (runtime-aware validation)
+
+- D3: `validate.js --runtime` for target profile/goal validation ([runtime-aware-validation.md](runtime-aware-validation.md))
 
 ## Addressed In v0.9.x Patch (D2 AGENTS.md ownership)
 

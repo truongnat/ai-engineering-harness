@@ -93,10 +93,16 @@ Global install cannot create shared .harness state. Run project install inside e
 From the **source pack** (maintainer clone):
 
 ```bash
+# Legacy / AGENTS.md-based targets (manual install or default)
 node validate.js --target <path-to-product-repo> --profile-only
+
+# Runtime-native (match install --runtime)
+node validate.js --target <path-to-product-repo> --runtime generic --profile-only
+node validate.js --target <path-to-product-repo> --runtime codex --profile-only
+node validate.js --target <path-to-product-repo> --runtime cursor --profile-only
 ```
 
-Checks `.harness/` paths and required headings per [frozen-target-profile-contract.md](frozen-target-profile-contract.md).
+Checks `.harness/` paths and required headings per [frozen-target-profile-contract.md](frozen-target-profile-contract.md). Runtime bootstrap paths per [runtime-aware-validation.md](runtime-aware-validation.md).
 
 ## Commit Policy
 

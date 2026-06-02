@@ -25,9 +25,11 @@ Authoring guide: [harness-build-contract.md](harness-build-contract.md). Validat
 
 ## Required Root Entry (Profile Mode)
 
-`--profile-only` also requires:
+**Legacy default** (`node validate.js --target <path> --profile-only` without `--runtime`):
 
 - `AGENTS.md` at the target repository root
+
+**Runtime-aware validation** ([runtime-aware-validation.md](runtime-aware-validation.md)): runtime bootstrap files (e.g. `.cursor/rules/`, `opencode.json`) are validated instead of `AGENTS.md` when `--runtime` is set. The **`.harness/` profile contract** (files and headings below) applies in both modes.
 
 ## Required Headings Per File
 

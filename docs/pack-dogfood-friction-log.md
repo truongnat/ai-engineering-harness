@@ -28,7 +28,7 @@ Do not paste secrets, tokens, customer data, or private business details. Summar
 | 2026-06-02 | D2 | Manual Codex check BLOCKED (API usage limit) | low | codex exec output | Re-run when quota available; do not claim stable | later optional |
 | 2026-06-02 | D2 | Dual-phase AGENTS.md CREATE/SKIP (repeat D1) | low | Scenario D2 write output | Install output clarity | v0.9.x patch |
 | 2026-06-02 | D2 | No blocking friction for codex project install or profile validation | none | Dry-run, write, skip, validate.js passed | No action required | no action |
-| 2026-06-02 | D3 | `--profile-only` requires AGENTS.md but Cursor project install does not create it | medium | Scenario D3 validate.js output | Runtime-aware validation or document Cursor exception | v0.9 contract candidate |
+| 2026-06-02 | D3 | `--profile-only` requires AGENTS.md but Cursor project install does not create it | medium | Scenario D3 validate.js output | **addressed** — `validate.js --runtime cursor` | v0.9.x fix |
 | 2026-06-02 | D3 | Manual Cursor IDE rule load not verified | low | D3 dogfood session | Re-run in Cursor when available | later optional |
 | 2026-06-02 | D3 | No blocking friction for cursor install, .mdc payload, or skip behavior | none | Dry-run, write, skip, diff mdc | No action required | no action |
 
@@ -52,6 +52,7 @@ Addressed in v0.9.x D2 patch (AGENTS.md ownership):
 | Scenario | Friction | Status |
 |---|---|---|
 | D1, D2 | Init minimal `AGENTS.md` blocked runtime `AGENTS.project.md` | **addressed** — `.harness/` init no longer creates `AGENTS.md` |
+| D3 | Profile validator required `AGENTS.md` for Cursor-only repos | **addressed** — [runtime-aware-validation.md](runtime-aware-validation.md) |
 
 Addressed in v0.8.0 Step 4 (dogfood fix pass):
 

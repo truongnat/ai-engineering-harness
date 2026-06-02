@@ -18,6 +18,10 @@ Implementation: [validate.js](../validate.js). Usage guide: [target-repo-validat
 | Target profile validation | `node validate.js --target <path>` | `target-profile` |
 | Target profile (explicit) | `node validate.js --target <path> --profile-only` | `target-profile` |
 | Target goal validation | `node validate.js --target <path> --goal <goal-id>` | `target-goal` |
+| Runtime-aware profile | `node validate.js --target <path> --runtime <name> --profile-only` | `target-profile` (+ `runtime`) |
+| Runtime-aware goal | `node validate.js --target <path> --runtime <name> --goal <goal-id>` | `target-goal` (+ `runtime`) |
+
+**Extension (v0.9.x):** [runtime-aware-validation.md](runtime-aware-validation.md) adds `--runtime` for target validation. Legacy AGENTS.md-only profile mode remains the default without `--runtime`; that is **not** the final v1 behavior for all runtime-native install modes.
 
 Rules:
 
@@ -66,8 +70,8 @@ node validate.js --target <path> --profile-only
 
 Validates [frozen target profile contract](frozen-target-profile-contract.md):
 
-- `AGENTS.md` and `.harness/` profile files exist
-- required headings per profile file
+- **Default:** `AGENTS.md` and `.harness/` profile files exist; required headings per profile file
+- **With `--runtime`:** `.harness/` profile + runtime bootstrap paths per [runtime-aware-validation.md](runtime-aware-validation.md) (no `AGENTS.md` for `cursor`, etc.)
 
 Run from the **source pack** working directory; `<path>` is resolved relative to `process.cwd()`.
 
