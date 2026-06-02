@@ -22,6 +22,7 @@ Describe the project-specific harness operating model for this repository.
 ## Selected Choices
 
 - Primary workflow:
+- Execution model:
 - Primary team pattern:
 - Primary skill packs:
 - Core skills:
@@ -31,6 +32,13 @@ Describe the project-specific harness operating model for this repository.
 
 - The harness should guide:
 - The harness should not manage:
+
+## Required References
+
+- Team architecture guide:
+- Memory model:
+- SDLC execution model:
+- Quality gates:
 
 ## Assumptions
 

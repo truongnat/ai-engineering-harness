@@ -15,6 +15,9 @@
 - `v0.2.0`: Harness Design System
 - add `harness-build` as the entry point for project-specific harness design
 - add harness profile templates for workflow, team, skills, gates, memory, and harness context
+- document team architecture selection for project-specific collaboration shape
+- document memory model and memory safety for durable, sanitized recall
+- document SDLC execution model for goal and task lifecycle control
 - document system positioning so each layer has a clear role and boundary
 - close the highest-value gaps identified in relation to [TARGET.md](../TARGET.md)
 - keep adoption, validation, and markdown-first execution lightweight

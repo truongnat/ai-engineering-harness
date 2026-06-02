@@ -16,6 +16,7 @@ Define the project-specific agent or team architecture for work in this reposito
 
 - Pattern:
 - Why this pattern fits:
+- Why simpler patterns were not enough:
 
 ## Roles
 
@@ -28,6 +29,11 @@ Define the project-specific agent or team architecture for work in this reposito
 - Planning handoff:
 - Review handoff:
 - Verification handoff:
+
+## Escalation Rules
+
+- Ask for human approval when:
+- Re-select pattern when:
 
 ## Assumptions
 

@@ -18,6 +18,9 @@ Define what this project should remember before planning and after shipping.
 - Decisions:
 - Root causes:
 - Reusable commands:
+- Constraints:
+- Hazards:
+- Open questions:
 - Verification lessons:
 
 ## Recall Rules
@@ -29,6 +32,7 @@ Define what this project should remember before planning and after shipping.
 ## Storage Boundaries
 
 - Shared durable memory:
+- Goal-level memory:
 - Local-only memory:
 
 ## Assumptions

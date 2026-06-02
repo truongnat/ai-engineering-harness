@@ -11,6 +11,10 @@ const requiredFiles = [
   "SECURITY.md",
   "TARGET.md",
   "docs/gap-analysis.md",
+  "docs/team-architecture-selection.md",
+  "docs/memory-model.md",
+  "docs/memory-safety.md",
+  "docs/sdlc-execution-model.md",
   "docs/system-positioning.md",
   "docs/adoption-guide.md",
   "docs/adoption-smoke-test.md",
@@ -46,7 +50,9 @@ const requiredFiles = [
   "templates/SKILLS.md",
   "templates/WORKFLOW.md",
   "templates/GATES.md",
-  "templates/MEMORY.md"
+  "templates/MEMORY.md",
+  "templates/TASK.md",
+  "templates/EXECUTION.md"
 ];
 
 const commandFiles = [
@@ -102,6 +108,8 @@ const templateFiles = [
   "templates/WORKFLOW.md",
   "templates/GATES.md",
   "templates/MEMORY.md",
+  "templates/TASK.md",
+  "templates/EXECUTION.md",
   "templates/REQUIREMENTS.md",
   "templates/ROADMAP.md",
   "templates/STATE.md",

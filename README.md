@@ -25,6 +25,10 @@ See [TARGET.md](TARGET.md) for the long-term target.
 - [TARGET.md](TARGET.md)
 - [docs/gap-analysis.md](docs/gap-analysis.md)
 - [docs/system-positioning.md](docs/system-positioning.md)
+- [docs/team-architecture-selection.md](docs/team-architecture-selection.md)
+- [docs/memory-model.md](docs/memory-model.md)
+- [docs/memory-safety.md](docs/memory-safety.md)
+- [docs/sdlc-execution-model.md](docs/sdlc-execution-model.md)
 - [commands/harness-build.md](commands/harness-build.md)
 
 ## ✨ What It Is

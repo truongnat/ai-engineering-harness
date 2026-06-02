@@ -20,6 +20,7 @@ Define the project-specific quality gates that work must satisfy before completi
 ## Phase Gates
 
 - Phase:
+- Entry criteria:
 - Required evidence:
 - Stop conditions:
 

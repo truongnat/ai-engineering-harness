@@ -18,6 +18,13 @@ Define the workflows this project should use for common work types.
 - Workflow:
 - Why selected:
 
+## Execution Model
+
+- Goal lifecycle:
+- Task lifecycle:
+- Review and retry loop:
+- Verification loop:
+
 ## Command Expectations
 
 - Required start command:

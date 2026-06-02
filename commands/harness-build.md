@@ -16,6 +16,10 @@ Build a project-specific harness profile before implementation work begins.
 - `TARGET.md`
 - `docs/gap-analysis.md`
 - `docs/system-positioning.md`
+- `docs/team-architecture-selection.md`
+- `docs/memory-model.md`
+- `docs/memory-safety.md`
+- `docs/sdlc-execution-model.md`
 - `.harness/PROJECT.md` if present
 - `.harness/REQUIREMENTS.md` if present
 - `.harness/ROADMAP.md` if present
@@ -33,11 +37,12 @@ Build a project-specific harness profile before implementation work begins.
 1. Read the existing project artifacts and identify the host repository shape, delivery model, and risk profile.
 2. Determine the most relevant workflows, team patterns, core skills, and skill packs for the project.
 3. Define the harness profile boundaries: what the harness must guide, what it will not manage, and where human approval is required.
-4. Select the initial team architecture pattern using the project size, coupling, risk, and review needs.
-5. Define the memory setup: what facts, decisions, root causes, and reusable commands should be persisted.
-6. Define the quality gates the project should apply before run, verify, ship, and remember phases are considered complete.
-7. Write the selected operating model to the harness profile artifacts.
-8. Stop after the harness profile is complete. Do not implement application code.
+4. Select the initial team architecture pattern using `docs/team-architecture-selection.md` and record why it fits this project better than the simpler alternatives.
+5. Initialize `.harness/MEMORY.md` using `docs/memory-model.md` and `docs/memory-safety.md`, including recall rules, allowed memory types, and storage boundaries.
+6. Select the execution workflow using `docs/sdlc-execution-model.md`, including goal lifecycle, task lifecycle, and review and verification expectations.
+7. Define the quality gates the project should apply before run, verify, ship, and remember phases are considered complete.
+8. Write the selected operating model to the harness profile artifacts.
+9. Stop after the harness profile is complete. Do not implement application code.
 
 ## Output Artifacts
 
@@ -55,14 +60,17 @@ The command is complete when the harness profile artifacts define a project-spec
 ## Pattern Selection
 
 - Prefer the smallest team pattern that still gives adequate review and verification discipline.
+- Use `docs/team-architecture-selection.md` as the decision guide, not intuition alone.
 - Use a simple single-agent or producer-reviewer shape for small scoped work.
 - Use pipeline, fan-out-fan-in, or hierarchical delegation only when the project or task shape clearly requires it.
 - Record why the selected pattern fits this repository and what would trigger a different pattern later.
 
 ## Memory Setup
 
-- Define what the project should remember before planning: facts, decisions, known risks, root causes, and reusable commands.
-- Define what should be remembered after shipping: durable lessons and recurring verification guidance.
+- Use `docs/memory-model.md` to decide what belongs in project memory and what belongs only at goal level.
+- Use `docs/memory-safety.md` before recording any memory entry.
+- Define what the project should remember before planning: facts, decisions, known risks, root causes, reusable commands, constraints, and hazards.
+- Define what should be remembered after shipping: durable lessons, root causes, and recurring verification guidance.
 - Keep memory sanitized. Never persist secrets, tokens, customer data, or private business data.
 
 ## Stop Conditions

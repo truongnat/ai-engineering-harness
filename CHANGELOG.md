@@ -9,6 +9,10 @@
 - Gap analysis
 - System positioning
 - Project-specific harness design surface
+- Team architecture selection
+- Memory model and memory safety
+- SDLC execution model
+- Task and execution templates
 
 ## [0.1.0] - 2026-06-02
 
