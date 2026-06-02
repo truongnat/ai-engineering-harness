@@ -67,6 +67,7 @@ const requiredFiles = [
   "docs/runtime-install-matrix-research.md",
   "docs/interactive-installer-design.md",
   "docs/project-state-policy.md",
+  "docs/harness-init-usage.md",
   "docs/one-line-installer-design.md",
   "docs/plugin-install-security.md",
   "docs/install-sh-usage.md",

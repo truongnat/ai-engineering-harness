@@ -20,7 +20,7 @@ Target UX: choose **runtime** + **scope** → install to runtime-correct locatio
 |---|---|
 | `--runtime <name>` | `claude`, `codex`, `cursor`, `gemini`, `opencode`, `generic`, `all`, `manual` |
 | `--scope <name>` | `global` or `project` (required for non-manual when non-interactive) |
-| `--init-harness` | Request `.harness/` scaffold (planned; Step 5) |
+| `--init-harness` | Scaffold project `.harness/` profile files (project scope; see [harness-init-usage.md](harness-init-usage.md)) |
 | `--legacy-root` | Alias for `--runtime manual` |
 | `--yes` | Skip confirmation prompt |
 
@@ -87,6 +87,19 @@ sh install-harness.sh --ref v0.9.0 --target .
 - `tar` on PATH
 - `curl` or `wget` for download
 - writable target directory (must exist for write install; dry-run allows missing target leaf with existing parent)
+
+## `.harness` Init
+
+Project scope only. Rejects `--scope global --init-harness`.
+
+```bash
+sh install.sh --runtime claude --scope project --target . --init-harness --dry-run --yes
+sh install.sh --runtime claude --scope project --target . --init-harness --yes
+```
+
+Non-interactive: pass `--init-harness` explicitly. Interactive project scope may prompt to init.
+
+Validate after init: `node validate.js --target <repo> --profile-only` from source pack.
 
 ## Examples (selector)
 

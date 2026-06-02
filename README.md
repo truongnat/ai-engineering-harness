@@ -95,6 +95,15 @@ Preview what the fallback would copy:
 curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install.sh | sh -s -- --target . --dry-run
 ```
 
+Project-local `.harness/` scaffold (runtime-native install still planned except manual fallback):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install.sh | sh -s -- \
+  --runtime claude --scope project --init-harness --dry-run --yes
+```
+
+See [harness-init-usage](docs/harness-init-usage.md). Runtime-specific install is **not** implemented yet unless `--runtime manual`.
+
 Pin a release tag: `--ref v0.9.0` ([install security](docs/plugin-install-security.md)).
 
 ## 🛠️ Maintainer quick start (source pack)

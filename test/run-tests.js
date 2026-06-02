@@ -428,7 +428,7 @@ runTest("install.sh legacy-root aliases manual fallback", () => {
   const script = fs.readFileSync(installShPath, "utf8");
 
   assert.match(script, /--legacy-root/);
-  assert.match(script, /RUNTIME="manual"/);
+  assert.match(script, /RUNTIME=manual/);
 });
 
 function runInstallSh(args, options = {}) {
@@ -459,6 +459,95 @@ runTest("install.sh claude write exits non-zero with not implemented", () => {
 
   assert.notEqual(result.status, 0);
   assert.match(result.stdout + result.stderr, /not implemented yet/i);
+});
+
+runTest("install.sh project init-harness dry-run prints WOULD CREATE HARNESS.md", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-init-dry-"));
+  const result = runInstallSh(
+    ["--runtime", "claude", "--scope", "project", "--init-harness", "--dry-run", "--yes", "--target", tmp],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stdout, /WOULD CREATE \.harness\/HARNESS\.md/);
+});
+
+runTest("install.sh project init-harness writes profile files", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-init-write-"));
+  const result = runInstallSh(
+    ["--runtime", "opencode", "--scope", "project", "--init-harness", "--yes", "--target", tmp],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stdout + result.stderr, /not implemented yet/i);
+  assert.ok(fs.existsSync(path.join(tmp, ".harness", "HARNESS.md")));
+  assert.ok(fs.existsSync(path.join(tmp, ".harness", "MEMORY.md")));
+  assert.ok(fs.existsSync(path.join(tmp, ".harness", "goals", ".gitkeep")));
+  assert.ok(fs.existsSync(path.join(tmp, "AGENTS.md")));
+});
+
+runTest("install.sh init-harness target passes profile validation", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-init-validate-"));
+  const result = runInstallSh(
+    ["--runtime", "generic", "--scope", "project", "--init-harness", "--yes", "--target", tmp],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.notEqual(result.status, 0);
+  const failures = validateTargetProfile(tmp);
+  assert.equal(failures.length, 0, failures.join("\n"));
+});
+
+runTest("install.sh global init-harness exits non-zero", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-init-global-"));
+  const result = runInstallSh(
+    ["--runtime", "claude", "--scope", "global", "--init-harness", "--yes", "--target", tmp],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stdout + result.stderr, /cannot create shared \.harness state/i);
+});
+
+runTest("install.sh init-harness skips existing files without force", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-init-skip-"));
+  fs.mkdirSync(path.join(tmp, ".harness"), { recursive: true });
+  fs.writeFileSync(path.join(tmp, ".harness", "HARNESS.md"), "# keep\n");
+
+  const result = runInstallSh(
+    ["--runtime", "claude", "--scope", "project", "--init-harness", "--yes", "--target", tmp],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stdout, /SKIP \.harness\/HARNESS\.md/);
+  assert.equal(fs.readFileSync(path.join(tmp, ".harness", "HARNESS.md"), "utf8"), "# keep\n");
+});
+
+runTest("install.sh init-harness force overwrites existing files", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-init-force-"));
+  fs.mkdirSync(path.join(tmp, ".harness"), { recursive: true });
+  fs.writeFileSync(path.join(tmp, ".harness", "HARNESS.md"), "# old\n");
+
+  const result = runInstallSh(
+    [
+      "--runtime",
+      "claude",
+      "--scope",
+      "project",
+      "--init-harness",
+      "--force",
+      "--yes",
+      "--target",
+      tmp
+    ],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stdout, /OVERWRITE \.harness\/HARNESS\.md/);
+  assert.match(fs.readFileSync(path.join(tmp, ".harness", "HARNESS.md"), "utf8"), /## Purpose/);
 });
 
 if (process.exitCode) {

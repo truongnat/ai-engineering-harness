@@ -101,10 +101,18 @@ cd ~/projects/other-app
 # run project init → creates other-app/.harness/
 ```
 
+## Project `.harness` Init (implemented)
+
+[install.sh](../install.sh) with `--scope project --init-harness` scaffolds minimal profile files under `<repo>/.harness/`. See [harness-init-usage.md](harness-init-usage.md).
+
+- Generated files are **structural skeletons** only (required headings + TODO placeholders).
+- Teams fill content after init.
+- **No** global `.harness/` is created.
+
 ## Rules (normative)
 
 1. Global install **never** creates shared project state by itself.
-2. Project install **may** create `.harness/` when requested.
+2. Project install **may** create `.harness/` when `--init-harness` is passed (or confirmed interactively).
 3. Each repo gets **its own** `.harness/`.
 4. Runtime plugins should **not** duplicate the full pack in every repo unless that runtime requires project-local files (then install **only** what that runtime needs).
 5. Commit vs ignore `.harness/` is a **team workflow** decision; document in profile README or adoption guide.

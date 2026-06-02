@@ -4,6 +4,10 @@
 
 ### Added
 
+- project `.harness/` init via [install.sh](install.sh) (`--scope project --init-harness`) with dry-run, skip, and `--force` overwrite
+- global scope + `--init-harness` rejection (no shared `.harness` state)
+- [harness-init-usage.md](docs/harness-init-usage.md)
+
 - runtime and scope selector plumbing in [install.sh](install.sh) (`--runtime`, `--scope`, `--yes`, `--init-harness`, `--legacy-root`)
 - manual fallback warning when non-interactive install defaults to root copy
 - planned-runtime dry-run (no network) and not-implemented message on write

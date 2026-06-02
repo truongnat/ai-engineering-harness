@@ -1,5 +1,5 @@
 #!/bin/sh
-# ai-engineering-harness remote installer — runtime/scope selection + manual fallback
+# ai-engineering-harness remote installer — runtime/scope selection + .harness init + manual fallback
 set -eu
 
 REPO="truongnat/ai-engineering-harness"
@@ -23,25 +23,24 @@ Options:
   --target <path>       Target repository (default: current directory)
   --runtime <name>      claude | codex | cursor | gemini | opencode | generic | all | manual
   --scope <name>        global | project (required for non-manual non-interactive)
-  --init-harness        Request project .harness/ scaffold (planned; not implemented yet)
+  --init-harness        Scaffold project-local .harness/ profile files
   --legacy-root         Alias for --runtime manual (root copy fallback)
-  --dry-run             Show plan or manual copy preview without writing
-  --force               Overwrite existing files (manual fallback only)
+  --dry-run             Show plan or preview without writing
+  --force               Overwrite existing .harness/ files (and manual fallback files)
   --ref <git-ref>       GitHub ref to install (branch or tag, default: main)
   --yes                 Skip interactive confirmation
   --help                Show this help
 
-Runtime-native install (claude, cursor, …) is planned; only manual fallback writes today.
+Runtime-native install (claude, cursor, …) is planned; only manual fallback root-copies today.
+Project .harness/ init works with --scope project --init-harness (or interactive confirm).
 
 Examples:
-  install.sh --runtime manual --target . --dry-run
+  install.sh --runtime claude --scope project --init-harness --dry-run --yes
+  install.sh --runtime manual --target . --init-harness --dry-run
   install.sh --legacy-root --target ../my-project
-  install.sh --runtime claude --scope project --dry-run --yes
-  install.sh --ref v0.9.0 --runtime manual --target .
 
 Remote one-line install (non-interactive; defaults to manual fallback with warning):
   curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install.sh | sh
-  curl -fsSL .../install.sh | sh -s -- --target . --dry-run
 EOF
 }
 
@@ -126,11 +125,43 @@ pick_scope_interactive() {
   done
 }
 
+maybe_prompt_init_harness() {
+  if [ "$INIT_HARNESS" -eq 1 ]; then
+    return 0
+  fi
+  if ! is_interactive; then
+    return 0
+  fi
+  if [ "$SCOPE" = project ] || [ "$RUNTIME" = manual ]; then
+    printf '%s' 'Initialize project .harness/ in target? [y/N]: '
+    read -r ans || fail 'could not read .harness init choice'
+    case "$ans" in
+      y|Y|yes|Yes|YES) INIT_HARNESS=1 ;;
+    esac
+  fi
+}
+
+print_harness_init_plan() {
+  if [ "$INIT_HARNESS" -ne 1 ]; then
+    return 0
+  fi
+  printf '%s\n' \
+    '  - Initialize project-local .harness/ (minimal structural skeletons)' \
+    "  - Target: ${TARGET_ABS}/.harness/" \
+    '  - Files: HARNESS.md, TEAM.md, SKILLS.md, WORKFLOW.md, GATES.md, MEMORY.md, goals/.gitkeep' \
+    '  - Optional: AGENTS.md at repo root if missing (for profile validation)' \
+    '  - Fill profile content after init; run validate.js --target <repo> --profile-only'
+}
+
 print_install_plan() {
   printf '%s\n' '' '--- Install plan ---'
   printf '  runtime:       %s (%s)\n' "$RUNTIME" "$(runtime_label "$RUNTIME")"
   if [ "$RUNTIME" = manual ]; then
-    printf '  scope:         (ignored for manual fallback)\n'
+    if [ -n "$SCOPE" ]; then
+      printf '  scope:         %s\n' "$SCOPE"
+    else
+      printf '  scope:         (manual fallback; scope optional)\n'
+    fi
   else
     printf '  scope:         %s\n' "$SCOPE"
   fi
@@ -140,23 +171,23 @@ print_install_plan() {
   printf '  dry-run:       %s\n' "$([ "$DRY_RUN" -eq 1 ] && printf yes || printf no)"
   printf '  force:         %s\n' "$([ "$FORCE" -eq 1 ] && printf yes || printf no)"
   printf '%s\n' '' 'What will happen:'
+  if [ "$SCOPE" = global ]; then
+    printf '%s\n' '  - No project-local .harness/ state will be created'
+  fi
+  print_harness_init_plan
   if [ "$RUNTIME" = manual ]; then
     printf '%s\n' \
       '  - Download pack archive from GitHub' \
       '  - Run install.js legacy root-copy fallback into target' \
-      '  - This copies AGENTS.md, commands/, skills/, workflows/, patterns/, templates/, docs/, …' \
       '  - Root copy is fallback only, not the recommended final plugin UX'
     if [ "$INIT_HARNESS" -eq 1 ]; then
-      printf '%s\n' '  - Note: --init-harness requested; .harness/ init is not implemented in this step'
+      printf '%s\n' '  - After manual copy, scaffold .harness/ if not already present (respect --force)'
     fi
   else
     printf '%s\n' \
-      "  - Runtime-native install for '$RUNTIME' (scope: $SCOPE) is planned but NOT implemented yet" \
+      "  - Runtime-native install for '$RUNTIME' is planned but NOT implemented yet" \
       '  - No pack files will be written to the product repo root in this step' \
-      '  - Use --runtime manual for legacy root copy, or wait for runtime-specific install steps'
-    if [ "$INIT_HARNESS" -eq 1 ]; then
-      printf '%s\n' '  - Note: --init-harness will apply when project init is implemented (Step 5)'
-    fi
+      '  - Use --runtime manual for legacy root copy, or wait for runtime-specific steps'
   fi
   printf '%s\n' '---'
 }
@@ -174,6 +205,265 @@ confirm_plan() {
     y|Y|yes|Yes|YES) return 0 ;;
     *) printf '%s\n' 'Aborted.'; exit 0 ;;
   esac
+}
+
+write_target_file() {
+  rel="$1"
+  content="$2"
+  dest="${TARGET_ABS}/${rel}"
+  dest_dir=$(dirname "$dest")
+
+  if [ -f "$dest" ]; then
+    if [ "$FORCE" -eq 1 ]; then
+      if [ "$DRY_RUN" -eq 1 ]; then
+        printf 'WOULD OVERWRITE %s\n' "$rel"
+      else
+        mkdir -p "$dest_dir"
+        printf '%s' "$content" >"$dest"
+        printf 'OVERWRITE %s\n' "$rel"
+      fi
+    else
+      if [ "$DRY_RUN" -eq 1 ]; then
+        printf 'WOULD SKIP %s\n' "$rel"
+      else
+        printf 'SKIP %s\n' "$rel"
+      fi
+    fi
+    return 0
+  fi
+
+  if [ "$DRY_RUN" -eq 1 ]; then
+    printf 'WOULD CREATE %s\n' "$rel"
+  else
+    mkdir -p "$dest_dir"
+    printf '%s' "$content" >"$dest"
+    printf 'CREATE %s\n' "$rel"
+  fi
+}
+
+harness_skeleton_harness_md() {
+  cat <<'EOF'
+# Harness Profile
+
+> Do not include credentials, tokens, customer data, or private business data.
+
+## Purpose
+
+(TODO: describe this repository harness operating model.)
+
+## Current Status
+
+- Status: draft
+- Last updated:
+- Owner:
+
+## Scope
+
+(TODO)
+
+## Operating Model
+
+(TODO)
+
+## Assumptions
+
+(TODO)
+
+## Unknowns
+
+(TODO)
+
+## Human Review
+
+(TODO)
+EOF
+}
+
+harness_skeleton_team_md() {
+  cat <<'EOF'
+# Team Profile
+
+## Purpose
+
+(TODO)
+
+## Current Status
+
+(TODO)
+
+## Selected Pattern
+
+(TODO)
+
+## Roles
+
+(TODO)
+
+## Handoff Rules
+
+(TODO)
+
+## Escalation Rules
+
+(TODO)
+
+## Human Review
+
+(TODO)
+EOF
+}
+
+harness_skeleton_skills_md() {
+  cat <<'EOF'
+# Skills Profile
+
+## Purpose
+
+(TODO)
+
+## Current Status
+
+(TODO)
+
+## Selected Core Skills
+
+(TODO)
+
+## Selected Skill Packs
+
+(TODO)
+
+## Excluded Skills Or Packs
+
+(TODO)
+
+## Human Review
+
+(TODO)
+EOF
+}
+
+harness_skeleton_workflow_md() {
+  cat <<'EOF'
+# Workflow Profile
+
+## Purpose
+
+(TODO)
+
+## Current Status
+
+(TODO)
+
+## Selected Workflow
+
+(TODO)
+
+## Command Sequence
+
+(TODO)
+
+## Execution Rules
+
+(TODO)
+
+## Human Review
+
+(TODO)
+EOF
+}
+
+harness_skeleton_gates_md() {
+  cat <<'EOF'
+# Quality Gates
+
+## Purpose
+
+(TODO)
+
+## Current Status
+
+(TODO)
+
+## Quality Gates
+
+(TODO)
+
+## Evidence Requirements
+
+(TODO)
+
+## Stop Conditions
+
+(TODO)
+
+## Human Review
+
+(TODO)
+EOF
+}
+
+harness_skeleton_memory_md() {
+  cat <<'EOF'
+# Memory Profile
+
+## Purpose
+
+(TODO)
+
+## Current Status
+
+(TODO)
+
+## Recall Before Planning
+
+(TODO)
+
+## Remember After Shipping
+
+(TODO)
+
+## Memory Types
+
+(TODO)
+
+## Forbidden Content
+
+(TODO)
+
+## Human Review
+
+(TODO)
+EOF
+}
+
+harness_skeleton_agents_md() {
+  cat <<'EOF'
+# AGENTS.md
+
+Minimal project agent contract. Extend with team rules and harness workflow references.
+
+Read `.harness/` profile artifacts before starting work.
+EOF
+}
+
+init_harness_profile() {
+  printf '%s\n' '' '--- .harness/ init ---'
+  write_target_file '.harness/HARNESS.md' "$(harness_skeleton_harness_md)"
+  write_target_file '.harness/TEAM.md' "$(harness_skeleton_team_md)"
+  write_target_file '.harness/SKILLS.md' "$(harness_skeleton_skills_md)"
+  write_target_file '.harness/WORKFLOW.md' "$(harness_skeleton_workflow_md)"
+  write_target_file '.harness/GATES.md' "$(harness_skeleton_gates_md)"
+  write_target_file '.harness/MEMORY.md' "$(harness_skeleton_memory_md)"
+  write_target_file '.harness/goals/.gitkeep' ''
+  if [ ! -f "${TARGET_ABS}/AGENTS.md" ]; then
+    write_target_file 'AGENTS.md' "$(harness_skeleton_agents_md)"
+  elif [ "$DRY_RUN" -eq 1 ]; then
+    printf 'WOULD SKIP AGENTS.md\n'
+  else
+    printf 'SKIP AGENTS.md\n'
+  fi
+  printf '%s\n' '--- .harness/ init complete ---'
 }
 
 run_manual_install() {
@@ -255,7 +545,7 @@ while [ "$#" -gt 0 ]; do
       shift
       ;;
     --legacy-root)
-      RUNTIME="manual"
+      RUNTIME=manual
       shift
       ;;
     --dry-run)
@@ -321,6 +611,10 @@ if [ "$RUNTIME" != manual ]; then
   fi
 fi
 
+if [ "$SCOPE" = global ] && [ "$INIT_HARNESS" -eq 1 ]; then
+  fail 'Global install cannot create shared .harness state. Run project install inside each repo.'
+fi
+
 # Resolve target to absolute path before any install work
 if [ -d "$TARGET" ]; then
   TARGET_ABS=$(cd "$TARGET" && pwd)
@@ -333,16 +627,32 @@ else
   fail "target directory does not exist: $TARGET"
 fi
 
+maybe_prompt_init_harness
+
 printf '%s\n' 'ai-engineering-harness installer'
 print_install_plan
 confirm_plan
+
+if [ "$INIT_HARNESS" -eq 1 ] && [ "$RUNTIME" != manual ]; then
+  if [ "$SCOPE" = global ]; then
+    fail 'Global install cannot create shared .harness state. Run project install inside each repo.'
+  fi
+  init_harness_profile
+fi
 
 if [ "$RUNTIME" != manual ]; then
   if [ "$DRY_RUN" -eq 1 ]; then
     printf '%s\n' '' "Dry-run complete: runtime '$RUNTIME' install is planned but not implemented yet."
     exit 0
   fi
+  if [ "$INIT_HARNESS" -eq 1 ]; then
+    printf '%s\n' "Project .harness/ initialized. Runtime '$RUNTIME' native install is still not implemented."
+  fi
   fail "Runtime '$RUNTIME' install is planned but not implemented yet. Use --runtime manual for fallback copy or wait for runtime-specific step."
 fi
 
 run_manual_install
+
+if [ "$INIT_HARNESS" -eq 1 ] && [ "$RUNTIME" = manual ]; then
+  init_harness_profile
+fi
