@@ -2,26 +2,33 @@
 
 ## Goal
 
-Confirm that the example `.harness/` artifacts show a coherent and safe operating flow.
+Confirm that the feature preserves guest mode while enabling Google login.
 
 ## Verification Commands
 
-- Command: manual review of example artifact set
-- Expected: consistent flow from goal to plan to verification to memory
-- Actual: not run in template form
+- Command: launch the Flutter app and choose "Continue as guest"
+- Expected: user reaches the main app without authentication
+- Actual: example-only artifact, not executed here
+
+- Command: launch the Flutter app and choose "Continue with Google"
+- Expected: successful Google auth enters the signed-in path
+- Actual: example-only artifact, not executed here
 
 ## Manual Verification
 
-- [ ] Check that artifacts reference the same example scope
-- [ ] Check that no sensitive data is present
+- [ ] Guest entry remains visible on the sign-in surface
+- [ ] Guest entry still reaches the app
+- [ ] Google sign-in success reaches the authenticated path
+- [ ] No secrets or provider credentials are written into artifacts
 
 ## Regression Checks
 
-- [ ] Not applicable for this documentation-only example
+- [ ] Guest mode is not blocked by the new Google flow
+- [ ] Existing navigation for anonymous sessions still works
 
 ## Not Run
 
-- automated validation specific to example content
+- real Flutter UI or integration tests for this example repository
 
 ## Result
 
@@ -29,8 +36,8 @@ Confirm that the example `.harness/` artifacts show a coherent and safe operatin
 
 ## Evidence
 
-- Example artifacts exist and demonstrate the expected flow
+- Example artifacts define explicit checks for both guest and Google sign-in paths
 
 ## Remaining Risks
 
-- The example remains illustrative rather than exhaustive
+- The example is illustrative and does not execute real Flutter code

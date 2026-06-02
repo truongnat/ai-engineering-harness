@@ -65,6 +65,8 @@ const templateFiles = [
   "templates/REMEMBER.md"
 ];
 
+const agentsRequiredHeadings = ["## Completion Gate", "## Memory Discipline"];
+
 function assertExists(baseDir, relativePath, failures) {
   const fullPath = path.join(baseDir, relativePath);
   if (!fs.existsSync(fullPath)) {
@@ -106,11 +108,21 @@ function assertAgentsContent(baseDir, failures) {
     return;
   }
   const content = readFile(baseDir, "AGENTS.md");
-  for (const heading of ["## Completion Gate", "## Memory Discipline"]) {
+  for (const heading of agentsRequiredHeadings) {
     if (!content.includes(heading)) {
       failures.push(`AGENTS.md is missing heading: ${heading}`);
     }
   }
+}
+
+function countCheckedContracts() {
+  return (
+    requiredFiles.length +
+    commandFiles.length * commandHeadings.length +
+    skillFiles.length * skillHeadings.length +
+    templateFiles.length +
+    agentsRequiredHeadings.length
+  );
 }
 
 function validateRepository(baseDir = root) {
@@ -148,7 +160,7 @@ function main() {
     process.exit(1);
   }
 
-  console.log(`Harness validation passed. Checked ${requiredFiles.length} required files.`);
+  console.log(`Harness validation passed. Checked ${countCheckedContracts()} required files/contracts.`);
 }
 
 if (require.main === module) {
@@ -158,6 +170,7 @@ if (require.main === module) {
 module.exports = {
   commandFiles,
   commandHeadings,
+  countCheckedContracts,
   requiredFiles,
   skillFiles,
   skillHeadings,

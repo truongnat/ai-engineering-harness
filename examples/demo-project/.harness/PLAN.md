@@ -2,64 +2,72 @@
 
 ## Goal
 
-Demonstrate the `.harness/` artifact flow for a host repository.
+Add Google login to the Flutter app without regressing guest mode.
 
 ## Scope
 
-Create a compact example of project, goal, plan, verify, and remember artifacts.
+Show a compact but realistic plan for a Flutter auth feature while keeping the harness artifacts readable.
 
 ## In Scope
 
-- example artifact structure
-- safe sample content
+- sign-in surface update
+- Google login wiring at the Flutter client layer
+- preserving guest-mode entry and navigation
+- verification for both guest and Google flows
 
 ## Out Of Scope
 
-- runtime code
+- backend redesign
+- mandatory sign-in
+- additional identity providers
 - secrets
 
 ## Current Understanding
 
-- the host repository needs a visible operating trail for agent work
+- the app already supports guest access and that path must remain first-class
+- Google login is an additive capability, not a replacement for anonymous use
 
 ## Assumptions
 
-- the reader wants a small but realistic example
+- a Flutter sign-in screen or onboarding gate already exists
+- Google Sign-In package integration is acceptable within the host app
 
 ## Affected Areas
 
-- `.harness/PROJECT.md`
-- `.harness/GOAL.md`
-- `.harness/PLAN.md`
+- Flutter sign-in or onboarding screen
+- auth service or controller layer
+- guest-mode navigation guard or session state
 - `.harness/VERIFY.md`
 - `.harness/REMEMBER.md`
 
 ## Proposed Approach
 
-Show one simple documentation-oriented task and its resulting artifacts.
+Add a second sign-in option for Google while leaving the guest continuation path visible and unchanged, then verify both entry modes explicitly.
 
 ## Tasks
 
-- [x] Create example project artifact
-- [x] Create example goal artifact
-- [x] Create example plan artifact
-- [x] Create example verify artifact
-- [x] Create example remember artifact
+- [ ] Map the current guest-mode entry path and sign-in screen responsibilities
+- [ ] Add a Google sign-in action without removing the guest continue action
+- [ ] Wire successful Google auth into the existing authenticated session path
+- [ ] Verify that guest mode still enters the app without auth
+- [ ] Verify that Google login enters the authenticated path cleanly
+- [ ] Capture the guest-mode preservation rule in memory
 
 ## Verification Strategy
 
-- Command: inspect example files for coherence
-- Expected result: each artifact fits the harness model and contains no sensitive data
+- Command: run Flutter tests or manual flow checks for guest and Google sign-in paths
+- Expected result: guest users still reach the app, and Google-authenticated users reach the signed-in experience
 
 ## Risks
 
-- the example may become too abstract if it does not show a full flow
+- auth changes can accidentally make sign-in mandatory
+- UI changes can hide the guest path even if it still exists internally
 
 ## Rollback Plan
 
-Remove or simplify the example artifacts if they become misleading.
+Remove the Google login entry point and restore the previous sign-in surface if guest-mode regression is detected.
 
 ## Human Approval
 
-- Status: not requested
-- Notes: example-only content
+- Status: approved
+- Notes: compact adoption example only

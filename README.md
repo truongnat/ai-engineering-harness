@@ -85,6 +85,13 @@ To adopt the harness in another repository, start with:
 
 The adoption layer stays lightweight: copy markdown assets, create `.harness/`, and use the command loop without adding a runtime service.
 
+Example:
+
+```bash
+node install.js --target ../my-project --dry-run
+node install.js --target ../my-project
+```
+
 ## Roadmap
 
 ### V1

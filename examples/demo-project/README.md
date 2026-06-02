@@ -16,11 +16,19 @@ demo-project/
 
 ## What This Example Demonstrates
 
-- where active artifacts live
-- how a goal becomes a plan
-- how verification is recorded
-- how durable memory is captured safely
+- a concrete feature request for a Flutter app
+- how a goal becomes a scoped plan
+- how verification is recorded before claiming success
+- how a durable lesson is captured without storing secrets
 
 ## Safety Rule
 
 The example artifacts are intentionally generic. They do not contain secrets, tokens, customer data, or private business data.
+
+## Scenario
+
+The compact flow models this task:
+
+`Add Google login to a Flutter app while preserving guest mode.`
+
+The `.harness/` artifacts show how to keep guest access explicit, avoid scope drift into backend redesign, and verify both sign-in paths before shipping.

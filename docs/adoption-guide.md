@@ -62,6 +62,37 @@ The installer will not overwrite existing files unless `--force` is passed.
 - `--force` overwrites existing files in the target path
 - the installer copies the markdown operating surface only
 
+## Installer Contract
+
+What gets copied:
+
+- `AGENTS.md`
+- `commands/`
+- `skills/`
+- `workflows/`
+- `patterns/`
+- `templates/`
+- selected adoption-facing docs
+
+What never gets generated:
+
+- no runtime files
+- no `src/`
+- no server code
+- no database configuration
+- no secrets or private business data
+
+Overwrite behavior:
+
+- existing files are skipped by default
+- existing files are overwritten only when `--force` is passed
+
+Why use dry-run first:
+
+- it shows the exact copy/skip plan before any file changes happen
+- it helps detect collisions with an existing repository contract
+- it keeps adoption reviewable and predictable
+
 ## Recommended `.harness/` Layout
 
 Use this structure in the target repository:

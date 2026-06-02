@@ -2,25 +2,28 @@
 
 ## Name
 
-Demo Project
+Flutter Guest Commerce App
 
 ## Mission
 
-Demonstrate a safe `.harness/` layout for a host repository using this operating system.
+Let users browse and start using the app immediately, while offering optional account sign-in for synced features.
 
 ## Product Or System Summary
 
-A small example repository used to show how agents should record goals, plans, verification, and durable memory.
+A Flutter application with guest mode enabled by default and optional authentication for personalized or synced behavior.
 
 ## Constraints
 
-- Technical: keep the example markdown-first
-- Process: no heavy runtime
+- Technical: keep guest-mode flows working without requiring authentication
+- Product: adding Google login must not block anonymous browsing
+- Process: no heavy runtime in the harness example
 - Safety: no secrets or private business data
 
 ## Primary Repositories Or Services
 
 - Repository: `examples/demo-project`
+- Mobile app: Flutter client
+- Auth provider: Google Sign-In
 
 ## Quality Bar
 
