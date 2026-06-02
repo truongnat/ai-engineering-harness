@@ -120,6 +120,8 @@ Use this when:
 - extract the relevant installed surface
 - copy or install it into the target repository
 
+See [docs/release-archive-model.md](release-archive-model.md).
+
 ### Pros
 
 - versioned distribution without runtime complexity
@@ -132,7 +134,7 @@ Use this when:
 
 ### Current Status
 
-Planned as a later distribution-friendly mode, not yet fully designed.
+Designed as a later distribution-friendly mode, but not automated yet.
 
 ## Mode 5: Future Plugin Registry
 

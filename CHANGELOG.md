@@ -10,6 +10,8 @@
 - installed surface contract
 - consumption mode guide
 - consume-as-pack quick guide
+- release archive model
+- release archive checklist
 - clearer source repo vs target repo distinction
 - future plugin or registry boundary documentation
 

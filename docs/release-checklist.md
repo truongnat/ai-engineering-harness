@@ -17,6 +17,7 @@ Use this checklist to prepare a manual release without adding release automation
 - review `docs/adoption-guide.md`
 - review `CHANGELOG.md`
 - review any newly added adoption or workflow docs for clarity and consistency
+- review `docs/release-archive-checklist.md` before publishing a release archive
 
 ## Validation Checks
 

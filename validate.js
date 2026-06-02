@@ -42,6 +42,8 @@ const requiredFiles = [
   "docs/installed-surface-contract.md",
   "docs/consumption-modes.md",
   "docs/consume-as-pack.md",
+  "docs/release-archive-model.md",
+  "docs/release-archive-checklist.md",
   "docs/v0.5.0-strategy.md",
   "docs/v0.5.0-plan.md",
   "docs/v0.3.0-plan.md",

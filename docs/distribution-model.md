@@ -72,3 +72,12 @@ Later optional distribution may include:
 - plugin-registry distribution
 
 Those are future delivery channels for the same markdown-first operating surface, not a shift toward runtime infrastructure.
+
+## Release Archive Distribution
+
+Use:
+
+- [docs/release-archive-model.md](release-archive-model.md)
+- [docs/release-archive-checklist.md](release-archive-checklist.md)
+
+to define how a future release archive should package the capability-pack surface without adding automation yet.

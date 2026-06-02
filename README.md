@@ -118,6 +118,7 @@ Then:
 | Plugin model | [docs/plugin-model.md](docs/plugin-model.md) |
 | Consumption modes | [docs/consumption-modes.md](docs/consumption-modes.md) |
 | Distribution model | [docs/distribution-model.md](docs/distribution-model.md) |
+| Release archive | [docs/release-archive-model.md](docs/release-archive-model.md) |
 | Installed surface | [docs/installed-surface-contract.md](docs/installed-surface-contract.md) |
 | Build a harness profile | [docs/harness-build-usage.md](docs/harness-build-usage.md) |
 | Copy-paste prompts | [docs/harness-build-prompts.md](docs/harness-build-prompts.md) |
