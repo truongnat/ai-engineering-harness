@@ -23,6 +23,8 @@ See [TARGET.md](TARGET.md) for the long-term target.
 `v0.2.0` focuses on project-specific harness profiles instead of only generic operating guidance.
 
 - [TARGET.md](TARGET.md)
+- [docs/harness-build-usage.md](docs/harness-build-usage.md)
+- [docs/harness-build-prompts.md](docs/harness-build-prompts.md)
 - [docs/gap-analysis.md](docs/gap-analysis.md)
 - [docs/system-positioning.md](docs/system-positioning.md)
 - [docs/team-architecture-selection.md](docs/team-architecture-selection.md)
@@ -97,6 +99,8 @@ Then:
 | Long-term direction | [TARGET.md](TARGET.md) |
 | Agent contract | [AGENTS.md](AGENTS.md) |
 | Adoption guide | [docs/adoption-guide.md](docs/adoption-guide.md) |
+| Build a harness profile | [docs/harness-build-usage.md](docs/harness-build-usage.md) |
+| Copy-paste prompts | [docs/harness-build-prompts.md](docs/harness-build-prompts.md) |
 | Runtime overview | [docs/runtime-compatibility.md](docs/runtime-compatibility.md) |
 | Runtime-specific usage | [docs/runtimes/README.md](docs/runtimes/README.md) |
 | Quality gates | [docs/quality-gates-matrix.md](docs/quality-gates-matrix.md) |

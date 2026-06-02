@@ -20,6 +20,9 @@
 - Demo harness build for Flutter Google login
 - Harness build contract documentation
 - Heading validation for harness profile templates and demo artifacts
+- Harness build usage guide
+- Harness build review checklist
+- Harness build prompt library
 
 ## [0.1.0] - 2026-06-02
 

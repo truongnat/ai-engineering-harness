@@ -17,6 +17,9 @@ const requiredFiles = [
   "docs/memory-safety.md",
   "docs/sdlc-execution-model.md",
   "docs/harness-build-contract.md",
+  "docs/harness-build-usage.md",
+  "docs/harness-build-review-checklist.md",
+  "docs/harness-build-prompts.md",
   "docs/system-positioning.md",
   "docs/adoption-guide.md",
   "docs/adoption-smoke-test.md",
@@ -68,8 +71,7 @@ const requiredFiles = [
   "templates/GATES.md",
   "templates/MEMORY.md",
   "templates/TASK.md",
-  "templates/EXECUTION.md"
-  ,
+  "templates/EXECUTION.md",
   "templates/SKILL.md"
 ];
 

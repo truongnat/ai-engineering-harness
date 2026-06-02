@@ -28,6 +28,12 @@ Build a project-specific harness profile before implementation work begins.
 - `.harness/ROADMAP.md` if present
 - relevant workflow, pattern, and skill pack documents
 
+## Operator Guides
+
+- [`docs/harness-build-usage.md`](../docs/harness-build-usage.md)
+- [`docs/harness-build-review-checklist.md`](../docs/harness-build-review-checklist.md)
+- [`docs/harness-build-prompts.md`](../docs/harness-build-prompts.md)
+
 ## Skills To Use
 
 - `using-harness`

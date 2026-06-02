@@ -23,6 +23,7 @@
 - enforce anti-bloat rules for future skill growth
 - add a demo harness build that shows project-specific profile output end to end
 - add harness build contract validation for profile and goal artifacts
+- add harness-build usage guidance for real host repositories
 - document system positioning so each layer has a clear role and boundary
 - close the highest-value gaps identified in relation to [TARGET.md](../TARGET.md)
 - keep adoption, validation, and markdown-first execution lightweight
