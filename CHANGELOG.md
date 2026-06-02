@@ -15,6 +15,8 @@
 - frozen runtime consumption contract ([frozen-runtime-consumption-contract.md](docs/frozen-runtime-consumption-contract.md))
 - frozen packaging and release contract ([frozen-packaging-release-contract.md](docs/frozen-packaging-release-contract.md))
 - frozen source pack vs target repo boundary contract ([frozen-source-target-boundary-contract.md](docs/frozen-source-target-boundary-contract.md))
+- v0.9.0 readiness audit ([v0.9.0-readiness.md](docs/v0.9.0-readiness.md))
+- v0.9.0 release scope documentation ([v0.9.0-release-scope.md](docs/v0.9.0-release-scope.md))
 - v1.0.0 readiness path
 
 ## [0.8.0] - 2026-06-02

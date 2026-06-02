@@ -60,6 +60,8 @@ const requiredFiles = [
   "docs/v0.8.0-release-scope.md",
   "docs/v0.8.0-release-notes.md",
   "docs/v0.9.0-plan.md",
+  "docs/v0.9.0-readiness.md",
+  "docs/v0.9.0-release-scope.md",
   "docs/stable-contract-index.md",
   "docs/breaking-change-policy.md",
   "docs/minimal-install-tier-decision.md",

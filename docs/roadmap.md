@@ -93,14 +93,17 @@
 ## V9: Stable Contract Freeze
 
 - `v0.9.0`: Stable Contract Freeze
-- in progress: contract index, breaking-change policy, minimal install tier decision
-- freezes PACK.md, installed surface, profile, goal artifacts, validation, runtime, packaging, and source vs target boundaries before `v1.0.0`
+- implemented in this release
+- stable contract index, breaking-change policy, minimal install tier decision
+- eight frozen contracts for PACK.md, installed surface, profile, goals, validation, runtime, packaging, and source-vs-target boundary
+- readiness and release scope docs; path to `v1.0.0` without new contract expansion unless a blocker is found
 - minimal install tier deferred post-v1 unless new evidence appears
 
 ## V10: Stable Capability Pack Release (planned)
 
 - `v1.0.0`: Stable Capability Pack Release
-- first stable release after contract freeze and dogfood evidence
+- first stable release after `v0.9.0` contract freeze and `v0.8.0` dogfood evidence
+- uses frozen contracts; does not require new contract surface unless a blocker appears
 
 ## Later Optional Work
 
@@ -133,6 +136,6 @@
 - `v0.6.0`: Runtime Consumption Guides
 - `v0.7.0`: Capability Pack Packaging
 - `v0.8.0`: Real Capability Pack Dogfood
-- `v0.9.0`: Stable Contract Freeze (in progress)
+- `v0.9.0`: Stable Contract Freeze
 
 Heavy runtime systems remain out of scope for v1. Any future automation should support the markdown operating model rather than replace it.
