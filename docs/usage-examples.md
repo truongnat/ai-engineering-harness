@@ -34,6 +34,10 @@ Example prompt:
 
 > Run `harness-plan`. Write `.harness/PLAN.md` for the approved goal, include in-scope and out-of-scope items, small tasks, verification strategy, risks, rollback plan, and stop before implementation.
 
+Skill pack routing example:
+
+> Select the most relevant skill pack for this task, then run `harness-plan` without implementation.
+
 ## `harness-run`
 
 Use when there is an approved plan and implementation should begin.

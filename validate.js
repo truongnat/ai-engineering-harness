@@ -15,7 +15,13 @@ const requiredFiles = [
   "docs/runtimes/cursor.md",
   "docs/runtimes/codex.md",
   "docs/runtimes/gemini-cli.md",
-  "docs/runtimes/opencode.md"
+  "docs/runtimes/opencode.md",
+  "skills/packs/README.md",
+  "skills/packs/frontend.md",
+  "skills/packs/backend.md",
+  "skills/packs/mobile.md",
+  "skills/packs/devops.md",
+  "skills/packs/debugging.md"
 ];
 
 const commandFiles = [
