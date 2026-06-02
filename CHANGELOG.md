@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.6.0] - Unreleased
+## [0.6.0] - 2026-06-02
 
 ### Planned
 
@@ -23,6 +23,7 @@
 - runtime comparison guide
 - v0.6.0 readiness audit
 - v0.6.0 release scope documentation
+- v0.6.0 release notes
 
 ## [0.5.0] - 2026-06-02
 

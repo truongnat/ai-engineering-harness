@@ -46,3 +46,7 @@ Heavy runtime systems are not part of `v0.1.0`. The first release is the markdow
 ## Scope Boundary For `v0.5.0`
 
 `v0.5.0` is a Plugin Distribution Model release and remains runtime-light. It clarifies pack consumption, installed-surface boundaries, and future distribution modes without adding marketplace automation, package publishing automation, release archive generation, runtime adapters, semantic validation, or deep scanning.
+
+## Scope Boundary For `v0.6.0`
+
+`v0.6.0` is a docs-only Runtime Consumption Guides release and remains runtime-light. It documents how common runtimes consume the capability pack in a target repository without adding runtime adapters, runtime integrations, marketplace automation, package publishing automation, semantic validation, or deep scanning.

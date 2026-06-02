@@ -51,6 +51,7 @@ const requiredFiles = [
   "docs/v0.5.0-release-scope.md",
   "docs/v0.6.0-plan.md",
   "docs/v0.6.0-readiness.md",
+  "docs/v0.6.0-release-notes.md",
   "docs/v0.6.0-release-scope.md",
   "docs/runtime-consumption-model.md",
   "docs/v0.3.0-plan.md",
