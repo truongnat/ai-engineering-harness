@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.9.0] - Unreleased
+
+### Planned
+
+- stable contract index
+- breaking change policy
+- minimal install tier decision
+- PACK.md contract freeze
+- installed surface contract freeze
+- target profile and goal artifact contract freeze
+- validation behavior contract freeze
+- v1.0.0 readiness path
+
 ## [0.8.0] - 2026-06-02
 
 ### Planned

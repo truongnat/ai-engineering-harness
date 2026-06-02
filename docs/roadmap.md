@@ -90,15 +90,17 @@
 - friction log, follow-up backlog, and dogfood fix pass
 - no runtime adapter work and no distribution automation in this release
 
-## V9: Stable Contract Freeze (planned)
+## V9: Stable Contract Freeze
 
 - `v0.9.0`: Stable Contract Freeze
-- lock PACK.md, installed surface, harness profile, goal artifacts, validation, and packaging flow before `v1.0.0`
+- in progress: contract index, breaking-change policy, minimal install tier decision
+- freezes PACK.md, installed surface, profile, goal artifacts, validation, runtime, packaging, and source vs target boundaries before `v1.0.0`
+- minimal install tier deferred post-v1 unless new evidence appears
 
 ## V10: Stable Capability Pack Release (planned)
 
 - `v1.0.0`: Stable Capability Pack Release
-- first stable release after dogfood evidence and contract freeze
+- first stable release after contract freeze and dogfood evidence
 
 ## Later Optional Work
 
@@ -114,7 +116,7 @@
 - optional interactive setup wizard
 - optional automatic harness or profile generation
 - optional Scenario C dogfood (backend/tooling) beyond minimum two-scenario bar
-- optional minimal install tier for tiny repositories (v0.9 discussion)
+- optional minimal install tier for tiny repositories (post-v1; see minimal-install-tier-decision.md)
 - optional package or marketplace distribution automation
 - optional plugin registry distribution
 - optional memory backend integrations
@@ -131,5 +133,6 @@
 - `v0.6.0`: Runtime Consumption Guides
 - `v0.7.0`: Capability Pack Packaging
 - `v0.8.0`: Real Capability Pack Dogfood
+- `v0.9.0`: Stable Contract Freeze (in progress)
 
 Heavy runtime systems remain out of scope for v1. Any future automation should support the markdown operating model rather than replace it.

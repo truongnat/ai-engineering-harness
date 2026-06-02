@@ -17,9 +17,10 @@ Doc clarifications, scenario fixes, and small guidance updates that do not chang
 
 ## v0.9 Contract Freeze Candidates
 
-Items that should become explicit stable contracts in `v0.9.0` (PACK.md, installed surface, harness profile, goal artifacts, validation behavior).
+Items addressed in v0.9.0 planning:
 
-- Clarify whether a future “minimal install” surface is a contract variant or optional profile (83 paths felt heavy for tiny repo)
+- minimal install tier → deferred post-v1 ([minimal-install-tier-decision.md](minimal-install-tier-decision.md)); **not a v1 blocker**
+- core contracts indexed in [stable-contract-index.md](stable-contract-index.md)
 
 ## v1.0 Blockers
 
@@ -28,12 +29,18 @@ Issues that must be resolved before a stable `v1.0.0` capability pack release.
 - **No v1 blockers found in Scenario A** (install, profile, goal validation succeeded)
 - **No v1 blockers found in Scenario B** (second repo, google-login goal, validation succeeded)
 
+## Post-v1 Optional Work
+
+- minimal install tier for tiny repositories ([minimal-install-tier-decision.md](minimal-install-tier-decision.md) — deferred; not a v1 blocker)
+- In-target copy of `validate.js` (only if contract changes; currently deferred)
+
+## v1.x Candidates
+
+- minimal install tier with explicit `full` vs `minimal` install modes after v1.0.0 stabilizes
+
 ## Later Optional Work
 
 Automation, adapters, marketplace, semantic validation, archive generation, checksums—only if still justified after dogfood.
-
-- Optional minimal install tier for tiny repositories
-- In-target copy of `validate.js` (only if contract changes; currently deferred)
 
 ## Rejected / Not Worth It
 
