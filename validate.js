@@ -274,19 +274,23 @@ const goalArtifactHeadings = {
   ]
 };
 
+function resolvePath(baseDir, relativePath) {
+  return path.join(baseDir, relativePath);
+}
+
 function assertExists(baseDir, relativePath, failures) {
-  const fullPath = path.join(baseDir, relativePath);
+  const fullPath = resolvePath(baseDir, relativePath);
   if (!fs.existsSync(fullPath)) {
     failures.push(`Missing required path: ${relativePath}`);
   }
 }
 
 function readFile(baseDir, relativePath) {
-  return fs.readFileSync(path.join(baseDir, relativePath), "utf8");
+  return fs.readFileSync(resolvePath(baseDir, relativePath), "utf8");
 }
 
 function assertHeadings(baseDir, relativePath, headings, failures) {
-  const fullPath = path.join(baseDir, relativePath);
+  const fullPath = resolvePath(baseDir, relativePath);
   if (!fs.existsSync(fullPath)) {
     return;
   }
@@ -299,7 +303,7 @@ function assertHeadings(baseDir, relativePath, headings, failures) {
 }
 
 function assertNonEmpty(baseDir, relativePath, failures) {
-  const fullPath = path.join(baseDir, relativePath);
+  const fullPath = resolvePath(baseDir, relativePath);
   if (!fs.existsSync(fullPath)) {
     return;
   }
@@ -310,7 +314,7 @@ function assertNonEmpty(baseDir, relativePath, failures) {
 }
 
 function assertAgentsContent(baseDir, failures) {
-  const fullPath = path.join(baseDir, "AGENTS.md");
+  const fullPath = resolvePath(baseDir, "AGENTS.md");
   if (!fs.existsSync(fullPath)) {
     return;
   }
@@ -342,7 +346,7 @@ function countCheckedContracts() {
   );
 }
 
-function validateRepository(baseDir = root) {
+function validateHarnessRepository(baseDir = root) {
   const failures = [];
 
   for (const relativePath of requiredFiles) {
@@ -384,8 +388,41 @@ function validateRepository(baseDir = root) {
   return failures;
 }
 
+function validateRepository(baseDir = root) {
+  return validateHarnessRepository(baseDir);
+}
+
+function parseValidateArgs(argv = []) {
+  if (argv.length === 0) {
+    return {
+      mode: "harness-repository",
+      baseDir: root
+    };
+  }
+
+  if (argv[0] === "--target") {
+    return {
+      usageErrors: ["--target is planned for v0.3.0 but not implemented in this step"]
+    };
+  }
+
+  return {
+    usageErrors: [`Unsupported argument: ${argv[0]}`]
+  };
+}
+
 function main() {
-  const failures = validateRepository(root);
+  const args = parseValidateArgs(process.argv.slice(2));
+
+  if (args.usageErrors && args.usageErrors.length > 0) {
+    console.error("Validation usage error:");
+    for (const error of args.usageErrors) {
+      console.error(`- ${error}`);
+    }
+    process.exit(1);
+  }
+
+  const failures = validateHarnessRepository(args.baseDir);
 
   if (failures.length > 0) {
     console.error("Harness validation failed:");
@@ -412,6 +449,7 @@ module.exports = {
   harnessHeadings,
   memoryHeadings,
   requiredFiles,
+  parseValidateArgs,
   selectedSkillsHeadings,
   skillFiles,
   skillHeadings,
@@ -419,5 +457,6 @@ module.exports = {
   taskHeadings,
   teamHeadings,
   templateFiles,
+  validateHarnessRepository,
   validateRepository
 };

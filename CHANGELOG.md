@@ -9,6 +9,7 @@
 - optional `--profile-only`
 - optional `--goal <goal-id>`
 - structural `.harness/` contract validation for adopted repositories
+- Validator refactor toward reusable validation modes
 
 ## [0.2.0] - 2026-06-02
 
