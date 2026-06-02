@@ -34,6 +34,7 @@ const requiredFiles = [
   "docs/v0.3.1-release-notes.md",
   "docs/v0.4.0-plan.md",
   "docs/v0.4.0-readiness.md",
+  "docs/v0.4.0-release-notes.md",
   "docs/v0.4.0-release-scope.md",
   "docs/v0.4.0-ideas.md",
   "docs/v0.3.0-plan.md",
