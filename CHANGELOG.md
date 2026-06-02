@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.4.0] - Unreleased
+
+### Planned
+
+- ergonomics polish for first-time adoption
+- clearer post-install guidance
+- installer output examples
+- install-to-profile flow improvements
+- tiny-repo adoption example
+- lightweight memory conventions for small repositories
+
 ## [0.3.1] - 2026-06-02
 
 ### Added

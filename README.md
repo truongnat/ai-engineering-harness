@@ -126,6 +126,8 @@ Then:
 ## 🎯 Release Status
 
 - Current release: [`v0.3.1`](docs/v0.3.1-release-notes.md)
+- Next planned release: `v0.4.0` Ergonomics Polish
+  ([plan](docs/v0.4.0-plan.md))
 - Previous releases: [`v0.3.0`](docs/v0.3.0-release-notes.md), [`v0.2.0`](docs/v0.2.0-release-notes.md), [`v0.1.0`](docs/v0.1.0-release-notes.md)
 - Release docs: [v0.3.1 notes](docs/v0.3.1-release-notes.md) · [v0.3.0 readiness](docs/v0.3.0-readiness.md) · [changelog](CHANGELOG.md)
 - Release process: [docs/release-checklist.md](docs/release-checklist.md) · [docs/versioning.md](docs/versioning.md)

@@ -43,6 +43,14 @@
 - keeps validation dependency-free and safe
 - keeps target validation structural rather than semantic
 
+## V4: Ergonomics Polish
+
+- `v0.4.0`: Ergonomics Polish
+- focus on install-to-profile clarity
+- focus on first-time adoption experience
+- improve ergonomics without adding runtime systems
+- keep validation structural-only and markdown-first
+
 ## Later Optional Work
 
 - optional deeper validation ideas beyond structural harness contracts
@@ -57,5 +65,6 @@
 - `v0.1.0`: markdown-first harness operating model
 - `v0.2.0`: Harness Design System
 - `v0.3.0`: Lightweight Host Repository Validation
+- `v0.4.0`: Ergonomics Polish
 
 Heavy runtime systems remain out of scope for v1. Any future automation should support the markdown operating model rather than replace it.
