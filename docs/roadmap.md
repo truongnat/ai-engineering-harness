@@ -90,20 +90,23 @@
 - friction log, follow-up backlog, and dogfood fix pass
 - no runtime adapter work and no distribution automation in this release
 
-## V9: Stable Contract Freeze
+## V9: Plugin Install UX
 
-- `v0.9.0`: Stable Contract Freeze
-- implemented in this release
-- stable contract index, breaking-change policy, minimal install tier decision
-- eight frozen contracts for PACK.md, installed surface, profile, goals, validation, runtime, packaging, and source-vs-target boundary
-- readiness and release scope docs; path to `v1.0.0` without new contract expansion unless a blocker is found
-- minimal install tier deferred post-v1 unless new evidence appears
+- `v0.9.0` tag: shipped draft contract-freeze documentation (pre-v1 candidates)
+- **active:** Plugin Install UX — one-line `install.sh`, optional global `ai-harness` CLI, no required manual clone for consumers
+- see [plugin-install-ux.md](plugin-install-ux.md), [v0.9.0-plan.md](v0.9.0-plan.md)
+- `install.js` remains canonical copy; shell/bootstrap only downloads pack and invokes Node
 
-## V10: Stable Capability Pack Release (planned)
+## V10: Runtime Capability Folder Integration (planned)
 
-- `v1.0.0`: Stable Capability Pack Release
-- first stable release after `v0.9.0` contract freeze and `v0.8.0` dogfood evidence
-- uses frozen contracts; does not require new contract surface unless a blocker appears
+- install into runtime-specific capability folders where documented
+- still docs-first; no runtime adapters required for first integration milestone
+
+## V11: Stable Plugin-like Capability Pack Release (planned)
+
+- `v1.0.0`: Stable Plugin-like Capability Pack Release
+- after plugin install UX is dogfooded and contracts are re-locked for v1
+- not “clone source pack first” as the primary consumer story
 
 ## Later Optional Work
 
@@ -136,6 +139,6 @@
 - `v0.6.0`: Runtime Consumption Guides
 - `v0.7.0`: Capability Pack Packaging
 - `v0.8.0`: Real Capability Pack Dogfood
-- `v0.9.0`: Stable Contract Freeze
+- `v0.9.0`: contract-freeze docs (tag); Plugin Install UX in progress
 
 Heavy runtime systems remain out of scope for v1. Any future automation should support the markdown operating model rather than replace it.

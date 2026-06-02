@@ -51,6 +51,20 @@ The intended product is a reusable pack that can be installed, copied, vendored,
 - target repositories should receive only the operating surface they need
 - the harness should feel like a superpower pack for AI engineering
 
+## Install UX Target
+
+`ai-engineering-harness` must be installable as a **plugin-like capability pack** without requiring consumers to manually clone this repository.
+
+Desired consumer flow:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install.sh | sh
+```
+
+Manual clone and `node install.js --target <repo>` remain supported for **maintainers**, not as the only adoption path.
+
+See [docs/plugin-install-ux.md](docs/plugin-install-ux.md) and [docs/v0.9.0-plan.md](docs/v0.9.0-plan.md).
+
 ## Source Inspirations
 
 | Source | What To Learn From It |

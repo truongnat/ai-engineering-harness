@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.9.1] - Unreleased
+
+### Planned
+
+- pivot to Plugin Install UX ([plugin-install-ux.md](docs/plugin-install-ux.md))
+- one-line installer design ([one-line-installer-design.md](docs/one-line-installer-design.md))
+- install security notes ([plugin-install-security.md](docs/plugin-install-security.md))
+- `install.sh` remote installer
+- optional `ai-harness` CLI (`bin/ai-harness.js`)
+- one-line installer dogfood
+- re-freeze contracts after plugin UX is proven
+
 ## [0.9.0] - 2026-06-02
 
 ### Planned

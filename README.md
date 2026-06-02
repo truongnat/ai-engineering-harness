@@ -79,7 +79,19 @@ Start with [`commands/`](commands/) and treat the loop as the default operating 
 | Quality Gates | evidence discipline |
 | Harness Profile | project-specific operating context |
 
-## 🚀 Quick Start
+## 🚀 Install (plugin-style target)
+
+**Planned in v0.9.x** — one-line install without cloning this repo ([plugin-install-ux](docs/plugin-install-ux.md)):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install.sh | sh -s -- --target .
+curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install.sh | sh -s -- --target ../my-project --dry-run
+```
+
+`install.sh` is not in the repo yet — [Step 2 in v0.9.0 plan](docs/v0.9.0-plan.md). Pin tags with `--ref v0.9.0` when available ([install security](docs/plugin-install-security.md)).
+
+## 🛠️ Maintainer quick start (source pack)
 
 ```bash
 git clone https://github.com/truongnat/ai-engineering-harness.git
@@ -89,7 +101,7 @@ node install.js --target ../my-project --dry-run
 node install.js --target ../my-project
 ```
 
-The clone above is the harness source pack. Your actual product work happens in the target repository.
+Clone is for **maintainers and contributors**. Product work stays in the target repository.
 
 Target validation examples:
 
@@ -143,8 +155,9 @@ Then:
 
 ## 🎯 Release Status
 
-- Current release: [`v0.9.0`](docs/v0.9.0-release-notes.md) — Stable Contract Freeze · [contracts](docs/stable-contract-index.md) · [PACK.md](PACK.md)
-- Next planned: `v1.0.0` Stable Capability Pack Release
+- Current release: [`v0.9.0`](docs/v0.9.0-release-notes.md) — contract docs shipped; **active work:** [Plugin Install UX](docs/v0.9.0-plan.md)
+- Next: `install.sh` + dogfood → `v1.0.0` Stable Plugin-like Capability Pack
+- [Plugin install UX](docs/plugin-install-ux.md) · [contracts (pre-v1)](docs/stable-contract-index.md) · [PACK.md](PACK.md)
 - `v0.9.0` docs: [notes](docs/v0.9.0-release-notes.md) · [readiness](docs/v0.9.0-readiness.md) · [scope](docs/v0.9.0-release-scope.md)
 - `v0.8.0` docs: [notes](docs/v0.8.0-release-notes.md) · [readiness](docs/v0.8.0-readiness.md) · [scope](docs/v0.8.0-release-scope.md) · [dogfood](docs/pack-dogfood-scenarios.md)
 - `v0.7.0` docs: [notes](docs/v0.7.0-release-notes.md) · [readiness](docs/v0.7.0-readiness.md) · [scope](docs/v0.7.0-release-scope.md) · [package](docs/manual-packaging-guide.md)

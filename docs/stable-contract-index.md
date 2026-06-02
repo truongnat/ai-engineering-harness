@@ -2,22 +2,29 @@
 
 ## Purpose
 
-Map the core contracts frozen for `v0.9.0` on the path to `v1.0.0`.
+Map core capability pack contracts on the path to `v1.0.0`.
 
 Use this index before making changes that affect adopters, validators, or packaging.
 
+## Pre-v1 Status (Pivot)
+
+Tag `v0.9.0` shipped **draft contract records** (`docs/frozen-*.md`). They are **not final v1.0.0 freeze** until **Plugin Install UX** is implemented and dogfooded ([plugin-install-ux.md](plugin-install-ux.md), [v0.9.0-plan.md](v0.9.0-plan.md)).
+
+Treat frozen docs as **pre-v1 contract candidates**—accurate for structural behavior today, but adoption UX must match plugin-style install before v1 lock.
+
 ## Contract Status
 
-| Contract | Freeze target | Status in v0.9.0 planning |
+| Contract | Intended v1 topic | Status |
 |---|---|---|
-| `PACK.md` | v0.9.0 | **frozen for v1.0.0** — [frozen-pack-contract.md](frozen-pack-contract.md) |
-| Installed surface | v0.9.0 | **frozen for v1.0.0** — [frozen-installed-surface-contract.md](frozen-installed-surface-contract.md) |
-| Target profile | v0.9.0 | **frozen for v1.0.0** — [frozen-target-profile-contract.md](frozen-target-profile-contract.md) |
-| Goal artifacts | v0.9.0 | **frozen for v1.0.0** — [frozen-goal-artifact-contract.md](frozen-goal-artifact-contract.md) |
-| Validation behavior | v0.9.0 | **frozen for v1.0.0** — [frozen-validation-contract.md](frozen-validation-contract.md) |
-| Runtime consumption | v0.9.0 | **frozen for v1.0.0** — [frozen-runtime-consumption-contract.md](frozen-runtime-consumption-contract.md) |
-| Packaging / release | v0.9.0 | **frozen for v1.0.0** — [frozen-packaging-release-contract.md](frozen-packaging-release-contract.md) |
-| Source vs target boundary | v0.9.0 | **frozen for v1.0.0** — [frozen-source-target-boundary-contract.md](frozen-source-target-boundary-contract.md) |
+| `PACK.md` | manifest headings | **pre-v1 candidate** — [frozen-pack-contract.md](frozen-pack-contract.md) |
+| Installed surface | default `exportPaths` | **pre-v1 candidate** — [frozen-installed-surface-contract.md](frozen-installed-surface-contract.md) |
+| Target profile | `.harness/` profile | **pre-v1 candidate** — [frozen-target-profile-contract.md](frozen-target-profile-contract.md) |
+| Goal artifacts | `.harness/goals/` | **pre-v1 candidate** — [frozen-goal-artifact-contract.md](frozen-goal-artifact-contract.md) |
+| Validation behavior | `validate.js` CLI | **pre-v1 candidate** — [frozen-validation-contract.md](frozen-validation-contract.md) |
+| Runtime consumption | docs-only runtimes | **pre-v1 candidate** — [frozen-runtime-consumption-contract.md](frozen-runtime-consumption-contract.md) |
+| Packaging / release | manual packaging | **pre-v1 candidate** — [frozen-packaging-release-contract.md](frozen-packaging-release-contract.md) |
+| Source vs target boundary | pack vs product repo | **pre-v1 candidate** — [frozen-source-target-boundary-contract.md](frozen-source-target-boundary-contract.md) |
+| Plugin install UX | one-line install | **in progress** — [plugin-install-ux.md](plugin-install-ux.md) |
 
 Breaking changes: [breaking-change-policy.md](breaking-change-policy.md).
 
