@@ -52,6 +52,8 @@
 ### Changed
 
 - Final cleanup pass: stale “installer not shipped” docs updated; pin examples use `v0.9.1`; `.gitignore` excludes local `harness-dogfood-*` dirs
+- README landing page cleaned up after `v0.9.2`
+- `PACK.md` now describes `aih.sh` + runtime entrypoint + `.ai-harness/` + `.harness/` as the current consumption model
 
 ## [0.9.1] - 2026-06-02
 

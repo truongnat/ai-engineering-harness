@@ -31,11 +31,22 @@ Help AI coding agents consume engineering discipline inside target repositories 
 - `README.md`
 - `PACK.md`
 
-Target repositories receive the installed surface subset via `install.js` or manual copy, plus `.harness/` artifacts created in the target repo.
+Project runtime-native installs use:
+
+```txt
+aih.sh            lifecycle dispatcher
+provider file     runtime entrypoint
+.ai-harness/      capability cache
+.harness/         project state
+```
+
+Legacy `install.js` / manual root copy remains available only as fallback, not as the primary consumption model.
 
 ## Consumption Modes
 
-- install or copy into target repository (recommended)
+- `aih.sh` project runtime-native install (recommended)
+- `aih.sh` global runtime-native install where supported
+- legacy `install.js` or manual root copy (fallback only)
 - vendored harness directory inside target repository
 - global agent capability folder (runtime-dependent)
 - release archive (manual versioned snapshot)
@@ -51,7 +62,13 @@ Documented consumption guidance for:
 - Gemini CLI
 - OpenCode
 
-Compatibility is docs-only. No runtime adapters are included in this pack.
+Current project install model is:
+
+- provider-specific entrypoint
+- `.ai-harness/` as shared capability source
+- `.harness/` as project-specific state
+
+No compiled runtime adapters are included in this pack.
 
 ## Validation Commands
 

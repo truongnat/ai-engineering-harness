@@ -20,23 +20,6 @@ It can be installed or vendored into an existing repo. You do not use this repos
 
 See [TARGET.md](TARGET.md) for the long-term target.
 
-## 🏗️ Harness Design System
-
-`v0.2.0` focuses on project-specific harness profiles instead of only generic operating guidance.
-
-- [TARGET.md](TARGET.md)
-- [docs/harness-build-usage.md](docs/harness-build-usage.md)
-- [docs/harness-build-prompts.md](docs/harness-build-prompts.md)
-- [docs/target-repo-validation.md](docs/target-repo-validation.md)
-- [docs/gap-analysis.md](docs/gap-analysis.md)
-- [docs/system-positioning.md](docs/system-positioning.md)
-- [docs/team-architecture-selection.md](docs/team-architecture-selection.md)
-- [docs/memory-model.md](docs/memory-model.md)
-- [docs/memory-safety.md](docs/memory-safety.md)
-- [docs/sdlc-execution-model.md](docs/sdlc-execution-model.md)
-- [docs/harness-build-contract.md](docs/harness-build-contract.md)
-- [commands/harness-build.md](commands/harness-build.md)
-
 ## ✨ What It Is
 
 - A markdown-first harness design system for AI-assisted engineering work
@@ -79,6 +62,29 @@ Start with [`commands/`](commands/) and treat the loop as the default operating 
 | Quality Gates | evidence discipline |
 | Harness Profile | project-specific operating context |
 
+## 🏗️ Current Model
+
+Project runtime-native install now follows:
+
+```txt
+aih.sh lifecycle dispatcher
+    ->
+provider entrypoint
+    ->
+.ai-harness/   capability source
+    ->
+.harness/      project state
+```
+
+Primary references:
+
+- [TARGET.md](TARGET.md)
+- [docs/simple-cli-ux.md](docs/simple-cli-ux.md)
+- [docs/plugin-install-ux.md](docs/plugin-install-ux.md)
+- [docs/private-capability-cache.md](docs/private-capability-cache.md)
+- [docs/target-repo-validation.md](docs/target-repo-validation.md)
+- [docs/runtime-dogfood-summary.md](docs/runtime-dogfood-summary.md)
+
 ## 🚀 Install
 
 **Current release: `v0.9.2` experimental** — runtime-native installer with simple lifecycle CLI, capability cache, and private git hygiene. **Stable runtime support: No.** [Dogfood summary](docs/runtime-dogfood-summary.md) · [Readiness](docs/v0.9.x-readiness.md) · [Release notes](docs/v0.9.2-release-notes.md)
@@ -94,6 +100,16 @@ curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/ma
 ```
 
 If provider cannot be detected in non-interactive mode, pass `--runtime cursor|claude|gemini|opencode|generic|codex`.
+
+Recommended local commands:
+
+```bash
+sh aih.sh install
+sh aih.sh status
+sh aih.sh doctor
+sh aih.sh update
+sh aih.sh uninstall
+```
 
 Preview then install (local pack):
 
@@ -111,7 +127,7 @@ curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/ma
 
 Validate from source pack: `node validate.js --target <repo> --runtime opencode --profile-only` ([runtime-aware-validation](docs/runtime-aware-validation.md)).
 
-Runtimes: `claude`, `codex`, `cursor`, `gemini`, `opencode`, `generic`. Avoid `--runtime all` until dogfooded. Legacy root copy: `--runtime manual`.
+Runtimes: `claude`, `codex`, `cursor`, `gemini`, `opencode`, `generic`. Avoid `--runtime all` until dogfooded. Legacy root copy remains available only as fallback via `--runtime manual`.
 
 Design: [interactive-installer-design](docs/interactive-installer-design.md), [runtime-install-matrix-research](docs/runtime-install-matrix-research.md), [project-state-policy](docs/project-state-policy.md).
 
@@ -205,19 +221,9 @@ Then:
 ## 🎯 Release Status
 
 - Current release: [`v0.9.2`](docs/v0.9.2-release-notes.md) — **experimental** simple lifecycle CLI + runtime-native installer; stable runtime support: **No**
-- Next: manual runtime verification sprint or `v0.10.x` narrowing — not immediate `v1.0.0`
-- [Plugin install UX](docs/plugin-install-ux.md) · [runtime dogfood](docs/runtime-dogfood-summary.md) · [contracts (pre-v1)](docs/stable-contract-index.md) · [PACK.md](PACK.md)
-- `v0.9.2` docs: [notes](docs/v0.9.2-release-notes.md) · [readiness](docs/v0.9.x-readiness.md) · [scope](docs/v0.9.x-release-scope.md)
-- `v0.9.1` docs: [notes](docs/v0.9.1-release-notes.md) · [readiness](docs/v0.9.x-readiness.md) · [scope](docs/v0.9.x-release-scope.md)
-- `v0.9.0` docs: [notes](docs/v0.9.0-release-notes.md) · [readiness](docs/v0.9.0-readiness.md) · [scope](docs/v0.9.0-release-scope.md) · [plan](docs/v0.9.0-plan.md)
-- `v0.8.0` docs: [notes](docs/v0.8.0-release-notes.md) · [readiness](docs/v0.8.0-readiness.md) · [scope](docs/v0.8.0-release-scope.md) · [dogfood](docs/pack-dogfood-scenarios.md)
-- `v0.7.0` docs: [notes](docs/v0.7.0-release-notes.md) · [readiness](docs/v0.7.0-readiness.md) · [scope](docs/v0.7.0-release-scope.md) · [package](docs/manual-packaging-guide.md)
-- `v0.6.0` docs: [notes](docs/v0.6.0-release-notes.md) · [readiness](docs/v0.6.0-readiness.md) · [scope](docs/v0.6.0-release-scope.md) · [model](docs/runtime-consumption-model.md)
-- `v0.5.0` docs: [notes](docs/v0.5.0-release-notes.md) · [readiness](docs/v0.5.0-readiness.md) · [scope](docs/v0.5.0-release-scope.md)
-- `v0.4.0` docs: [notes](docs/v0.4.0-release-notes.md) · [readiness](docs/v0.4.0-readiness.md) · [scope](docs/v0.4.0-release-scope.md)
-- Previous releases: [`v0.3.0`](docs/v0.3.0-release-notes.md), [`v0.2.0`](docs/v0.2.0-release-notes.md), [`v0.1.0`](docs/v0.1.0-release-notes.md)
-- Release docs: [v0.3.1 notes](docs/v0.3.1-release-notes.md) · [v0.3.0 readiness](docs/v0.3.0-readiness.md) · [changelog](CHANGELOG.md)
-- Release process: [docs/release-checklist.md](docs/release-checklist.md) · [docs/versioning.md](docs/versioning.md)
+- Next likely milestone: `v0.10.0` binary `aih` installer surface + manual runtime verification
+- Current references: [Plugin install UX](docs/plugin-install-ux.md) · [Simple CLI UX](docs/simple-cli-ux.md) · [runtime dogfood](docs/runtime-dogfood-summary.md) · [contracts (pre-v1)](docs/stable-contract-index.md) · [PACK.md](PACK.md)
+- Release docs: [v0.9.2 notes](docs/v0.9.2-release-notes.md) · [versioning](docs/versioning.md) · [release checklist](docs/release-checklist.md) · [changelog](CHANGELOG.md)
 
 ## 🤝 Contributing
 
