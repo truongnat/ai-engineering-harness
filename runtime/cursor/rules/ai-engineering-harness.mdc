@@ -1,5 +1,5 @@
 ---
-description: ai-engineering-harness operating contract — read .harness profile, plan before code, verify with evidence
+description: ai-engineering-harness — capability pack + project harness state
 alwaysApply: true
 ---
 
@@ -7,12 +7,31 @@ alwaysApply: true
 
 This project uses the ai-engineering-harness capability pack.
 
-Before implementation:
+## Capability source (read first)
+
+1. Read `.ai-harness/AGENTS.md` for the operating contract.
+2. Use `.ai-harness/commands/` for command-loop flows.
+3. Use `.ai-harness/skills/` for capabilities and skill packs.
+4. Use `.ai-harness/workflows/` for process templates.
+5. Use `.ai-harness/patterns/` and `.ai-harness/templates/` when planning work.
+6. Use `.ai-harness/docs/` for adoption, validation, and harness-build guidance.
+
+If `.ai-harness/` is missing, ask the user to reinstall with project capability cache:
+
+`install.sh install --runtime cursor --scope project --visibility private --init-harness --yes`
+
+(private project installs include `.ai-harness/` by default)
+
+## Project state
 
 1. Read `.harness/HARNESS.md`, `TEAM.md`, `SKILLS.md`, `WORKFLOW.md`, `GATES.md`, and active goal artifacts under `.harness/goals/` when they exist.
-2. Do not invent requirements or architecture; read artifacts first.
-3. Follow the harness command loop: map → start → discuss → plan → run → verify → ship → remember.
-4. Prefer surgical changes; verify before claiming done.
-5. Never store secrets or private data in `.harness/` files.
+2. `.harness/` holds **this repo's** profile and goals — not the shared capability pack.
 
-If `.harness/` is missing, ask the user to run: `install.sh --runtime cursor --scope project --init-harness`
+## Discipline
+
+- Read artifacts before inventing requirements or architecture.
+- Follow the loop: map → start → discuss → plan → run → verify → ship → remember.
+- Prefer surgical changes; verify before claiming done.
+- Never store secrets or private data in `.harness/` or `.ai-harness/` files.
+
+If `.harness/` is missing, ask the user to run with `--init-harness`.

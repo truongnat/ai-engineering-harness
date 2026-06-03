@@ -69,8 +69,9 @@ Feedback from installing into a **real** product repository with Cursor (not dis
 | 2026-06-02 | Real install | Installer too complex — want one wizard, multi-provider, scope detection | medium | [installer-ux-v0.9.2-plan.md](installer-ux-v0.9.2-plan.md) | **v0.9.2 blocker** |
 
 | 2026-06-02 | E1 | Private Cursor + info-exclude — git status clean | none | Scenario E1 dogfood | no action |
+| 2026-06-02 | Real Cursor install | Runtime bootstrap + `.harness/` skeleton only — no local `commands/`, `skills/`, `workflows/` | **high** | Thin `.mdc` points at TODO `.harness/` | **addressed** — `.ai-harness/` private capability cache (v0.9.2 Step 2) | v0.9.2 fix |
 
-**Conclusion:** `v0.9.1` file/install dogfood is not enough for wide promotion; `v0.9.2` git hygiene Step 1 dogfooded (E1 PASS).
+**Conclusion:** `v0.9.1` file/install dogfood is not enough for wide promotion; `v0.9.2` Step 1 (git hygiene, E1 PASS) and Step 2 (capability cache) address real-install gaps.
 
 ## Runtime Native Dogfood Summary (C, D1–D6)
 

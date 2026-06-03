@@ -8,6 +8,12 @@ Triage dogfood findings from [pack-dogfood-friction-log.md](pack-dogfood-frictio
 - `--visibility` / `--ignore-strategy` flags in [install.sh](../install.sh)
 - Dogfood E1: private Cursor git status clean — [scenario-e1-cursor-private-git-hygiene.md](pack-dogfood-reports/scenario-e1-cursor-private-git-hygiene.md)
 
+## Addressed In v0.9.2 Step 2 (private capability cache)
+
+- `.ai-harness/` capability cache — [private-capability-cache.md](private-capability-cache.md), [install-cache.js](../install-cache.js)
+- Default cache for private project runtime-native; bootstraps point to `.ai-harness/` + `.harness/`
+- Real-install friction: Cursor rule alone insufficient without local capability source
+
 ## v0.9.2 Patch Candidates
 
 - `.git` as file (worktree/submodule): resolve `gitdir:` before writing `.git/info/exclude` ([scenario-e1-cursor-private-git-hygiene.md](pack-dogfood-reports/scenario-e1-cursor-private-git-hygiene.md) friction)
@@ -16,6 +22,7 @@ Triage dogfood findings from [pack-dogfood-friction-log.md](pack-dogfood-frictio
 
 | Item | Doc |
 |---|---|
+| Private capability cache | ~~**blocker**~~ — Step 2 shipped |
 | `uninstall` / `update` commands | [uninstall-update-design.md](uninstall-update-design.md) |
 | Provider multi-select + wizard | [installer-ux-v0.9.2-plan.md](installer-ux-v0.9.2-plan.md) |
 | Antigravity provider impl | [antigravity-provider-research.md](antigravity-provider-research.md) |

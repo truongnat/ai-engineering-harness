@@ -486,6 +486,8 @@ runTest("install.sh includes runtime selector flags", () => {
   assert.match(script, /--legacy-root/);
   assert.match(script, /--visibility/);
   assert.match(script, /--ignore-strategy/);
+  assert.match(script, /--install-cache/);
+  assert.match(script, /--no-install-cache/);
 });
 
 runTest("install.sh includes runtime option names", () => {
@@ -811,6 +813,7 @@ runTest("install.sh private cursor dry-run prints WOULD UPDATE .git/info/exclude
   assert.match(result.stdout, /WOULD UPDATE \.git\/info\/exclude/);
   assert.match(result.stdout, /\.cursor\/rules\/ai-engineering-harness\.mdc/);
   assert.match(result.stdout, /\.harness\//);
+  assert.match(result.stdout, /\.ai-harness\//);
 });
 
 runTest("install.sh private cursor install writes .git/info/exclude block", () => {
@@ -838,8 +841,10 @@ runTest("install.sh private cursor install writes .git/info/exclude block", () =
   assert.match(exclude, /# ai-engineering-harness end/);
   assert.match(exclude, /\.cursor\/rules\/ai-engineering-harness\.mdc/);
   assert.match(exclude, /\.harness\//);
+  assert.match(exclude, /\.ai-harness\//);
   assert.equal(exclude.includes(".gitignore"), false);
   assert.ok(fs.existsSync(path.join(tmp, ".cursor", "rules", "ai-engineering-harness.mdc")));
+  assert.ok(fs.existsSync(path.join(tmp, ".ai-harness", "AGENTS.md")));
 });
 
 runTest("install.sh shared cursor install does not modify .git/info/exclude", () => {
@@ -946,6 +951,183 @@ runTest("install.sh private opencode block does not ignore opencode.json", () =>
   const exclude = readInfoExclude(tmp);
   assert.match(exclude, /\.opencode\/plugins\/ai-engineering-harness\.js/);
   assert.doesNotMatch(exclude, /^opencode\.json$/m);
+});
+
+runTest("install.sh private cursor dry-run prints WOULD COPY .ai-harness paths", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-cache-dry-"));
+  initFakeGitWorkTree(tmp);
+  const result = runInstallSh(
+    [
+      "install",
+      "--runtime",
+      "cursor",
+      "--scope",
+      "project",
+      "--visibility",
+      "private",
+      "--init-harness",
+      "--dry-run",
+      "--yes",
+      "--target",
+      tmp
+    ],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stdout, /WOULD COPY \.ai-harness\//);
+  assert.match(result.stdout, /\.ai-harness\/AGENTS\.md/);
+});
+
+runTest("install.sh private cursor install creates .ai-harness capability cache", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-cache-write-"));
+  initFakeGitWorkTree(tmp);
+  const result = runInstallSh(
+    [
+      "--runtime",
+      "cursor",
+      "--scope",
+      "project",
+      "--visibility",
+      "private",
+      "--init-harness",
+      "--yes",
+      "--target",
+      tmp
+    ],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.ok(fs.existsSync(path.join(tmp, ".ai-harness", "AGENTS.md")));
+  assert.ok(fs.existsSync(path.join(tmp, ".ai-harness", "commands")));
+  assert.ok(fs.existsSync(path.join(tmp, ".ai-harness", "skills")));
+  assert.ok(fs.existsSync(path.join(tmp, ".ai-harness", "workflows")));
+  assert.ok(fs.existsSync(path.join(tmp, ".ai-harness", "templates")));
+  assert.equal(fs.existsSync(path.join(tmp, "commands")), false);
+  assert.equal(fs.existsSync(path.join(tmp, "skills")), false);
+  assert.equal(fs.existsSync(path.join(tmp, "workflows")), false);
+  assert.equal(fs.existsSync(path.join(tmp, "templates")), false);
+
+  const exclude = readInfoExclude(tmp);
+  assert.match(exclude, /\.ai-harness\//);
+
+  const mdc = fs.readFileSync(path.join(tmp, ".cursor", "rules", "ai-engineering-harness.mdc"), "utf8");
+  assert.match(mdc, /\.ai-harness\/AGENTS\.md/);
+});
+
+runTest("install.sh shared cursor without --install-cache skips .ai-harness", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-cache-shared-"));
+  initFakeGitWorkTree(tmp);
+  const result = runInstallSh(
+    [
+      "--runtime",
+      "cursor",
+      "--scope",
+      "project",
+      "--visibility",
+      "shared",
+      "--yes",
+      "--target",
+      tmp
+    ],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.equal(fs.existsSync(path.join(tmp, ".ai-harness")), false);
+});
+
+runTest("install.sh private --no-install-cache skips .ai-harness", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-cache-no-"));
+  initFakeGitWorkTree(tmp);
+  const result = runInstallSh(
+    [
+      "--runtime",
+      "cursor",
+      "--scope",
+      "project",
+      "--visibility",
+      "private",
+      "--no-install-cache",
+      "--yes",
+      "--target",
+      tmp
+    ],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.equal(fs.existsSync(path.join(tmp, ".ai-harness")), false);
+  const exclude = readInfoExclude(tmp);
+  assert.doesNotMatch(exclude, /\.ai-harness\//);
+});
+
+runTest("install.sh private cache skips existing file without force", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-cache-skip-"));
+  initFakeGitWorkTree(tmp);
+  fs.mkdirSync(path.join(tmp, ".ai-harness"), { recursive: true });
+  fs.writeFileSync(path.join(tmp, ".ai-harness", "AGENTS.md"), "# keep\n");
+
+  const result = runInstallSh(
+    [
+      "--runtime",
+      "cursor",
+      "--scope",
+      "project",
+      "--visibility",
+      "private",
+      "--yes",
+      "--target",
+      tmp
+    ],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stdout, /SKIP.*\.ai-harness\/AGENTS\.md/);
+  assert.equal(fs.readFileSync(path.join(tmp, ".ai-harness", "AGENTS.md"), "utf8"), "# keep\n");
+});
+
+runTest("install.sh private cache force overwrites existing file", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-cache-force-"));
+  initFakeGitWorkTree(tmp);
+  fs.mkdirSync(path.join(tmp, ".ai-harness"), { recursive: true });
+  fs.writeFileSync(path.join(tmp, ".ai-harness", "AGENTS.md"), "# old\n");
+  const packAgents = fs.readFileSync(path.join(repoRoot, "AGENTS.md"), "utf8");
+
+  const result = runInstallSh(
+    [
+      "--runtime",
+      "cursor",
+      "--scope",
+      "project",
+      "--visibility",
+      "private",
+      "--force",
+      "--yes",
+      "--target",
+      tmp
+    ],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.equal(fs.readFileSync(path.join(tmp, ".ai-harness", "AGENTS.md"), "utf8"), packAgents);
+});
+
+runTest("install-cache.js copies AGENTS.md under .ai-harness", () => {
+  const { installCapabilityCache } = require(path.join(repoRoot, "install-cache.js"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-cache-unit-"));
+  const results = installCapabilityCache({
+    packRoot: repoRoot,
+    target: tmp,
+    dryRun: false,
+    force: false
+  });
+
+  assert.ok(fs.existsSync(path.join(tmp, ".ai-harness", "AGENTS.md")));
+  assert.ok(results.some((r) => r.relativePath === ".ai-harness/AGENTS.md" && r.action === "COPY"));
 });
 
 runTest("install.sh rejects gitignore strategy in Step 1", () => {

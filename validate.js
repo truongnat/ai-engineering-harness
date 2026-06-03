@@ -113,6 +113,7 @@ const requiredFiles = [
   "docs/uninstall-update-design.md",
   "docs/antigravity-provider-research.md",
   "docs/private-install-git-hygiene.md",
+  "docs/private-capability-cache.md",
   "docs/runtime-aware-validation.md",
   "docs/packaging-model.md",
   "docs/pack-manifest-spec.md",

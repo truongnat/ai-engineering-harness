@@ -48,12 +48,19 @@ Expect `WOULD UPDATE .git/info/exclude` before file writes.
 
 ```gitignore
 # ai-engineering-harness start
+.ai-harness/
 .harness/
 .cursor/rules/ai-engineering-harness.mdc
 # ai-engineering-harness end
 ```
 
-Only paths for selected `--runtime` plus `.harness/` when `--init-harness`.
+Paths included when applicable:
+
+- `.ai-harness/` when capability cache is installed (default for private project runtime-native)
+- `.harness/` when `--init-harness`
+- Runtime bootstrap paths for selected `--runtime`
+
+See [private-capability-cache.md](private-capability-cache.md).
 
 ## Runtime Paths
 

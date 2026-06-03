@@ -10,6 +10,8 @@ FORCE=0
 RUNTIME=""
 SCOPE=""
 INIT_HARNESS=0
+INSTALL_CACHE=0
+NO_INSTALL_CACHE=0
 YES=0
 VERB=install
 VISIBILITY=""
@@ -34,6 +36,8 @@ Options:
   --visibility <name>   private | shared (project scope; private uses .git/info/exclude)
   --ignore-strategy <name>  info-exclude | none | auto (private project; default auto → info-exclude)
   --init-harness        Scaffold project-local .harness/ profile files
+  --install-cache       Install capability pack under .ai-harness/ (project scope)
+  --no-install-cache    Skip .ai-harness/ cache (private default is to install cache)
   --legacy-root         Alias for --runtime manual (root copy fallback)
   --dry-run             Show plan or preview without writing
   --force               Overwrite existing .harness/ files; runtime/manual may overwrite their files
@@ -45,7 +49,7 @@ Git hygiene (v0.9.2): project + --visibility private writes .git/info/exclude (n
 Project + --visibility shared leaves generated files visible in git status.
 
 Examples:
-  install.sh install --runtime cursor --scope project --visibility private --ignore-strategy info-exclude --init-harness --yes
+  install.sh install --runtime cursor --scope project --visibility private --init-harness --yes
   install.sh --runtime claude --scope project --init-harness --dry-run --yes
   install.sh --runtime manual --target . --init-harness --dry-run
 
@@ -138,7 +142,12 @@ harness_ignore_paths_for_runtime() {
 }
 
 collect_ignore_paths() {
-  harness_ignore_paths_for_runtime "$RUNTIME" "$INIT_HARNESS" | awk '!seen[$0]++'
+  {
+    harness_ignore_paths_for_runtime "$RUNTIME" "$INIT_HARNESS"
+    if [ "$INSTALL_CACHE" -eq 1 ]; then
+      printf '%s\n' '.ai-harness/'
+    fi
+  } | awk '!seen[$0]++'
 }
 
 build_exclude_block_content() {
@@ -239,6 +248,56 @@ pick_visibility_interactive() {
       *) printf '%s\n' '  Invalid choice. Enter 1-2.' ;;
     esac
   done
+}
+
+resolve_install_cache_settings() {
+  if [ "$RUNTIME" = manual ] || [ "$SCOPE" = global ]; then
+    INSTALL_CACHE=0
+    return 0
+  fi
+
+  if [ "$NO_INSTALL_CACHE" -eq 1 ]; then
+    INSTALL_CACHE=0
+    return 0
+  fi
+
+  if [ "$INSTALL_CACHE" -eq 1 ]; then
+    return 0
+  fi
+
+  if [ "$VISIBILITY" = private ]; then
+    INSTALL_CACHE=1
+    return 0
+  fi
+
+  INSTALL_CACHE=0
+}
+
+run_capability_cache_install() {
+  if [ "$INSTALL_CACHE" -ne 1 ]; then
+    return 0
+  fi
+  if [ "$SCOPE" != project ]; then
+    return 0
+  fi
+
+  command -v node >/dev/null 2>&1 || fail "node is required but was not found on PATH"
+  download_pack_root
+
+  printf '%s\n' '' '--- Capability cache (.ai-harness/) ---'
+
+  set -- node "$PACK_ROOT/install-cache.js" \
+    --pack-root "$PACK_ROOT" \
+    --target "$TARGET_ABS"
+  if [ "$DRY_RUN" -eq 1 ]; then
+    set -- "$@" --dry-run
+  fi
+  if [ "$FORCE" -eq 1 ]; then
+    set -- "$@" --force
+  fi
+
+  "$@"
+  printf '%s\n' '--- Capability cache complete ---' ''
 }
 
 resolve_git_hygiene_settings() {
@@ -385,6 +444,9 @@ print_install_plan() {
   printf '  target:        %s\n' "$TARGET_ABS"
   printf '  ref:           %s\n' "$REF"
   printf '  init-harness:  %s\n' "$([ "$INIT_HARNESS" -eq 1 ] && printf yes || printf no)"
+  if [ "$SCOPE" = project ] && [ "$RUNTIME" != manual ]; then
+    printf '  install-cache: %s\n' "$([ "$INSTALL_CACHE" -eq 1 ] && printf yes || printf no)"
+  fi
   if [ "$SCOPE" = project ]; then
     if [ -n "$VISIBILITY" ]; then
       printf '  visibility:    %s\n' "$VISIBILITY"
@@ -403,6 +465,9 @@ print_install_plan() {
   printf '  dry-run:       %s\n' "$([ "$DRY_RUN" -eq 1 ] && printf yes || printf no)"
   printf '  force:         %s\n' "$([ "$FORCE" -eq 1 ] && printf yes || printf no)"
   printf '%s\n' '' 'What will happen:'
+  if [ "$SCOPE" = project ] && [ "$INSTALL_CACHE" -eq 1 ]; then
+    printf '%s\n' '  - Install capability pack under .ai-harness/ (commands, skills, workflows, …)'
+  fi
   if [ "$SCOPE" = project ] && [ "$VISIBILITY" = private ] && [ "$EFFECTIVE_IGNORE_STRATEGY" = info-exclude ]; then
     if is_git_repo; then
       printf '%s\n' '  - Update .git/info/exclude with harness paths (private/local; not committed)'
@@ -808,6 +873,14 @@ while [ "$#" -gt 0 ]; do
       INIT_HARNESS=1
       shift
       ;;
+    --install-cache)
+      INSTALL_CACHE=1
+      shift
+      ;;
+    --no-install-cache)
+      NO_INSTALL_CACHE=1
+      shift
+      ;;
     --legacy-root)
       RUNTIME=manual
       shift
@@ -926,12 +999,14 @@ fi
 maybe_prompt_init_harness
 
 resolve_git_hygiene_settings
+resolve_install_cache_settings
 
 printf '%s\n' 'ai-engineering-harness installer'
 print_install_plan
 confirm_plan
 
 apply_private_ignore
+run_capability_cache_install
 
 if [ "$RUNTIME" != manual ]; then
   if [ -z "$SCOPE" ] && [ "$RUNTIME" != all ]; then

@@ -134,6 +134,32 @@ sh install.sh install --runtime cursor --scope project --visibility private --ig
 
 → exclude block written → `.mdc` + `.harness/` installed → `git status` clean for generated paths.
 
+## Step 2 — Private Capability Cache (`.ai-harness/`)
+
+**Problem:** Runtime-native install only wrote bootstrap + `.harness/` skeleton. Agents had **no local** `commands/`, `skills/`, `workflows/`, etc.
+
+**Fix:** Install capability surface under `.ai-harness/` via [install-cache.js](../install-cache.js). Do **not** copy pack dirs to product repo root.
+
+| Piece | Role |
+|---|---|
+| `.ai-harness/` | Capability source (pack surface) |
+| `.harness/` | Project state |
+| Runtime bootstrap | Points to both |
+
+Default: **project + private + runtime-native** installs cache. Shared needs `--install-cache`. Global/manual: no project cache.
+
+Private exclude also lists `.ai-harness/` when cache is on.
+
+Docs: [private-capability-cache.md](private-capability-cache.md).
+
+Recommended command:
+
+```bash
+sh install.sh install --runtime cursor --scope project --visibility private --init-harness --yes
+```
+
+(`--install-cache` is optional — on by default for private project.)
+
 ## Uninstall
 
 Implementation order **#5** (after install verb + visibility):
@@ -170,13 +196,14 @@ Existing installs: re-run `install` with `--visibility private --ignore-strategy
 
 Do **not** implement everything at once:
 
-1. **Git hygiene** — `.git/info/exclude` for private project install (**Step 1**)
-2. **`install.sh` command model** — `install` / `uninstall` / `update` verbs + backward compat
-3. **Provider multi-select** (comma + wizard)
-4. **Project private/shared** (`--visibility`)
-5. **Uninstall**
-6. **Update**
-7. **Antigravity** — only if docs/paths verified + D7 dogfood
+1. **Git hygiene** — `.git/info/exclude` for private project install (**Step 1** — done)
+2. **Private capability cache** — `.ai-harness/` install (**Step 2** — done)
+3. **`install.sh` command model** — `install` / `uninstall` / `update` verbs + backward compat
+4. **Provider multi-select** (comma + wizard)
+5. **Project private/shared** (`--visibility`) — partial (flags exist)
+6. **Uninstall**
+7. **Update**
+8. **Antigravity** — only if docs/paths verified + D7 dogfood
 
 ## Definition Of Done (v0.9.2 release)
 

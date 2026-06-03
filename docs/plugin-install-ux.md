@@ -71,12 +71,14 @@ See:
 
 **Runtime-native installer exists (`v0.9.1` tag).** All primary runtimes are **experimental** (file/install dogfooded; **stable support: No**). See [runtime-dogfood-summary.md](runtime-dogfood-summary.md).
 
-Recommended consumer path (private project — no git noise):
+Recommended consumer path (private project — capability cache + no git noise):
 
 ```bash
-sh install.sh install --runtime cursor --scope project --visibility private --ignore-strategy info-exclude --init-harness --yes
+sh install.sh install --runtime cursor --scope project --visibility private --init-harness --yes
 node validate.js --target <repo> --runtime <name> --profile-only   # from source pack
 ```
+
+Private project installs **default** to `.ai-harness/` capability cache ([private-capability-cache.md](private-capability-cache.md)). Runtime bootstrap (e.g. Cursor rule) points agents at `.ai-harness/` for commands/skills and `.harness/` for project state.
 
 Team-shared (files visible in `git status`):
 
@@ -87,7 +89,7 @@ sh install.sh install --runtime <name> --scope project --visibility shared --ini
 - `<name>`: `generic`, `codex`, `cursor`, `windsurf`, `opencode`, `gemini`, `claude`
 - **Manual fallback** (`manual` / default `curl | sh` without flags): root copy only — [scenario-c-one-line-installer.md](pack-dogfood-reports/scenario-c-one-line-installer.md)
 
-[install.sh](../install.sh) + [install-runtime.js](../install-runtime.js) install **per runtime** without copying `commands/`, `skills/`, etc. to the product root. See [runtime-native-install.md](runtime-native-install.md).
+[install.sh](../install.sh) + [install-runtime.js](../install-runtime.js) install **per runtime** without copying `commands/`, `skills/`, etc. to the product root. Capabilities live under **`.ai-harness/`** when cache is installed (private project default). See [runtime-native-install.md](runtime-native-install.md) and [private-capability-cache.md](private-capability-cache.md).
 
 | Capability | Status |
 |---|---|

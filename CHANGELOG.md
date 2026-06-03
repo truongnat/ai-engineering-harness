@@ -21,10 +21,13 @@
 - `--visibility private|shared` and `--ignore-strategy info-exclude|none|auto`
 - `install` verb alias; warning when `--visibility` omitted (defaults shared)
 - [private-install-git-hygiene.md](docs/private-install-git-hygiene.md)
+- **Step 2:** private `.ai-harness/` capability cache — [install-cache.js](install-cache.js), [private-capability-cache.md](docs/private-capability-cache.md)
+- `--install-cache` / `--no-install-cache`; default cache for project + private + runtime-native
+- runtime bootstraps (Cursor, generic, Claude, Gemini, OpenCode) point to `.ai-harness/` + `.harness/`
 
 ### Planned (implementation)
 
-- **Step 2+:** install/uninstall/update verbs beyond exclude
+- **Step 3+:** uninstall/update verbs; wizard; Antigravity
 - provider multi-select and install wizard
 - `install.sh` verbs: install, uninstall, update
 - Antigravity runtime paths after verification
