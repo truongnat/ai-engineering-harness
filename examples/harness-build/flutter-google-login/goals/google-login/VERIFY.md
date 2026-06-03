@@ -8,8 +8,8 @@ Prove that Google login can be added without breaking guest mode or session expe
 
 ## Status
 
-- `pending`
-- Summary: blocked until real Flutter and provider checks are run in the target app.
+status: pending
+summary: blocked until real Flutter and provider checks are run in the target app.
 
 ## Tests Run
 

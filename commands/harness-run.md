@@ -16,7 +16,7 @@ Execute the approved plan in small, surgical steps without silent scope drift.
 
 - `.harness/GOAL.md` exists and describes the current goal.
 - `.harness/PLAN.md` exists.
-- `.harness/PLAN.md` records explicit approval, such as `Status: approved` or equivalent approval notes.
+- `.harness/PLAN.md` includes **Approval Status** with `status: approved` (not `draft` or `blocked`).
 - `.harness/TASKS.md` contains at least one actionable task when task tracking is in use.
 
 ## When To Use

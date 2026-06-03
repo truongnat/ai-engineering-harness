@@ -15,6 +15,12 @@ const {
   summarizeResults
 } = require(path.join(repoRoot, "install.js"));
 const {
+  assertCommandContractStructure,
+  assertPlanTemplateContract,
+  assertVerifyTemplateContract,
+  extractMarkdownSection,
+  hasConcreteFailureRule,
+  hasSubstantiveSectionBody,
   packRequiredHeadings,
   parseValidateArgs,
   validateRepository,
@@ -234,6 +240,105 @@ runTest("VERIFY template uses evidence-first contract headings", () => {
   for (const heading of ["## Status", "## Tests Run", "## Manual Checks", "## Evidence", "## Known Gaps"]) {
     assert.match(text, new RegExp(heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   }
+});
+
+runTest("VERIFY template uses structured status and safe Known Gaps default", () => {
+  const text = fs.readFileSync(path.join(repoRoot, "templates", "VERIFY.md"), "utf8");
+  assert.match(text, /status:\s*pending/i);
+  assert.match(text, /Not assessed yet/i);
+  assert.doesNotMatch(text, /## Known Gaps\s*\n\s*-?\s*None\s*$/im);
+  const failures = [];
+  assertVerifyTemplateContract(repoRoot, failures);
+  assert.deepEqual(failures, []);
+});
+
+runTest("PLAN template includes Approval Status fields", () => {
+  const text = fs.readFileSync(path.join(repoRoot, "templates", "PLAN.md"), "utf8");
+  assert.match(text, /## Approval Status/);
+  assert.match(text, /status:\s*draft/i);
+  assert.match(text, /approved_by:/i);
+  assert.match(text, /approved_at:/i);
+  const failures = [];
+  assertPlanTemplateContract(repoRoot, failures);
+  assert.deepEqual(failures, []);
+});
+
+runTest("contract helpers reject placeholder-only sections", () => {
+  assert.equal(hasSubstantiveSectionBody("- TBD"), false);
+  assert.equal(hasSubstantiveSectionBody("- \n- "), false);
+  assert.equal(
+    hasSubstantiveSectionBody("- Do not implement unplanned work without updating the plan."),
+    true
+  );
+  assert.equal(hasConcreteFailureRule("- Do not ship without verification evidence."), true);
+  assert.equal(hasConcreteFailureRule("- TBD"), false);
+});
+
+runTest("command contract validation rejects empty Preconditions", () => {
+  const failures = [];
+  const content = [
+    "# harness-test",
+    "## Preconditions",
+    "",
+    "## Required Outputs",
+    "- `.harness/PLAN.md` updated with concrete tasks.",
+    "## Redirect Behavior",
+    "- redirect to `harness-plan` if missing.",
+    "## Failure Conditions",
+    "- Do not implement without approval."
+  ].join("\n");
+  assertCommandContractStructure("commands/harness-test.md", content, failures);
+  assert.ok(
+    failures.some((f) => f.includes("Preconditions") && f.includes("substantive"))
+  );
+});
+
+runTest("command contract validation rejects placeholder-only Required Outputs", () => {
+  const failures = [];
+  const content = [
+    "# harness-test",
+    "## Preconditions",
+    "- Goal exists in `.harness/GOAL.md`.",
+    "## Required Outputs",
+    "- TBD",
+    "## Redirect Behavior",
+    "- use harness-discuss when unclear.",
+    "## Failure Conditions",
+    "- Do not claim completion early."
+  ].join("\n");
+  assertCommandContractStructure("commands/harness-test.md", content, failures);
+  assert.ok(failures.some((f) => f.includes("Required Outputs")));
+});
+
+runTest("command contract validation rejects Redirect without harness command", () => {
+  const failures = [];
+  const content = [
+    "# harness-test",
+    "## Preconditions",
+    "- Goal exists.",
+    "## Required Outputs",
+    "- State file updated.",
+    "## Redirect Behavior",
+    "- ask the user what to do next.",
+    "## Failure Conditions",
+    "- Do not improvise scope."
+  ].join("\n");
+  assertCommandContractStructure("commands/harness-test.md", content, failures);
+  assert.ok(failures.some((f) => f.includes("Redirect Behavior")));
+});
+
+runTest("repository command docs pass substantive contract validation", () => {
+  const failures = [];
+  const commandDir = path.join(repoRoot, "commands");
+  for (const fileName of fs.readdirSync(commandDir)) {
+    if (!fileName.endsWith(".md")) {
+      continue;
+    }
+    const relativePath = `commands/${fileName}`;
+    const content = fs.readFileSync(path.join(commandDir, fileName), "utf8");
+    assertCommandContractStructure(relativePath, content, failures);
+  }
+  assert.deepEqual(failures, [], failures.join("\n"));
 });
 
 runTest("frozen validation contract: empty args use harness-repository mode", () => {

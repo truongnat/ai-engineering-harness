@@ -24,6 +24,13 @@ Create a compact plan for a tiny repository.
 - missing required headings
 - mixing planning with implementation
 
+## Approval Status
+
+status: approved
+approved_by: example maintainer
+approved_at: example
+notes: Required before run.
+
 ## Human Approval
 
-Required before run.
+See Approval Status above.

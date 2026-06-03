@@ -52,7 +52,15 @@
 
 -
 
+## Approval Status
+
+status: draft
+approved_by:
+approved_at:
+notes:
+
 ## Human Approval
 
-- Status: not requested | requested | approved
+Use **Approval Status** above as the canonical approval record. Legacy notes may appear here during migration.
+
 - Notes:

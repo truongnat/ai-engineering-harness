@@ -6,8 +6,8 @@ Add a health check endpoint without changing existing behavior.
 
 ## Status
 
-- `pending`
-- Summary: validation should be run in the adopted target repo before claiming completion.
+status: pending
+summary: validation should be run in the adopted target repo before claiming completion.
 
 ## Tests Run
 
@@ -30,4 +30,4 @@ Add a health check endpoint without changing existing behavior.
 
 ## Known Gaps
 
-- No application runtime checks are included in this example.
+- Application runtime checks are not included in this example (by design).

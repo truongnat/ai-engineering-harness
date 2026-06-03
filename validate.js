@@ -407,6 +407,7 @@ const goalArtifactHeadings = {
     "## Tasks",
     "## Verification Strategy",
     "## Risks",
+    "## Approval Status",
     "## Human Approval"
   ],
   "examples/harness-build/flutter-google-login/goals/google-login/TASKS.md": [
@@ -509,6 +510,193 @@ function readFile(baseDir, relativePath) {
   return fs.readFileSync(resolvePath(baseDir, relativePath), "utf8");
 }
 
+const CONTRACT_PLACEHOLDER_BULLETS = new Set([
+  "tbd",
+  "todo",
+  "fixme",
+  "n/a",
+  "na",
+  "none",
+  "-",
+  "—",
+  "...",
+  "placeholder",
+  "[ ]",
+  "[]"
+]);
+
+const HARNESS_COMMAND_PATTERN = /harness-[a-z][a-z0-9-]*/;
+
+function extractMarkdownSection(content, heading) {
+  const index = content.indexOf(heading);
+  if (index === -1) {
+    return null;
+  }
+  const bodyStart = index + heading.length;
+  const rest = content.slice(bodyStart);
+  const nextHeading = rest.search(/\n## /);
+  const body = nextHeading === -1 ? rest : rest.slice(0, nextHeading);
+  return body.trim();
+}
+
+function isPlaceholderBullet(text) {
+  const bullet = text.replace(/^[-*]\s*/, "").replace(/^\d+\.\s*/, "").trim();
+  if (bullet.length < 2) {
+    return true;
+  }
+  const lower = bullet.toLowerCase();
+  if (CONTRACT_PLACEHOLDER_BULLETS.has(lower)) {
+    return true;
+  }
+  if (/^tbd\b/i.test(bullet)) {
+    return true;
+  }
+  if (/^\[?\s*\]?\s*$/.test(bullet)) {
+    return true;
+  }
+  return false;
+}
+
+function hasSubstantiveSectionBody(sectionBody, options = {}) {
+  const minChars = options.minChars ?? 12;
+  if (!sectionBody || !sectionBody.trim()) {
+    return false;
+  }
+  const lines = sectionBody
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+  let substantiveChars = 0;
+  let substantiveLines = 0;
+  for (const line of lines) {
+    if (isPlaceholderBullet(line)) {
+      continue;
+    }
+    const bullet = line.replace(/^[-*]\s*/, "").replace(/^\d+\.\s*/, "").trim();
+    if (bullet.length < 3) {
+      continue;
+    }
+    substantiveLines += 1;
+    substantiveChars += bullet.length;
+  }
+  return substantiveLines > 0 && substantiveChars >= minChars;
+}
+
+function hasConcreteFailureRule(sectionBody) {
+  if (!sectionBody || !sectionBody.trim()) {
+    return false;
+  }
+  const lines = sectionBody.split("\n").map((line) => line.trim()).filter(Boolean);
+  return lines.some((line) => {
+    if (isPlaceholderBullet(line)) {
+      return false;
+    }
+    const text = line.replace(/^[-*]\s*/, "").trim();
+    return /^(?:Do not|Never|Must not|Stop|Block|Reject|Avoid)\b/i.test(text);
+  });
+}
+
+function assertCommandContractStructure(relativePath, content, failures) {
+  const sections = [
+    { heading: "## Preconditions", label: "Preconditions" },
+    { heading: "## Required Outputs", label: "Required Outputs" }
+  ];
+  for (const { heading, label } of sections) {
+    const body = extractMarkdownSection(content, heading);
+    if (body === null) {
+      continue;
+    }
+    if (!hasSubstantiveSectionBody(body)) {
+      failures.push(
+        `${relativePath}: ${label} must contain substantive contract content (not empty or placeholder-only)`
+      );
+    }
+  }
+
+  const redirectBody = extractMarkdownSection(content, "## Redirect Behavior");
+  if (redirectBody !== null && !HARNESS_COMMAND_PATTERN.test(redirectBody)) {
+    failures.push(
+      `${relativePath}: Redirect Behavior must mention at least one harness command (harness-<name>)`
+    );
+  }
+
+  const failureBody = extractMarkdownSection(content, "## Failure Conditions");
+  if (failureBody !== null && !hasConcreteFailureRule(failureBody)) {
+    failures.push(
+      `${relativePath}: Failure Conditions must include at least one concrete negative rule (e.g. Do not …)`
+    );
+  }
+}
+
+const skillContractSubstanceHeadings = [
+  "## When Not To Use",
+  "## Inputs",
+  "## Output Contract",
+  "## Common Failure Modes"
+];
+
+function assertSkillContractStructure(relativePath, content, failures) {
+  for (const heading of skillContractSubstanceHeadings) {
+    const body = extractMarkdownSection(content, heading);
+    if (body === null) {
+      continue;
+    }
+    if (!hasSubstantiveSectionBody(body, { minChars: 10 })) {
+      failures.push(
+        `${relativePath}: ${heading.replace("## ", "")} must contain substantive contract content`
+      );
+    }
+  }
+}
+
+function assertVerifyTemplateContract(baseDir, failures) {
+  const relativePath = "templates/VERIFY.md";
+  if (!fs.existsSync(resolvePath(baseDir, relativePath))) {
+    failures.push(`Missing required path: ${relativePath}`);
+    return;
+  }
+  const content = readFile(baseDir, relativePath);
+  if (!/status:\s*(pending|passed|failed|blocked)/i.test(content)) {
+    failures.push(
+      `${relativePath} must include a machine-readable status field (status: pending|passed|failed|blocked)`
+    );
+  }
+  const gapsBody = extractMarkdownSection(content, "## Known Gaps");
+  if (gapsBody !== null) {
+    const onlyNone =
+      /^\s*-?\s*None\s*\.?\s*$/im.test(gapsBody.trim()) ||
+      (gapsBody.trim().toLowerCase() === "none");
+    if (onlyNone) {
+      failures.push(
+        `${relativePath}: Known Gaps must not default to "None" (use pending wording such as "Not assessed yet.")`
+      );
+    }
+    if (!hasSubstantiveSectionBody(gapsBody, { minChars: 8 })) {
+      failures.push(`${relativePath}: Known Gaps must contain substantive pending wording`);
+    }
+  }
+}
+
+function assertPlanTemplateContract(baseDir, failures) {
+  const relativePath = "templates/PLAN.md";
+  if (!fs.existsSync(resolvePath(baseDir, relativePath))) {
+    failures.push(`Missing required path: ${relativePath}`);
+    return;
+  }
+  const content = readFile(baseDir, relativePath);
+  if (!content.includes("## Approval Status")) {
+    failures.push(`${relativePath} is missing heading: ## Approval Status`);
+  }
+  if (!/status:\s*(draft|approved|blocked)/i.test(content)) {
+    failures.push(
+      `${relativePath} must include approval status field (status: draft|approved|blocked)`
+    );
+  }
+  if (!/approved_by:/i.test(content) || !/approved_at:/i.test(content)) {
+    failures.push(`${relativePath} must include approved_by: and approved_at: fields`);
+  }
+}
+
 function assertHeadings(baseDir, relativePath, headings, failures) {
   const fullPath = resolvePath(baseDir, relativePath);
   if (!fs.existsSync(fullPath)) {
@@ -575,12 +763,29 @@ function validateHarnessRepository(baseDir = root) {
   }
 
   for (const relativePath of commandFiles) {
+    const fullPath = resolvePath(baseDir, relativePath);
+    if (!fs.existsSync(fullPath)) {
+      failures.push(`Missing required path: ${relativePath}`);
+      continue;
+    }
+    const content = readFile(baseDir, relativePath);
     assertHeadings(baseDir, relativePath, commandHeadings, failures);
+    assertCommandContractStructure(relativePath, content, failures);
   }
 
   for (const relativePath of skillFiles) {
+    const fullPath = resolvePath(baseDir, relativePath);
+    if (!fs.existsSync(fullPath)) {
+      failures.push(`Missing required path: ${relativePath}`);
+      continue;
+    }
+    const content = readFile(baseDir, relativePath);
     assertHeadings(baseDir, relativePath, skillHeadings, failures);
+    assertSkillContractStructure(relativePath, content, failures);
   }
+
+  assertVerifyTemplateContract(baseDir, failures);
+  assertPlanTemplateContract(baseDir, failures);
 
   for (const relativePath of templateFiles) {
     assertNonEmpty(baseDir, relativePath, failures);
@@ -870,9 +1075,16 @@ if (require.main === module) {
 }
 
 module.exports = {
+  assertCommandContractStructure,
+  assertSkillContractStructure,
+  assertVerifyTemplateContract,
+  assertPlanTemplateContract,
   commandFiles,
   commandHeadings,
   countCheckedContracts,
+  extractMarkdownSection,
+  hasSubstantiveSectionBody,
+  hasConcreteFailureRule,
   executionHeadings,
   gatesHeadings,
   goalArtifactHeadings,

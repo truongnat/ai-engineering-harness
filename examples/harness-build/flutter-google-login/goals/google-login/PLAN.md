@@ -71,7 +71,13 @@ Bound the work to the smallest change set that introduces Google login without t
 
 Remove or disable the new login path if guest or session behavior cannot be made safe within scope.
 
+## Approval Status
+
+status: approved
+approved_by: example maintainer
+approved_at: example
+notes: Re-plan and seek approval if auth architecture changes are needed.
+
 ## Human Approval
 
-- Status: approved example
-- Notes: Re-plan and seek approval if auth architecture changes are needed.
+See Approval Status above.

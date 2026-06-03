@@ -15,5 +15,13 @@ Run validator.
 ## Risks
 Missing required files.
 
+## Approval Status
+
+status: approved
+approved_by: fixture
+approved_at: fixture
+notes: Required for harness-run in tests.
+
 ## Human Approval
-Required.
+
+See Approval Status above.

@@ -59,7 +59,7 @@ Translate the agreed goal into an explicit, reviewable implementation plan.
 
 ## Completion Gate
 
-The command is complete when `.harness/PLAN.md` contains concrete ordered work, explicit scope, verification strategy, approval status, and implementation has not yet started.
+The command is complete when `.harness/PLAN.md` contains concrete ordered work, explicit scope, verification strategy, an **Approval Status** block (`status: draft` until human approval, then `status: approved`), and implementation has not yet started.
 
 ## Artifact Paths
 

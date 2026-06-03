@@ -8,8 +8,8 @@
 
 ## Status
 
-- `pending | passed | failed | blocked`
-- Summary:
+status: pending
+summary:
 
 ## Tests Run
 
@@ -31,4 +31,4 @@
 
 ## Known Gaps
 
-- None
+- Not assessed yet.
