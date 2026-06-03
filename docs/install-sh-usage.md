@@ -42,7 +42,7 @@ Non-interactive `curl | sh` **without** `--runtime` defaults to **`manual`**: do
 
 Non-interactive install without `--runtime` defaults to `manual` and prints a **fallback warning**.
 
-Windsurf: use `--runtime windsurf` (alias for cursor) or interactive option 3 (Cursor / Windsurf).
+Windsurf is not exposed as a separate runtime until its native payload and docs are verified. Use the `cursor` runtime only when you intentionally want the Cursor rule path.
 
 See [interactive-installer-design.md](interactive-installer-design.md), [runtime-install-matrix-research.md](runtime-install-matrix-research.md), [project-state-policy.md](project-state-policy.md).
 

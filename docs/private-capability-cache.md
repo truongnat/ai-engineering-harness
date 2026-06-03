@@ -60,7 +60,6 @@ Root must **not** contain `commands/`, `skills/`, `workflows/`, or `templates/` 
 | Runtime | Entrypoint | Also installed |
 |---|---|---|
 | `cursor` | `.cursor/rules/ai-engineering-harness.mdc` | `.ai-harness/`, `.harness/` |
-| `windsurf` | Same as cursor (alias in `install-runtime.js` until dedicated payload) | same |
 | `claude` | `.claude/CLAUDE.md`, `.claude/settings.json` | `.ai-harness/`, `.harness/` |
 | `codex`, `generic` | `AGENTS.md` (bootstrap → `.ai-harness/`) | `.ai-harness/`, `.harness/` |
 | `gemini` | `.gemini/extensions/ai-engineering-harness/` | `.ai-harness/`, `.harness/` |

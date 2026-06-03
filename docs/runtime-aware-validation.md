@@ -8,7 +8,7 @@ Validate **target repositories** after runtime-native install without forcing ev
 
 Legacy target profile validation (`node validate.js --target <repo> --profile-only`) always required `AGENTS.md`. That matched manual/`install.js` adoption and generic/codex project modes, but not:
 
-- **Cursor / Windsurf** — `.cursor/rules/ai-engineering-harness.mdc`
+- **Cursor** — `.cursor/rules/ai-engineering-harness.mdc`
 - **OpenCode** — `opencode.json` + `.opencode/plugins/ai-engineering-harness.js`
 - **Gemini** — `.gemini/extensions/ai-engineering-harness/…`
 - **Claude** — `.claude/CLAUDE.md` + `.claude/settings.json`
@@ -54,7 +54,7 @@ Rules:
 - `--profile-only` and `--goal` remain mutually exclusive.
 - `--goal` with `--runtime` validates runtime bootstrap + profile + goal artifacts.
 
-Supported values: `generic`, `codex`, `cursor`, `windsurf` (alias of `cursor`), `opencode`, `gemini`, `claude`, `manual`.
+Supported values: `generic`, `codex`, `cursor`, `opencode`, `gemini`, `claude`, `manual`.
 
 ## Runtime Bootstrap Requirements
 
@@ -63,7 +63,7 @@ Structural **path existence** only:
 | Runtime | Required paths |
 |---|---|
 | `generic`, `codex`, `manual` | `AGENTS.md` |
-| `cursor`, `windsurf` | `.cursor/rules/ai-engineering-harness.mdc` |
+| `cursor` | `.cursor/rules/ai-engineering-harness.mdc` |
 | `opencode` | `opencode.json`, `.opencode/plugins/ai-engineering-harness.js` |
 | `gemini` | `.gemini/extensions/ai-engineering-harness/gemini-extension.json`, `.gemini/extensions/ai-engineering-harness/GEMINI.md` (project scope; load path best-effort per audit) |
 | `claude` | `.claude/CLAUDE.md`, `.claude/settings.json` |

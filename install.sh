@@ -69,7 +69,7 @@ is_interactive() {
 
 validate_runtime() {
   case "$1" in
-    claude|codex|cursor|windsurf|gemini|opencode|generic|all|manual) return 0 ;;
+    claude|codex|cursor|gemini|opencode|generic|all|manual) return 0 ;;
     *) return 1 ;;
   esac
 }
@@ -112,7 +112,7 @@ harness_ignore_paths_for_runtime() {
   fi
 
   case "$_rt" in
-    cursor|windsurf)
+    cursor)
       printf '%s\n' '.cursor/rules/ai-engineering-harness.mdc'
       ;;
     claude)
@@ -345,7 +345,7 @@ runtime_label() {
   case "$1" in
     claude) printf '%s' 'Claude Code' ;;
     codex) printf '%s' 'Codex CLI' ;;
-    cursor|windsurf) printf '%s' 'Cursor / Windsurf' ;;
+    cursor) printf '%s' 'Cursor' ;;
     gemini) printf '%s' 'Gemini CLI' ;;
     opencode) printf '%s' 'OpenCode' ;;
     generic) printf '%s' 'Generic AGENTS.md bootstrap' ;;
@@ -360,7 +360,7 @@ pick_runtime_interactive() {
   printf '%s\n' \
     '  1) Claude Code' \
     '  2) Codex CLI' \
-    '  3) Cursor / Windsurf (or --runtime windsurf)' \
+    '  3) Cursor' \
     '  4) Gemini CLI' \
     '  5) OpenCode' \
     '  6) Generic AGENTS.md bootstrap' \

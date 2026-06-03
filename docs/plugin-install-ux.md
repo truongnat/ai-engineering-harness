@@ -78,7 +78,7 @@ sh install.sh install --runtime cursor --scope project --visibility private --in
 node validate.js --target <repo> --runtime <name> --profile-only   # from source pack
 ```
 
-All **project** runtime-native installs **default** to `.ai-harness/` capability cache ([private-capability-cache.md](private-capability-cache.md)) — Cursor, Claude, Codex, Generic, Gemini, OpenCode, Windsurf (cursor alias). Each runtime entrypoint only adapts the provider; capabilities live under `.ai-harness/`, project state under `.harness/`.
+All **project** runtime-native installs **default** to `.ai-harness/` capability cache ([private-capability-cache.md](private-capability-cache.md)) — Cursor, Claude, Codex, Generic, Gemini, OpenCode. Each runtime entrypoint only adapts the provider; capabilities live under `.ai-harness/`, project state under `.harness/`.
 
 Team-shared (files visible in `git status`):
 
@@ -86,7 +86,7 @@ Team-shared (files visible in `git status`):
 sh install.sh install --runtime <name> --scope project --visibility shared --init-harness --yes
 ```
 
-- `<name>`: `generic`, `codex`, `cursor`, `windsurf`, `opencode`, `gemini`, `claude`
+- `<name>`: `generic`, `codex`, `cursor`, `opencode`, `gemini`, `claude`
 - **Manual fallback** (`manual` / default `curl | sh` without flags): root copy only — [scenario-c-one-line-installer.md](pack-dogfood-reports/scenario-c-one-line-installer.md)
 
 [install.sh](../install.sh) + [install-runtime.js](../install-runtime.js) install **per runtime** without copying `commands/`, `skills/`, etc. to the product root. Capabilities live under **`.ai-harness/`** when cache is installed (private project default). See [runtime-native-install.md](runtime-native-install.md) and [private-capability-cache.md](private-capability-cache.md).

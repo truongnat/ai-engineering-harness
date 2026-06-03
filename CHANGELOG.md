@@ -25,6 +25,7 @@
 - `--install-cache` / `--no-install-cache`; default cache for all project runtime-native providers
 - provider-agnostic model: entrypoint → `.ai-harness/` → `.harness/` (docs + runtime README)
 - runtime bootstraps (Cursor, generic, Claude, Gemini, OpenCode) point to `.ai-harness/` + `.harness/`
+- stop exposing `windsurf` as a first-class runtime until a verified native payload exists
 
 ### Planned (implementation)
 

@@ -23,7 +23,7 @@ Every project runtime-native install should run **cache + optional harness init 
 | Path | Runtime |
 |---|---|
 | `bootstrap/` | Codex, generic → project `AGENTS.md` |
-| `cursor/rules/` | Cursor; **windsurf** aliases to cursor until separate payload exists |
+| `cursor/rules/` | Cursor |
 | `claude/` | Claude Code project/global |
 | `gemini/` | Gemini CLI extension |
 | `opencode/plugins/` | OpenCode plugin bootstrap message |

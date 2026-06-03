@@ -112,6 +112,10 @@ function ensureDirectory(filePath, dryRun) {
   fs.mkdirSync(dirPath, { recursive: true });
 }
 
+function cacheRelativePath(relativePath) {
+  return `${CACHE_DIR}/${relativePath.split(path.sep).join("/")}`;
+}
+
 function installCapabilityCache(options) {
   const optionalPaths = ["LICENSE"];
   const relativePaths = [
@@ -137,7 +141,7 @@ function installCapabilityCache(options) {
     if (exists && !options.force) {
       results.push({
         action: options.dryRun ? "WOULD SKIP" : "SKIP",
-        relativePath: path.join(CACHE_DIR, relativePath),
+        relativePath: cacheRelativePath(relativePath),
         reason: "exists"
       });
       continue;
@@ -145,7 +149,7 @@ function installCapabilityCache(options) {
 
     results.push({
       action: options.dryRun ? "WOULD COPY" : "COPY",
-      relativePath: path.join(CACHE_DIR, relativePath),
+      relativePath: cacheRelativePath(relativePath),
       reason: exists ? "overwrite" : "new"
     });
 
@@ -184,6 +188,7 @@ module.exports = {
   cacheExportPaths,
   formatResults,
   installCapabilityCache,
+  cacheRelativePath,
   listFiles,
   main,
   parseArgs

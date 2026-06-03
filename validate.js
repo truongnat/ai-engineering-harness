@@ -404,16 +404,11 @@ const VALID_TARGET_RUNTIMES = [
   "generic",
   "codex",
   "cursor",
-  "windsurf",
   "opencode",
   "gemini",
   "claude",
   "manual"
 ];
-
-const RUNTIME_VALIDATION_ALIASES = {
-  windsurf: "cursor"
-};
 
 const targetHarnessProfileFiles = [
   ".harness/",
@@ -428,7 +423,7 @@ const targetHarnessProfileFiles = [
 const targetProfileFiles = ["AGENTS.md", ...targetHarnessProfileFiles];
 
 function normalizeTargetRuntime(runtime) {
-  return RUNTIME_VALIDATION_ALIASES[runtime] || runtime;
+  return runtime;
 }
 
 function getRuntimeBootstrapPaths(runtime) {

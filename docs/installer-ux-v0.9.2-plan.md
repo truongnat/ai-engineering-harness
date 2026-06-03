@@ -134,7 +134,7 @@ sh install.sh install --runtime cursor --scope project --visibility private --ig
 
 → exclude block written → `.mdc` + `.harness/` installed → `git status` clean for generated paths.
 
-## Step 2 — Provider-Agnostic Capability Cache + Runtime Bootstrap
+## Step 2 — Provider-Agnostic Capability Cache + Runtime Bootstrap Switch
 
 **Problem:** Runtime-native install only wrote provider entrypoint + `.harness/` skeleton. Every provider lacked local `commands/`, `skills/`, `workflows/`.
 

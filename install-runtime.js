@@ -9,11 +9,6 @@ const path = require("node:path");
 const HARNESS_REPO = "truongnat/ai-engineering-harness";
 const HARNESS_GIT_URL = `https://github.com/${HARNESS_REPO}`;
 
-// Windsurf uses Cursor rule paths until a dedicated payload is verified.
-const RUNTIME_ALIASES = {
-  windsurf: "cursor"
-};
-
 const ALL_RUNTIMES = ["opencode", "cursor", "claude", "codex", "gemini", "generic"];
 
 function parseArgs(argv) {
@@ -53,11 +48,7 @@ function parseArgs(argv) {
 function usage() {
   console.log(`Usage: node install-runtime.js --pack-root <path> --runtime <name> --scope <global|project> --target <path> [--dry-run] [--force]
 
-Runtimes: claude, codex, cursor, windsurf, gemini, opencode, generic, all`);
-}
-
-function resolveRuntime(name) {
-  return RUNTIME_ALIASES[name] || name;
+Runtimes: claude, codex, cursor, gemini, opencode, generic, all`);
 }
 
 function packPath(packRoot, relativePath) {
@@ -256,10 +247,9 @@ function installOpencode(scope, targetRoot, packRoot, options) {
 }
 
 function installOne(runtime, scope, targetRoot, packRoot, options) {
-  const name = resolveRuntime(runtime);
-  console.log(`\n--- Runtime: ${runtime}${name !== runtime ? ` (${name})` : ""} (${scope}) ---`);
+  console.log(`\n--- Runtime: ${runtime} (${scope}) ---`);
 
-  switch (name) {
+  switch (runtime) {
     case "cursor":
       installCursor(scope, targetRoot, packRoot, options);
       break;
@@ -293,7 +283,7 @@ function installRuntime(options) {
     fs.mkdirSync(targetRoot, { recursive: true });
   }
 
-  const runtimes = options.runtime === "all" ? ALL_RUNTIMES : [resolveRuntime(options.runtime)];
+  const runtimes = options.runtime === "all" ? ALL_RUNTIMES : [options.runtime];
 
   for (const runtime of runtimes) {
     installOne(runtime, options.scope, targetRoot, options.packRoot, options);
@@ -341,9 +331,7 @@ if (require.main === module) {
 
 module.exports = {
   ALL_RUNTIMES,
-  RUNTIME_ALIASES,
   deepMerge,
   installRuntime,
   parseArgs,
-  resolveRuntime
 };

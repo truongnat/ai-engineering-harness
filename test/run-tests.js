@@ -531,16 +531,14 @@ runTest("install-runtime.js does not reference root pack copy", () => {
 });
 
 runTest("install-runtime.js supports expected runtimes", () => {
-  const { ALL_RUNTIMES, RUNTIME_ALIASES, resolveRuntime } = require(path.join(repoRoot, "install-runtime.js"));
+  const { ALL_RUNTIMES } = require(path.join(repoRoot, "install-runtime.js"));
   assert.deepEqual(ALL_RUNTIMES, ["opencode", "cursor", "claude", "codex", "gemini", "generic"]);
-  assert.equal(resolveRuntime("windsurf"), "cursor");
-  assert.equal(RUNTIME_ALIASES.windsurf, "cursor");
 });
 
-runTest("install.sh documents windsurf alias", () => {
+runTest("install.sh does not document windsurf alias", () => {
   const script = fs.readFileSync(installShPath, "utf8");
-  assert.match(script, /windsurf/);
-  assert.match(script, /Windsurf/);
+  assert.doesNotMatch(script, /windsurf/);
+  assert.doesNotMatch(script, /Windsurf/);
 });
 
 runTest("install.sh legacy-root aliases manual fallback", () => {
