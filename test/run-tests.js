@@ -797,7 +797,7 @@ runTest("runtime payload directories exist", () => {
 });
 
 runTest("install-runtime.js does not reference root pack copy", () => {
-  const script = fs.readFileSync(path.join(repoRoot, "install-runtime.js"), "utf8");
+  const script = fs.readFileSync(path.join(repoRoot, "lib", "install-runtime.js"), "utf8");
   assert.doesNotMatch(script, /packRoot,\s*["']commands\//);
   assert.doesNotMatch(script, /packPath\([^)]*["']commands\//);
   assert.equal(script.includes("installHarness"), false);
@@ -2231,11 +2231,11 @@ runTest("aih cli status delegates to shell backend", () => {
 });
 
 runTest("interactive install does not auto-assign providers from detection alone", () => {
-  const mainSrc = fs.readFileSync(path.join(repoRoot, "lib", "cli-main.js"), "utf8");
+  const installSrc = fs.readFileSync(path.join(repoRoot, "lib", "cli-commands", "install.js"), "utf8");
   const uiSrc = fs.readFileSync(path.join(repoRoot, "lib", "cli-ui.js"), "utf8");
-  assert.match(mainSrc, /ui\.selectProviders/);
-  assert.doesNotMatch(mainSrc, /providers\s*=\s*detectRecommendedProviders/);
-  assert.match(mainSrc, /recommended: recommended\.includes/);
+  assert.match(installSrc, /ui\.selectProviders/);
+  assert.doesNotMatch(installSrc, /providers\s*=\s*detectRecommendedProviders/);
+  assert.match(installSrc, /recommended: recommended\.includes/);
   assert.match(uiSrc, /detected/);
 });
 
@@ -2318,7 +2318,7 @@ runTest("README links wizard UX docs", () => {
 });
 
 runTest("validate requires terminal-wizard-ux doc", () => {
-  const validateSrc = fs.readFileSync(path.join(repoRoot, "validate.js"), "utf8");
+  const validateSrc = fs.readFileSync(path.join(repoRoot, "lib", "validate.js"), "utf8");
   assert.match(validateSrc, /docs\/terminal-wizard-ux\.md/);
   assert.ok(fs.existsSync(path.join(repoRoot, "docs", "terminal-wizard-ux.md")));
 });
