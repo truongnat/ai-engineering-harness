@@ -16,7 +16,15 @@
 
 - [ ]
 
+## Evidence Reviewed
+
+- [ ]
+
 ## Residual Risk
+
+- [ ]
+
+## Ship Blockers
 
 - [ ]
 

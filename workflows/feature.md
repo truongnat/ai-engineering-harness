@@ -21,16 +21,21 @@ Use this for new capabilities, user-visible behavior changes, or meaningful inte
 
 - `using-harness`
 - `discussing-goals`
+- `brainstorming` when the feature shape is not stable yet
 - `writing-plans`
 - `executing-plans`
+- `using-git-worktrees` when isolation reduces branch risk
 - `test-driven-development` when behavior changes
+- `requesting-code-review` when an explicit review gate is warranted
 - `verification`
+- `verification-before-completion`
 
 ## Verification Expectations
 
 - acceptance criteria in `.harness/REQUIREMENTS.md` are checked directly
 - behavior changes have regression protection where practical
 - anything not run is documented in `.harness/VERIFY.md`
+- deferred human checks and ship blockers are explicit when automation is insufficient
 
 ## Failure Handling
 

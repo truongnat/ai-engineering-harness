@@ -31,20 +31,22 @@ Synthesize existing harness artifacts and produce a decision-oriented discussion
 
 - `using-harness`
 - `discussing-goals`
+- `brainstorming` when the goal needs option-shaping before planning
 - `remembering` when prior decisions constrain the solution
 
 ## Step-By-Step Workflow
 
 1. Read the minimum read set in order of artifact priority, including typed memory artifacts when they shape scope or constraints.
 2. If `.harness/REVIEW.md` exists, synthesize it into a decision-oriented discussion instead of repeating the whole review.
-3. Otherwise restate the request, separate confirmed requirements from assumptions, and compare realistic approaches.
+3. Otherwise restate the request, separate confirmed requirements from assumptions, and make the following explicit before handing off to planning: goal, success criteria, scope boundaries, constraints, and unresolved risks.
+4. Compare realistic approaches, recommend one, and note tradeoffs the planner must preserve.
 4. Write or update `.harness/DISCUSSION.md`.
 5. End with the next recommended command, not a vague prompt.
 
 ## Required Outputs
 
 - `.harness/DISCUSSION.md` updated on every successful run
-- explicit scope, constraints, and preferred direction
+- explicit goal, success criteria, scope boundaries, constraints, unresolved risks, and preferred direction
 - one recommended next command
 
 ## Redirect Behavior
@@ -69,7 +71,7 @@ Synthesize existing harness artifacts and produce a decision-oriented discussion
 
 ## Completion Gate
 
-The command is complete when the discussion artifact makes the goal, boundaries, assumptions, and preferred direction explicit enough to plan or decide without inventing requirements.
+The command is complete when the discussion artifact makes the goal, success criteria, boundaries, constraints, assumptions, unresolved risks, and preferred direction explicit enough to plan or decide without inventing requirements.
 
 ## Artifact Paths
 

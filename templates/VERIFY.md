@@ -24,6 +24,12 @@ summary:
 |---|---|---|---|
 | | | | |
 
+## Deferred Human Checks
+
+| Check | Why automation is insufficient | Owner | Blocking for ship? | Status |
+|---|---|---|---|---|
+| | | | yes/no | pending |
+
 ## Evidence
 
 - Commands executed:
@@ -33,3 +39,7 @@ summary:
 ## Known Gaps
 
 - Not assessed yet.
+
+## Ship Blockers
+
+- None recorded yet. Replace this line with explicit blockers or an intentional no-blocker statement backed by evidence.

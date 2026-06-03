@@ -1,43 +1,47 @@
-# Verify
+# Verification
 
 ## Goal
 
 Confirm that the feature preserves guest mode while enabling Google login.
 
-## Verification Commands
+## Status
 
-- Command: launch the Flutter app and choose "Continue as guest"
-- Expected: user reaches the main app without authentication
-- Actual: example-only artifact, not executed here
+status: pending human verification
+freshness: example-only artifact
+summary: The example defines clear guest and Google checks, but the real Flutter flows were not executed in this repository.
 
-- Command: launch the Flutter app and choose "Continue with Google"
-- Expected: successful Google auth enters the signed-in path
-- Actual: example-only artifact, not executed here
+## Tests Run
 
-## Manual Verification
+| Command | Exit Code | Result | Notes |
+|---|---:|---|---|
+| Launch Flutter app and choose `Continue as guest` | not run | pending | Real host app needed |
+| Launch Flutter app and choose `Continue with Google` | not run | pending | Real host app and provider setup needed |
 
-- [ ] Guest entry remains visible on the sign-in surface
-- [ ] Guest entry still reaches the app
-- [ ] Google sign-in success reaches the authenticated path
-- [ ] No secrets or provider credentials are written into artifacts
+## Manual Checks
 
-## Regression Checks
+| Step | Expected | Observed | Result |
+|---|---|---|---|
+| Guest entry remains visible on sign-in surface | Guest path is clearly available | Example-only artifact, not executed here | pending |
+| Guest entry reaches app | Anonymous session still works | Example-only artifact, not executed here | pending |
+| Google sign-in reaches authenticated path | Authenticated session starts cleanly | Example-only artifact, not executed here | pending |
+| Artifact hygiene | No secrets or provider credentials in artifacts | Example artifact contains no secrets | passed |
 
-- [ ] Guest mode is not blocked by the new Google flow
-- [ ] Existing navigation for anonymous sessions still works
+## Deferred Human Checks
 
-## Not Run
-
-- real Flutter UI or integration tests for this example repository
-
-## Result
-
-- Status: partial
+| Check | Why automation is insufficient | Owner | Blocking for ship? | Status |
+|---|---|---|---|---|
+| Guest-mode UI flow | The example repo does not contain a runnable Flutter app | adopting maintainer | yes | pending |
+| Google sign-in flow | Requires real provider wiring and runtime UI interaction | adopting maintainer | yes | pending |
 
 ## Evidence
 
-- Example artifacts define explicit checks for both guest and Google sign-in paths
+- Example artifacts define explicit checks for both guest and Google sign-in paths.
+- This repository does not contain the runnable Flutter implementation needed to produce live flow evidence.
 
-## Remaining Risks
+## Known Gaps
 
-- The example is illustrative and does not execute real Flutter code
+- Real Flutter UI or integration tests were not run in this example repository.
+
+## Ship Blockers
+
+- Human verification of both guest and Google flows is still required in the adopting host repo.

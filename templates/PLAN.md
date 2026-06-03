@@ -22,6 +22,10 @@
 
 - [ ]
 
+## Success Criteria
+
+- [ ]
+
 ## Assumptions
 
 - [ ]
@@ -37,7 +41,17 @@
 
 ## Tasks
 
-- [ ]
+- Task:
+- Why now:
+- Affected files or artifacts:
+- Verification for this task cluster:
+
+## Approval Checkpoints
+
+- Checkpoint:
+- Trigger:
+- Approval needed from:
+- Notes:
 
 ## Verification Strategy
 

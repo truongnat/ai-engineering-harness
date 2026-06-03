@@ -25,6 +25,12 @@ summary: `npm test` passed (2/2). `/health` returns 200 with `{"status":"ok"}`; 
 | Read `/health` handler | Returns 200 JSON `status: ok` | `res.end(JSON.stringify({ status: "ok" }))` in `src/server.js` | passed |
 | Root route | Still serves `dogfood-tiny-node-api` text | Test asserts body match | passed |
 
+## Deferred Human Checks
+
+| Check | Why automation is insufficient | Owner | Blocking for ship? | Status |
+|---|---|---|---|---|
+| Optional live `curl /health` smoke check | Repo stores artifact evidence, not a running long-lived demo process | dogfood maintainer | no | deferred |
+
 ## Evidence
 
 - Commands executed: `npm test` from `examples/dogfood-tiny-node-api` on 2026-06-03 (dogfood maintainer run).
@@ -35,3 +41,7 @@ summary: `npm test` passed (2/2). `/health` returns 200 with `{"status":"ok"}`; 
 
 - No live `curl` capture checked into the repo; manual probe optional (`npm start` + `curl /health`).
 - No install of `.ai-harness/` in this example tree — dogfood documents workflow artifacts only.
+
+## Ship Blockers
+
+- None. The remaining live `curl` probe is optional and explicitly non-blocking for this workflow-artifact demo.

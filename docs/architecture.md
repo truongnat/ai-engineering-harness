@@ -2,6 +2,8 @@
 
 This repository uses markdown-first architecture rather than runtime orchestration.
 
+It may borrow engineering discipline from larger systems, but it does so by tightening documents, skills, and validation rules instead of adding a long-running control plane.
+
 ## Why Markdown First
 
 Markdown is portable across editors, repos, and agent tools. It keeps plans, reviews, verification, and memory visible in version control instead of hiding state inside prompts or runtime services.
@@ -21,6 +23,13 @@ Version 1 is intentionally light:
 - no web UI
 
 The goal of v1 is to standardize engineering behavior, not to introduce a platform dependency. The only code layer is lightweight install and validation helpers plus CI.
+
+That means this repo intentionally does not absorb:
+
+- parallel state trees such as `.planning/`
+- workspace inventories or graph intelligence
+- autonomous subagent meshes
+- framework-style SDKs for active planning state
 
 ## System Layers
 

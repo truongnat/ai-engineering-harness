@@ -9,6 +9,7 @@ Prove that Google login can be added without breaking guest mode or session expe
 ## Status
 
 status: pending
+freshness: example artifact
 summary: blocked until real Flutter and provider checks are run in the target app.
 
 ## Tests Run
@@ -26,6 +27,13 @@ summary: blocked until real Flutter and provider checks are run in the target ap
 | Google login succeeds | Login completes and session state is correct | Not run in demo artifact | pending |
 | Logout returns to expected state | Session resets without stale auth | Not run in demo artifact | pending |
 
+## Deferred Human Checks
+
+| Check | Why automation is insufficient | Owner | Blocking for ship? | Status |
+|---|---|---|---|---|
+| Real guest flow run | Example repo does not contain the runnable host app | adopting maintainer | yes | pending |
+| Real Google provider flow | Requires provider credentials and platform setup | adopting maintainer | yes | pending |
+
 ## Evidence
 
 - Commands executed: none in this example artifact
@@ -36,3 +44,7 @@ summary: blocked until real Flutter and provider checks are run in the target ap
 
 - Real provider credentials and platform checks are intentionally not run in the demo artifact.
 - Backend session rules may require deeper checks if the host app relies on API-issued auth state.
+
+## Ship Blockers
+
+- Real Flutter and provider-backed verification must run in the adopting host repo before completion or ship claims.

@@ -27,6 +27,12 @@ Show a compact but realistic plan for a Flutter auth feature while keeping the h
 - the app already supports guest access and that path must remain first-class
 - Google login is an additive capability, not a replacement for anonymous use
 
+## Success Criteria
+
+- guest users can still enter the app without authentication
+- Google users can enter the authenticated path cleanly
+- verification makes any unrun manual checks explicit
+
 ## Assumptions
 
 - a Flutter sign-in screen or onboarding gate already exists
@@ -46,12 +52,27 @@ Add a second sign-in option for Google while leaving the guest continuation path
 
 ## Tasks
 
-- [ ] Map the current guest-mode entry path and sign-in screen responsibilities
-- [ ] Add a Google sign-in action without removing the guest continue action
-- [ ] Wire successful Google auth into the existing authenticated session path
-- [ ] Verify that guest mode still enters the app without auth
-- [ ] Verify that Google login enters the authenticated path cleanly
-- [ ] Capture the guest-mode preservation rule in memory
+- Task: Map the current guest-mode entry path and sign-in responsibilities
+- Why now: protecting the existing guest flow is the highest regression risk
+- Affected files or artifacts: sign-in screen, auth controller/service
+- Verification for this task cluster: a reviewer can trace the guest path without finding hidden auth requirements
+
+- Task: Add Google sign-in without removing guest continuation
+- Why now: the feature is additive, not a redesign
+- Affected files or artifacts: sign-in surface, auth action wiring
+- Verification for this task cluster: UI and state logic still expose both entry modes
+
+- Task: Verify both entry modes and capture the lesson
+- Why now: the feature is not done if one mode works and the other regresses
+- Affected files or artifacts: `.harness/VERIFY.md`, `.harness/REMEMBER.md`
+- Verification for this task cluster: guest and Google flows each have explicit checks
+
+## Approval Checkpoints
+
+- Checkpoint: auth scope remains additive
+- Trigger: plan stays out of backend redesign and mandatory sign-in scope
+- Approval needed from: example maintainer
+- Notes: compact adoption example only
 
 ## Verification Strategy
 
@@ -67,7 +88,13 @@ Add a second sign-in option for Google while leaving the guest continuation path
 
 Remove the Google login entry point and restore the previous sign-in surface if guest-mode regression is detected.
 
+## Approval Status
+
+status: approved
+approved_by: example maintainer
+approved_at: example
+notes: compact adoption example only
+
 ## Human Approval
 
-- Status: approved
-- Notes: compact adoption example only
+See Approval Status above.

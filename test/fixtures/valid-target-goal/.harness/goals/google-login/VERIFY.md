@@ -22,6 +22,12 @@ summary: the structural verification artifact is complete for this fixture.
 |---|---|---|---|
 | Inspect failures | No structural failures remain | None observed | passed |
 
+## Deferred Human Checks
+
+| Check | Why automation is insufficient | Owner | Blocking for ship? | Status |
+|---|---|---|---|---|
+| Behavioral auth flow check | This fixture only proves structural goal artifacts | adopting maintainer | yes | pending |
+
 ## Evidence
 
 - Commands executed: `node validate.js`
@@ -31,3 +37,7 @@ summary: the structural verification artifact is complete for this fixture.
 ## Known Gaps
 
 - No behavioral application test evidence is included in this fixture; it is structural validation only.
+
+## Ship Blockers
+
+- Behavioral verification in the real host repo is still required before any ship claim.

@@ -30,14 +30,15 @@ Translate the agreed goal into an explicit, reviewable implementation plan.
 
 - `using-harness`
 - `writing-plans`
+- `brainstorming` when the plan still depends on an unresolved approach choice
 - `mapping-codebase` when affected areas need more detail
 
 ## Step-By-Step Workflow
 
 1. Restate the approved goal and scope after recalling relevant decisions, hazards, and reusable commands.
 2. Identify the files, systems, and `.harness/` artifacts that will change.
-3. Break the work into small ordered tasks.
-4. Define verification strategy, approval points, and not-run risks.
+3. Break the work into small ordered tasks that are easy to verify independently.
+4. Define verification strategy for each task cluster, approval checkpoints, and not-run risks.
 5. Record assumptions, dependencies, rollback considerations, and scope boundaries.
 6. Write the plan to `.harness/PLAN.md` and update `.harness/TASKS.md` if task tracking is needed.
 7. Stop before implementation.
@@ -62,7 +63,7 @@ Translate the agreed goal into an explicit, reviewable implementation plan.
 
 ## Completion Gate
 
-The command is complete when `.harness/PLAN.md` contains concrete ordered work, explicit scope, verification strategy, an **Approval Status** block (`status: draft` until human approval, then `status: approved`), and implementation has not yet started.
+The command is complete when `.harness/PLAN.md` contains concrete ordered work, explicit scope, affected areas, task-sized verification expectations, approval checkpoints, an **Approval Status** block (`status: draft` until human approval, then `status: approved`), and implementation has not yet started.
 
 ## Artifact Paths
 

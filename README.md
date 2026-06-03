@@ -24,6 +24,8 @@ Give your repo a repeatable engineering loop — plan, build, verify, ship, and 
 
 You get a private capability cache (`.ai-harness/`), project workflow state (`.harness/`), and provider-native entrypoints (Cursor rules, Claude commands, and similar) — not a runtime platform or universal plugin system.
 
+The harness learns from stronger systems such as Superpowers and GSD, but keeps only the parts that fit a lightweight markdown-first pack: better discussion discipline, smaller plans, clearer verification states, and explicit review or human-check gates.
+
 > [!IMPORTANT]
 > **v0.11.0 is experimental.** Per-provider behavior is still being validated. The install wizard lets you **choose** providers; detection only recommends.
 
@@ -150,6 +152,7 @@ If you need one runtime to orchestrate everything, use a framework. If you want 
 | NPX / wizard | [docs/npx-cli-ux.md](docs/npx-cli-ux.md), [docs/terminal-wizard-ux.md](docs/terminal-wizard-ux.md) |
 | Slash / runtime commands | [docs/runtime-command-surface.md](docs/runtime-command-surface.md) |
 | Command behavior | [docs/harness-command-behavior.md](docs/harness-command-behavior.md) |
+| Distillation choices | [docs/distillation-superpowers-gsd.md](docs/distillation-superpowers-gsd.md), [docs/forensics-lite.md](docs/forensics-lite.md) |
 | Capability cache | [docs/private-capability-cache.md](docs/private-capability-cache.md) |
 | v0.11.0 release | [docs/v0.11.0-release-notes.md](docs/v0.11.0-release-notes.md) |
 | Dogfood example | [examples/dogfood-tiny-node-api](examples/dogfood-tiny-node-api) |

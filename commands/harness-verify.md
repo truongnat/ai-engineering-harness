@@ -31,20 +31,21 @@ Gather fresh evidence that the implemented work meets the goal before any comple
 
 - `using-harness`
 - `verification`
+- `verification-before-completion` when the risk of optimistic claims is high
 - `code-review` when inspection is part of the gate
 
 ## Step-By-Step Workflow
 
 1. Identify the exact checks that prove the claim, using `.harness/INDEX.md` for reusable verification recipes and `.harness/HAZARDS.md` for regression focus when present.
 2. Run the checks fresh.
-3. Record automated checks, manual checks, evidence, and known gaps in `.harness/VERIFY.md`.
+3. Record automated checks, manual checks, evidence, deferred human checks, known gaps, and ship blockers in `.harness/VERIFY.md`.
 4. Compare the evidence against the goal and plan.
-5. Write `passed`, `failed`, `blocked`, or `pending` status into `.harness/VERIFY.md`.
+5. Write `passed`, `failed`, `blocked`, or `pending human verification` status into `.harness/VERIFY.md`.
 6. Stop if evidence is missing, contradictory, or failed.
 
 ## Required Outputs
 
-- `.harness/VERIFY.md` with status, tests run, manual checks, evidence, and known gaps
+- `.harness/VERIFY.md` with status, tests run, manual checks, evidence, known gaps, deferred human checks when needed, and ship blockers
 - `.harness/STATE.md` updated with verification status
 - optional `.harness/REVIEW.md` if inspection findings are required
 
@@ -59,10 +60,11 @@ Gather fresh evidence that the implemented work meets the goal before any comple
 - Do not assume success because the change looks correct.
 - Do not record only passing checks and omit skipped or blocked evidence.
 - Do not reuse stale verification output as if it were fresh.
+- Do not hide required human verification behind a passed status.
 
 ## Completion Gate
 
-The command is complete when `.harness/VERIFY.md` contains fresh evidence that clearly supports a pass, fail, blocked, or pending result and no one could mistake missing evidence for a pass.
+The command is complete when `.harness/VERIFY.md` contains fresh evidence that clearly supports a pass, fail, blocked, or pending-human-verification result, with explicit blockers and no chance of mistaking missing evidence for a pass.
 
 ## Artifact Paths
 

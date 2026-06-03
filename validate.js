@@ -87,6 +87,8 @@ const requiredFiles = [
   "docs/provider-command-matrix.md",
   "docs/codex-plugin-support.md",
   "docs/harness-command-behavior.md",
+  "docs/distillation-superpowers-gsd.md",
+  "docs/forensics-lite.md",
   ".cursor-plugin/plugin.json",
   ".claude-plugin/plugin.json",
   ".codex-plugin/plugin.json",
@@ -264,11 +266,15 @@ const skillFiles = [
   "skills/using-harness/SKILL.md",
   "skills/mapping-codebase/SKILL.md",
   "skills/discussing-goals/SKILL.md",
+  "skills/brainstorming/SKILL.md",
   "skills/writing-plans/SKILL.md",
   "skills/executing-plans/SKILL.md",
+  "skills/using-git-worktrees/SKILL.md",
   "skills/test-driven-development/SKILL.md",
   "skills/code-review/SKILL.md",
+  "skills/requesting-code-review/SKILL.md",
   "skills/verification/SKILL.md",
+  "skills/verification-before-completion/SKILL.md",
   "skills/remembering/SKILL.md",
   "skills/writing-skills/SKILL.md"
 ];
@@ -698,9 +704,9 @@ function assertVerifyTemplateContract(baseDir, failures) {
 function assertVerifyArtifactContent(relativePath, content, failures, options = {}) {
   const isTemplate = options.isTemplate ?? false;
 
-  if (!/status:\s*(pending|passed|failed|blocked|partial)/i.test(content)) {
+  if (!/status:\s*(pending|passed|failed|blocked|partial|pending human verification)/i.test(content)) {
     failures.push(
-      `${relativePath} must include a machine-readable status field (status: pending|passed|failed|blocked|partial)`
+      `${relativePath} must include a machine-readable status field (status: pending|passed|failed|blocked|partial|pending human verification)`
     );
   }
 
@@ -728,10 +734,19 @@ function assertVerifyArtifactContent(relativePath, content, failures, options = 
     }
   }
 
+  const blockersBody = extractMarkdownSection(content, "## Ship Blockers");
+  if (blockersBody === null || !hasSubstantiveSectionBody(blockersBody, { minChars: 12 })) {
+    failures.push(`${relativePath}: Ship Blockers must contain an explicit blocker statement`);
+  }
+
   if (isTemplate) {
     const evidenceBody = extractMarkdownSection(content, "## Evidence");
     if (evidenceBody === null || !hasSubstantiveSectionBody(evidenceBody, { minChars: 20 })) {
       failures.push(`${relativePath}: Evidence must contain structured summary prompts`);
+    }
+    const humanChecksBody = extractMarkdownSection(content, "## Deferred Human Checks");
+    if (humanChecksBody === null || !hasSubstantiveSectionBody(humanChecksBody, { minChars: 20 })) {
+      failures.push(`${relativePath}: Deferred Human Checks must contain structured prompts`);
     }
   }
 }
@@ -887,6 +902,11 @@ function assertPlanTemplateContract(baseDir, failures) {
   if (!content.includes("## Approval Status")) {
     failures.push(`${relativePath} is missing heading: ## Approval Status`);
   }
+  for (const heading of ["## Success Criteria", "## Approval Checkpoints"]) {
+    if (!content.includes(heading)) {
+      failures.push(`${relativePath} is missing heading: ${heading}`);
+    }
+  }
   if (!/status:\s*(draft|approved|blocked)/i.test(content)) {
     failures.push(
       `${relativePath} must include approval status field (status: draft|approved|blocked)`
@@ -894,6 +914,29 @@ function assertPlanTemplateContract(baseDir, failures) {
   }
   if (!/approved_by:/i.test(content) || !/approved_at:/i.test(content)) {
     failures.push(`${relativePath} must include approved_by: and approved_at: fields`);
+  }
+  if (!/Verification for this task cluster:/i.test(content)) {
+    failures.push(`${relativePath} must prompt for task-level verification expectations`);
+  }
+}
+
+function assertReviewTemplateContract(baseDir, failures) {
+  const relativePath = "templates/REVIEW.md";
+  if (!fs.existsSync(resolvePath(baseDir, relativePath))) {
+    failures.push(`Missing required path: ${relativePath}`);
+    return;
+  }
+  const content = readFile(baseDir, relativePath);
+  for (const heading of [
+    "## Findings",
+    "## Missing Verification",
+    "## Evidence Reviewed",
+    "## Ship Blockers",
+    "## Review Status"
+  ]) {
+    if (!content.includes(heading)) {
+      failures.push(`${relativePath} is missing heading: ${heading}`);
+    }
   }
 }
 
@@ -986,6 +1029,7 @@ function validateHarnessRepository(baseDir = root) {
 
   assertVerifyTemplateContract(baseDir, failures);
   assertPlanTemplateContract(baseDir, failures);
+  assertReviewTemplateContract(baseDir, failures);
   assertDogfoodDemoContract(baseDir, failures);
   assertHyphenCommandNamingInActiveDocs(baseDir, failures);
   assertPublicDemoPolish(baseDir, failures);

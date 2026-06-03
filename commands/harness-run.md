@@ -29,6 +29,8 @@ Execute the approved plan in small, surgical steps without silent scope drift.
 
 - `using-harness`
 - `executing-plans`
+- `using-git-worktrees` when implementation should be isolated from the current branch
+- `requesting-code-review` when an independent review gate is part of the approved plan
 - `test-driven-development` when behavior changes
 - `writing-skills` when adding or revising skills
 
@@ -37,15 +39,18 @@ Execute the approved plan in small, surgical steps without silent scope drift.
 1. Re-read `.harness/PLAN.md` before making changes.
 2. Execute the next smallest approved task only.
 3. Keep changes tightly aligned to the recorded scope.
-4. Update `.harness/TASKS.md` and `.harness/STATE.md` as status changes.
-5. Record deviations or blockers instead of improvising around them.
-6. Stop once the implementation is complete enough to inspect or verify.
+4. Use optional worktree isolation when the plan or repo risk warrants it, but do not make it a hidden requirement.
+5. Update `.harness/TASKS.md` and `.harness/STATE.md` as status changes.
+6. Record deviations or blockers instead of improvising around them.
+7. Treat self-reports as notes only; verification evidence belongs in `harness-verify`.
+8. Stop once the implementation is complete enough to inspect or verify.
 
 ## Required Outputs
 
 - implemented repository changes required by the approved plan
 - `.harness/TASKS.md` updated with in-progress, completed, or blocked status
 - `.harness/STATE.md` updated with current execution state
+- recorded deviations or blockers when reality diverges from plan
 
 ## Redirect Behavior
 
@@ -58,6 +63,7 @@ Execute the approved plan in small, surgical steps without silent scope drift.
 - Do not implement unplanned work.
 - Do not claim completion if implementation is partial.
 - Do not update `.harness/VERIFY.md` as a substitute for real verification.
+- Do not treat "I checked it" or similar self-reporting as verification evidence.
 - Do not hide scope drift, skipped tasks, or blockers.
 
 ## Completion Gate

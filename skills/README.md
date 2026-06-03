@@ -7,11 +7,15 @@ Skills define reusable agent capabilities for this harness. Each skill has a nar
 - `using-harness`
 - `mapping-codebase`
 - `discussing-goals`
+- `brainstorming`
 - `writing-plans`
 - `executing-plans`
+- `using-git-worktrees`
 - `test-driven-development`
 - `code-review`
+- `requesting-code-review`
 - `verification`
+- `verification-before-completion`
 - `remembering`
 - `writing-skills`
 

@@ -12,6 +12,7 @@ Provider invocation differs (slash, plugin skill, ask `harness-plan`, etc.). **A
 | Artifacts before rework | Read `.harness/REVIEW.md`, `.harness/PLAN.md`, `.harness/STATUS.md`, `.harness/DISCUSSION.md` before re-running expensive work |
 | No fake freshness | State *not verified* if git/base diff was not checked |
 | Project scope only | Use this repo's `.ai-harness/` and `.harness/` only |
+| No heavy runtime drift | Borrow process ideas freely, but do not introduce framework-style state engines or orchestration into the core harness |
 
 ## Summarize vs re-run vs incremental diff
 
@@ -37,7 +38,23 @@ Provider invocation differs (slash, plugin skill, ask `harness-plan`, etc.). **A
 
 **Pre-plan mode** (no review): classic scope/goal discussion → `.harness/DISCUSSION.md`.
 
+Before leaving discuss, make the following explicit when they matter:
+
+- goal
+- success criteria
+- scope boundaries
+- constraints
+- unresolved risks
+- preferred direction
+
 Source contract: [commands/harness-discuss.md](../commands/harness-discuss.md).
+
+## `/harness-run` and `/harness-verify` guardrails
+
+- `harness-run` follows the approved plan in small steps, records deviations, and does not treat self-reporting as verification.
+- Worktree isolation is optional and risk-driven, not a hidden default.
+- `harness-verify` must record fresh evidence, known gaps, deferred human checks, and ship blockers when relevant.
+- `pending human verification` is a valid verification outcome and must not be flattened into `passed`.
 
 ## Other commands (short)
 
@@ -51,3 +68,5 @@ Source contract: [commands/harness-discuss.md](../commands/harness-discuss.md).
 
 - [runtime-command-surface.md](runtime-command-surface.md)
 - [usage-examples.md](usage-examples.md)
+- [distillation-superpowers-gsd.md](distillation-superpowers-gsd.md)
+- [forensics-lite.md](forensics-lite.md)
