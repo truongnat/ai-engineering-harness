@@ -52,6 +52,7 @@
 
 ### Added
 
+- Standardized canonical harness command IDs to hyphen form (`harness-plan`, …); native slash `/harness-plan` where supported; colon form deprecated in active docs
 - v0.11.0 Step 4 public demo polish — GitHub Actions [CI](.github/workflows/ci.yml), README Demo section, [TRANSCRIPT.md](examples/dogfood-tiny-node-api/TRANSCRIPT.md)
 - v0.11.0 Step 3 end-to-end dogfood demo — [examples/dogfood-tiny-node-api](examples/dogfood-tiny-node-api) with `.harness/` artifacts and real `npm test` evidence in VERIFY
 - v0.11.0 Step 2 command execution contracts: minimum read sets, phase preconditions, required outputs, redirect behavior, and failure conditions across harness commands

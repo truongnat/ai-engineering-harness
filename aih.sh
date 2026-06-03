@@ -1133,9 +1133,9 @@ run_doctor() {
   if [ -f "${TARGET_ABS}/.ai-harness/runtime-commands/harness-plan.md" ]; then
     if grep -q '.ai-harness/activation.md' "${TARGET_ABS}/.ai-harness/runtime-commands/harness-plan.md" 2>/dev/null \
       && grep -q '.ai-harness/commands/harness-plan.md' "${TARGET_ABS}/.ai-harness/runtime-commands/harness-plan.md" 2>/dev/null; then
-      printf '%s\n' 'PASS harness:plan local catalog references activation and source command'
+      printf '%s\n' 'PASS harness-plan local catalog references activation and source command'
     else
-      printf '%s\n' 'FAIL harness:plan local catalog incomplete'
+      printf '%s\n' 'FAIL harness-plan local catalog incomplete'
       _fail=1
     fi
   fi

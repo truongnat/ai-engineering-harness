@@ -25,17 +25,17 @@ Cursor manifest (upstream): `commands: "./commands/"`, `skills: "./skills/"` —
 | Project skill | `.claude/skills/deploy/SKILL.md` | `/deploy` (skill) |
 | Plugin skill | `my-plugin/skills/review/SKILL.md` | `/my-plugin:review` (namespaced) |
 
-**ai-engineering-harness:**
+**ai-engineering-harness commands*
 
 - Pack: `.claude-plugin/plugin.json` + repo `commands/`, `skills/`
 - Project npx install: `.claude/commands/harness-plan.md` → **`/harness-plan`** (hyphen, per filename rule)
-- **`/harness:plan` not claimed** unless plugin namespace dogfooded
+- **`/harness-plan` not claimed** unless plugin namespace dogfooded
 
 ## Cursor
 
 **Source:** Superpowers README — `/add-plugin superpowers` or marketplace; [`.cursor-plugin/plugin.json`](https://github.com/obra/superpowers/blob/main/.cursor-plugin/plugin.json) declares `commands`, `skills`, `agents`, `hooks`.
 
-**ai-engineering-harness:**
+**ai-engineering-harness commands*
 
 - Pack: `.cursor-plugin/plugin.json` → `./commands/`, `./skills/`
 - **Do not** treat project `.cursor/commands/harness-*.md` as native (removed)
@@ -50,7 +50,7 @@ Was experimental; no longer in wizard or `install-runtime.js`. Legacy projects m
 
 **Source:** Superpowers — `gemini extensions install <git-url>`; extension manifest `gemini-extension.json` + `GEMINI.md`.
 
-**ai-engineering-harness:**
+**ai-engineering-harness commands*
 
 - Pack root `gemini-extension.json`
 - Project/runtime: `.gemini/extensions/ai-engineering-harness/` with manifest + context
@@ -64,10 +64,10 @@ Was experimental; no longer in wizard or `install-runtime.js`. Legacy projects m
 - [build-web-apps example](https://github.com/openai/plugins/tree/main/plugins/build-web-apps) — `skills: "./skills/"` + `interface` block
 - [Superpowers README](https://github.com/obra/superpowers) — Codex install: `/plugins` → search → Install Plugin
 
-**ai-engineering-harness:**
+**ai-engineering-harness commands*
 
 - Pack: `.codex-plugin/plugin.json` + repo `skills/` (no fake `.codex/commands/`)
-- **Not** a project-local `/harness:*` slash provider
+- **Not** a project-local `/harness-*` slash provider
 - `npx install --provider codex`: `AGENTS.md` + `.ai-harness/` **fallback only**
 - Native: install plugin via Codex `/plugins` when marketplace entry exists
 
@@ -82,7 +82,7 @@ Regardless of provider:
 .ai-harness/activation.md
 ```
 
-Canonical names: `harness:plan`, … — use when asking the agent on fallback-only providers.
+Canonical names: `harness-plan`, … — use when asking the agent on fallback-only providers.
 
 ## Related
 

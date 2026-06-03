@@ -1,6 +1,6 @@
 # Harness command behavior
 
-Provider invocation differs (slash, plugin skill, ask `harness:plan`, etc.). **After routing to `.ai-harness/commands/`, behavior is the same** for every provider.
+Provider invocation differs (slash, plugin skill, ask `harness-plan`, etc.). **After routing to `.ai-harness/commands/`, behavior is the same** for every provider.
 
 ## Core policy
 
@@ -21,7 +21,7 @@ Provider invocation differs (slash, plugin skill, ask `harness:plan`, etc.). **A
 | Stale review suspected | State freshness unverified or run incremental diff **after** presenting baseline |
 | Full re-review | User must ask explicitly or run `harness-verify` / review workflow — not default for discuss |
 
-## `/harness:discuss` (canonical: `harness:discuss`)
+## `/harness-discuss` (canonical: `harness-discuss`)
 
 **Expected when `.harness/REVIEW.md` exists:**
 
@@ -43,9 +43,9 @@ Source contract: [commands/harness-discuss.md](../commands/harness-discuss.md).
 
 | Command | Act-first trigger |
 |---------|-------------------|
-| `harness:plan` | Read GOAL + DISCUSSION before asking scope |
-| `harness:verify` | Read PLAN + STATE before re-asking what to verify |
-| `harness:status` | Summarize install + `.harness/` state without menu prompts |
+| `harness-plan` | Read GOAL + DISCUSSION before asking scope |
+| `harness-verify` | Read PLAN + STATE before re-asking what to verify |
+| `harness-status` | Summarize install + `.harness/` state without menu prompts |
 
 ## Related
 

@@ -168,7 +168,7 @@ function installCodex(scope, targetRoot, packRoot, options) {
   }
   writeFileAction(targetRoot, "AGENTS.md", readPackBootstrap(packRoot, "AGENTS.project.md"), options);
   console.log(
-    "NEXT: Codex — project install is AGENTS.md + .ai-harness/ fallback only. Native: /plugins → ai-engineering-harness plugin (not /harness:* slash)."
+    "NEXT: Codex — project install is AGENTS.md + .ai-harness/ fallback only. Native: /plugins → ai-engineering-harness plugin (not /harness-* slash)."
   );
 }
 

@@ -25,7 +25,7 @@ Inspired by modern CLIs: shadcn, create-t3-app, `npx skills add`.
 5. **Plan** — `Will install` / `Will not modify` blocks + slash command preview
 6. **Proceed** — confirm before writes
 7. **Spinner** — `Installing harness…` while `aih.sh` runs per provider
-8. **Outro** — success + next steps (use `harness:plan` for this repo, `doctor`)
+8. **Outro** — success + next steps (use `harness-plan` for this repo, `doctor`)
 
 Detection **recommends and preselects** only; it never auto-installs without explicit selection.
 

@@ -43,7 +43,7 @@ const PROVIDER_COMMAND_SUPPORT = Object.freeze({
     useInstruction:
       "Prefer /plugin install from repo marketplace; project install adds .claude/commands/harness-plan.md → /harness-plan per Claude docs.",
     notes:
-      "Pack ships .claude-plugin/ + skills/ + commands/. Colon namespace /harness:plan only via plugin skill namespace when verified.",
+      "Pack ships .claude-plugin/ + skills/ + commands/. Plugin skill namespace may use colon form; project command IDs use harness-plan hyphen form.",
     invocations: { plan: "/harness-plan" }
   },
   cursor: {
@@ -78,7 +78,7 @@ const PROVIDER_COMMAND_SUPPORT = Object.freeze({
     installedPaths: ["AGENTS.md (project fallback)"],
     actualInvocation: null,
     useInstruction:
-      "Native: open Codex /plugins, install ai-engineering-harness plugin (marketplace pending). Use plugin skills. Project npx install: AGENTS.md + .ai-harness/ fallback only — no /harness:* slash.",
+      "Native: open Codex /plugins, install ai-engineering-harness plugin (marketplace pending). Use plugin skills. Project npx install: AGENTS.md + .ai-harness/ fallback only — no /harness-* slash.",
     notes:
       "Codex is not a project-local slash-command provider. Package ships .codex-plugin/plugin.json + skills/ per openai/plugins layout.",
     invocations: {}
@@ -94,7 +94,7 @@ const PROVIDER_COMMAND_SUPPORT = Object.freeze({
     installMethod: "AGENTS.md activation + .ai-harness/ catalog",
     installedPaths: ["AGENTS.md"],
     actualInvocation: null,
-    useInstruction: 'Ask the agent: "Use harness:plan for this repository."',
+    useInstruction: 'Ask the agent: "Use harness-plan for this repository."',
     notes: "Generic bootstrap — not Codex plugin UI. For Codex native skills use codex provider + /plugins.",
     invocations: {}
   },
@@ -109,7 +109,7 @@ const PROVIDER_COMMAND_SUPPORT = Object.freeze({
     installedPaths: [".gemini/extensions/ai-engineering-harness/gemini-extension.json", "GEMINI.md"],
     actualInvocation: null,
     useInstruction:
-      'gemini extensions install https://github.com/truongnat/ai-engineering-harness — context via GEMINI.md; ask "use harness:plan".',
+      'gemini extensions install https://github.com/truongnat/ai-engineering-harness — context via GEMINI.md; ask "use harness-plan".',
     notes: "Extension context/skills — no invented slash commands under extension commands/.",
     invocations: {}
   },
@@ -129,70 +129,70 @@ const PROVIDER_COMMAND_SUPPORT = Object.freeze({
 const HARNESS_COMMANDS = Object.freeze([
   {
     id: "start",
-    canonical: "harness:start",
+    canonical: "harness-start",
     title: "Harness Start",
     sourceCommand: "commands/harness-start.md",
     description: "Start or resume work on the active goal in this repository."
   },
   {
     id: "map",
-    canonical: "harness:map",
+    canonical: "harness-map",
     title: "Harness Map",
     sourceCommand: "commands/harness-map.md",
     description: "Map affected codebase areas for the current goal."
   },
   {
     id: "discuss",
-    canonical: "harness:discuss",
+    canonical: "harness-discuss",
     title: "Harness Discuss",
     sourceCommand: "commands/harness-discuss.md",
     description: "Discuss scope, constraints, and approach before planning."
   },
   {
     id: "plan",
-    canonical: "harness:plan",
+    canonical: "harness-plan",
     title: "Harness Plan",
     sourceCommand: "commands/harness-plan.md",
     description: "Create or update a project-scoped implementation plan."
   },
   {
     id: "run",
-    canonical: "harness:run",
+    canonical: "harness-run",
     title: "Harness Run",
     sourceCommand: "commands/harness-run.md",
     description: "Execute the approved plan with evidence-backed progress."
   },
   {
     id: "verify",
-    canonical: "harness:verify",
+    canonical: "harness-verify",
     title: "Harness Verify",
     sourceCommand: "commands/harness-verify.md",
     description: "Verify implementation against gates and proof requirements."
   },
   {
     id: "ship",
-    canonical: "harness:ship",
+    canonical: "harness-ship",
     title: "Harness Ship",
     sourceCommand: "commands/harness-ship.md",
     description: "Ship completed work with status aligned to proof."
   },
   {
     id: "remember",
-    canonical: "harness:remember",
+    canonical: "harness-remember",
     title: "Harness Remember",
     sourceCommand: "commands/harness-remember.md",
     description: "Record durable lessons in project memory."
   },
   {
     id: "status",
-    canonical: "harness:status",
+    canonical: "harness-status",
     title: "Harness Status",
     sourceCommand: "commands/harness-status.md",
     description: "Summarize harness install and project state for this repo."
   },
   {
     id: "doctor",
-    canonical: "harness:doctor",
+    canonical: "harness-doctor",
     title: "Harness Doctor",
     sourceCommand: "commands/harness-doctor.md",
     description: "Check harness readiness for this repository."
@@ -283,7 +283,7 @@ function formatCommandSupportForPlan(providerIds) {
     lines.push(`  ${spec.provider}:`);
     lines.push(`    mode: ${spec.status}`);
     if (providerId === "codex") {
-      lines.push("    native /harness:* slash: not claimed");
+      lines.push("    native /harness-* slash: not claimed");
       lines.push("    Codex plugin: .codex-plugin/plugin.json + skills/ (install via /plugins when published)");
       lines.push("    project install: AGENTS.md + .ai-harness/ fallback only");
     }
@@ -304,9 +304,9 @@ function formatCommandSupportForPlan(providerIds) {
 function activationMarkdown() {
   return `# ai-engineering-harness — project activation
 
-This repository uses a **project-local** harness install. Canonical command names (\`harness:plan\`, \`harness:verify\`, …) apply **only to this repo** via the local catalog below.
+This repository uses a **project-local** harness install. Canonical command IDs (\`harness-plan\`, \`harness-verify\`, …) apply **only to this repo** via the local catalog below.
 
-## Before any harness:* command
+## Before any harness command
 
 1. Read \`.ai-harness/manifest.json\` (see \`commandSurface\` for provider-specific support).
 2. Read this file (\`.ai-harness/activation.md\`).
@@ -323,11 +323,11 @@ This repository uses a **project-local** harness install. Canonical command name
 
 Canonical names map to \`.ai-harness/runtime-commands/harness-<id>.md\`, which points at \`.ai-harness/commands/harness-<id>.md\`.
 
-**Native slash commands are provider-dependent.** See \`docs/runtime-command-surface.md\`. If the tool has no verified native command, ask the user to request \`harness:<id>\` for this repository.
+**Native slash commands are provider-dependent.** See \`docs/runtime-command-surface.md\`. If the tool has no verified native slash, ask the user to run \`harness-<id>\` for this repository (e.g. \`harness-plan\`).
 
 ## Namespace
 
-Command namespace: \`${COMMAND_NAMESPACE}\` (canonical: \`harness:plan\`, \`harness:verify\`, …).
+Command namespace: \`${COMMAND_NAMESPACE}\` (canonical IDs: \`harness-plan\`, \`harness-verify\`, …). Native slash where supported: \`/harness-plan\`, etc.
 `;
 }
 
@@ -376,7 +376,7 @@ function renderCursorCommandsRuleMdc() {
     "",
     "# Harness commands (this repo)",
     "",
-    "When the user asks to run a harness command (e.g. **harness:plan**), treat it as **project-scoped** for this repository.",
+    "When the user asks to run a harness command (e.g. **harness-plan**), treat it as **project-scoped** for this repository.",
     "",
     "Always read `.ai-harness/activation.md` first, then the matching file under `.ai-harness/runtime-commands/`, then `.ai-harness/commands/`.",
     "",
@@ -398,15 +398,15 @@ function renderAgentsCommandAliasesSection() {
     "",
     "## Harness commands (project-scoped, fallback aliases)",
     "",
-    "This repository exposes a **local command catalog** under `.ai-harness/runtime-commands/`. These names activate **only** this repo's harness:",
+    "This repository exposes a **local command catalog** under `.ai-harness/runtime-commands/`. These hyphen-form IDs activate **only** in this repo:",
     "",
     "1. `.ai-harness/activation.md`",
     "2. `.ai-harness/runtime-commands/harness-<command>.md`",
     "3. `.ai-harness/commands/harness-<command>.md`",
     "4. `.harness/` project state",
     "",
-    "Ask the agent explicitly, e.g. **Use harness:plan for this repository.**",
-    "Do not assume a native `/harness:*` slash command exists in this tool.",
+    "Ask the agent explicitly, e.g. **Use harness-plan for this repository.**",
+    "Do not assume a native `/harness-*` slash command exists in this tool.",
     "",
     "| Canonical | Local routing |",
     "|-----------|---------------|",
@@ -425,7 +425,7 @@ function renderGeminiCommandsReadme() {
     "# Harness commands (Gemini fallback)",
     "",
     "Project-scoped **local catalog** for this extension. Read `.ai-harness/activation.md` first.",
-    "Ask: **Use harness:plan** — native slash commands are not claimed.",
+    "Ask: **Use harness-plan** — native slash commands are not claimed.",
     "",
     "| Canonical | File |",
     "|-----------|------|",
@@ -622,7 +622,7 @@ function installGeminiHarnessFallback(targetRoot, options) {
     let body = fs.readFileSync(geminiMd, "utf8");
     const marker = "## Harness commands";
     if (!body.includes(marker)) {
-      body = `${body.trimEnd()}\n\n## Harness commands\n\nRead \`.ai-harness/activation.md\` first. Use **gemini extensions install** from pack \`gemini-extension.json\` or project extension dir. Ask: **use harness:plan** — no slash claim.\n`;
+      body = `${body.trimEnd()}\n\n## Harness commands\n\nRead \`.ai-harness/activation.md\` first. Use **gemini extensions install** from pack \`gemini-extension.json\` or project extension dir. Ask: **use harness-plan** — no slash claim.\n`;
       results.push(
         writeFile(targetRoot, ".gemini/extensions/ai-engineering-harness/GEMINI.md", body, {
           ...options,

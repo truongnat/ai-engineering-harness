@@ -6,8 +6,8 @@ Active scope (v0.11.0): Claude, Cursor, Codex, Gemini — **not OpenCode**.
 |----------|----------------------|----------------|----------------|------------|---------|-------------|
 | Claude Code | native-plugin + project command files | `.claude-plugin/plugin.json`, `.claude/commands/` | `/plugin install …` or npx project install | `/harness-plan`; plugin namespace TBD | partial | Primary polish + marketplace |
 | Cursor | plugin-ready | `.cursor-plugin/plugin.json` | `/add-plugin` (pending publish) | Plugin commands when installed | no | Secondary polish + marketplace |
-| Codex | plugin-packaging | `.codex-plugin/plugin.json` + `skills/` | `/plugins` marketplace once published | plugin skills (no `/harness:*` claim) | pending | Marketplace submit |
-| Gemini | fallback-only | `gemini-extension.json` | `gemini extensions install <git-url>` | ask harness:plan | partial | Extension dogfood |
+| Codex | plugin-packaging | `.codex-plugin/plugin.json` + `skills/` | `/plugins` marketplace once published | plugin skills (no `/harness-*` claim) | pending | Marketplace submit |
+| Gemini | fallback-only | `gemini-extension.json` | `gemini extensions install <git-url>` | ask harness-plan | partial | Extension dogfood |
 
 ## Removed from active scope
 

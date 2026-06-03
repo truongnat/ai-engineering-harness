@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚙️ ai-engineering-harness
+# ai-engineering-harness
 
 ### A lightweight, markdown-first workflow kit for AI coding agents
 
@@ -9,42 +9,31 @@
 ![License](https://img.shields.io/badge/license-MIT-16a34a)
 ![Markdown First](https://img.shields.io/badge/markdown-first-7c3aed)
 
-**Plan → Build → Verify → Ship → Remember**
+Give your repo a repeatable engineering loop — plan, build, verify, ship, and remember — using markdown contracts, command docs, skills, and quality gates instead of scattering workflow files at the project root.
 
-Install discipline into your repo with an interactive wizard — commands, skills, and `.harness/` state stay in a private capability cache, not scattered at the project root.
-
-[Quickstart](#-quickstart) · [Demo](#demo) · [Providers](#provider-support) · [Commands](#-commands) · [Docs](#-docs)
+[Quickstart](#quickstart) · [Demo](#demo) · [Why](#why) · [Providers](#providers) · [Commands](#commands)
 
 </div>
 
 ---
 
-## What is this?
+## Why
 
-`ai-engineering-harness` is a **lightweight, markdown-first workflow kit** for AI coding agents. It installs a local capability cache (`.ai-harness/`), project workflow state (`.harness/`), and provider-specific entrypoints (Cursor rules, Claude commands, etc.) so agents follow the same engineering loop without copying `commands/` and `skills/` into your repo root.
+**In 10 seconds:** AI coding agents are good at editing code, but they often skip engineering discipline: unclear goals, weak plans, optimistic verification, and forgotten context. `ai-engineering-harness` installs a lightweight workflow contract so agents follow a repeatable loop: **plan, build, verify, ship, and remember**.
+
+You get a private capability cache (`.ai-harness/`), project workflow state (`.harness/`), and provider-native entrypoints (Cursor rules, Claude commands, and similar) — not a runtime platform or universal plugin system.
 
 > [!IMPORTANT]
-> **v0.11.0 is experimental.** Per-provider behavior is still being validated. The install wizard lets you **choose** providers — detection only recommends; it does not auto-install.
+> **v0.11.0 is experimental.** Per-provider behavior is still being validated. The install wizard lets you **choose** providers; detection only recommends.
 
 ---
 
-## Why not a framework?
-
-This kit is **not** an agent framework, orchestrator, or “harness OS.” There is no long-running service, plugin runtime platform, or universal slash-command layer across every tool. You get markdown artifacts, a small installer, and provider-native hooks where each agent already supports them. If you need a single runtime that owns sessions, tools, and routing, use a framework; if you want shared **plan → verify → ship** discipline inside repos you already work in, use this pack.
-
----
-
-## 🚀 Quickstart
+## Quickstart {#quickstart}
 
 Inside your target project:
 
 ```bash
 npx ai-engineering-harness install
-```
-
-Verify:
-
-```bash
 npx ai-engineering-harness status
 npx ai-engineering-harness doctor
 ```
@@ -55,11 +44,33 @@ Non-interactive:
 npx ai-engineering-harness install --provider cursor --yes
 ```
 
-The wizard uses [@clack/prompts](https://github.com/natemoo-re/clack) for a polished terminal flow (intro, multiselect, plan, spinner, outro). See [docs/terminal-wizard-ux.md](docs/terminal-wizard-ux.md) and [docs/npx-cli-ux.md](docs/npx-cli-ux.md).
+Wizard UX details: [docs/terminal-wizard-ux.md](docs/terminal-wizard-ux.md), [docs/npx-cli-ux.md](docs/npx-cli-ux.md).
 
-## Demo
+---
 
-End-to-end **workflow-artifact dogfood** (not a full provider install demo): [examples/dogfood-tiny-node-api](examples/dogfood-tiny-node-api).
+## The loop
+
+```text
+Plan → Build → Verify → Ship → Remember
+```
+
+| Phase | Canonical command ID | Typical artifact |
+|-------|----------------------|------------------|
+| Plan | `harness-map`, `harness-start`, `harness-discuss`, `harness-plan` | `.harness/GOAL.md`, `PLAN.md` |
+| Build | `harness-run` | implementation work |
+| Verify | `harness-verify` | `.harness/VERIFY.md` |
+| Ship | `harness-ship` | `.harness/SHIP.md` |
+| Remember | `harness-remember` | `.harness/REMEMBER.md` |
+
+Where a provider supports native slash commands, use `/harness-plan` (and the same pattern for other IDs). Elsewhere, invoke the hyphen form via rules, AGENTS.md, or `.ai-harness/runtime-commands/`. Deprecated: legacy colon-separated command IDs in older docs and changelogs.
+
+Command policy (artifacts first): [docs/harness-command-behavior.md](docs/harness-command-behavior.md). Provider matrix: [docs/provider-command-matrix.md](docs/provider-command-matrix.md).
+
+---
+
+## Demo {#demo}
+
+End-to-end **workflow-artifact dogfood** (not a full provider install walkthrough): [examples/dogfood-tiny-node-api](examples/dogfood-tiny-node-api).
 
 ```bash
 git clone https://github.com/truongnat/ai-engineering-harness.git
@@ -69,35 +80,35 @@ cd examples/dogfood-tiny-node-api
 npm test
 ```
 
-The example includes `.harness/GOAL.md`, `PLAN.md`, `VERIFY.md`, `SHIP.md`, and `REMEMBER.md`. [.harness/VERIFY.md](examples/dogfood-tiny-node-api/.harness/VERIFY.md) records real `npm test` evidence (`status: passed`). Optional terminal notes: [TRANSCRIPT.md](examples/dogfood-tiny-node-api/TRANSCRIPT.md).
+The example includes `.harness/GOAL.md`, `PLAN.md`, `VERIFY.md`, `SHIP.md`, and `REMEMBER.md` with real test evidence in [VERIFY.md](examples/dogfood-tiny-node-api/.harness/VERIFY.md).
 
-## Provider support
+---
 
-Active scope (v0.11.0):
+## Providers {#providers}
 
 | Provider | Status | Notes |
 |----------|--------|-------|
 | Claude Code | **Primary** | Recommended path for dogfooding and polish |
-| Cursor | **Secondary** | Plugin-ready packaging (`.cursor-plugin/`); rules fallback until marketplace publish |
-| Codex | Experimental | Plugin via `/plugins` when published; project install = AGENTS.md fallback — [codex-plugin-support.md](docs/codex-plugin-support.md) |
+| Cursor | **Secondary** | Plugin-ready packaging; rules fallback until marketplace publish |
+| Codex | Experimental | Plugin via `/plugins` when published; project install = AGENTS.md — [codex-plugin-support.md](docs/codex-plugin-support.md) |
 | Gemini | Experimental | `gemini extensions install`; extension context |
+| OpenCode | **Out of scope** | Not part of v0.11.0 active support; legacy cleanup via `aih.sh uninstall --runtime opencode` |
 
-**OpenCode is no longer part of the active provider scope** (v0.11.0). Historical releases may still mention OpenCode. Legacy cleanup: `aih.sh uninstall --runtime opencode`.
+Research and native surfaces: [docs/provider-native-command-research.md](docs/provider-native-command-research.md), [docs/runtime-command-surface.md](docs/runtime-command-surface.md).
 
-Command details: [docs/provider-command-matrix.md](docs/provider-command-matrix.md), [docs/provider-native-command-research.md](docs/provider-native-command-research.md).
+---
 
-Local catalog (always): `.ai-harness/runtime-commands/` — canonical `harness:plan`, not a universal `/harness:plan` slash in every UI.
+## Commands {#commands}
 
-## Known limitations
+| Command | Purpose |
+|---------|---------|
+| `npx ai-engineering-harness install` | Interactive wizard → install into project |
+| `npx ai-engineering-harness status` | Local install summary |
+| `npx ai-engineering-harness doctor` | Readiness checks |
+| `npx ai-engineering-harness update` | Refresh cache and entrypoints |
+| `npx ai-engineering-harness uninstall` | Remove entrypoints (optional full cleanup) |
 
-- **Slash commands differ by provider** — native `/harness-*` paths exist only where documented; elsewhere use canonical `harness:plan` via rules, AGENTS.md, or the local catalog.
-- **Shell installer is not fully cross-platform** — `aih.sh` expects a POSIX `sh`; Windows users should prefer `npx ai-engineering-harness install`.
-- **Windows** may need [Git for Windows](https://git-scm.com/download/win) (Git Bash) or WSL when using shell fallbacks.
-- **Provider support is still validating** — Claude and Cursor are the most exercised paths; Codex and Gemini are experimental.
-
-## Command behavior
-
-Harness commands use **existing local artifacts first**. For example, `harness:discuss` summarizes and discusses `.harness/REVIEW.md` when present, instead of asking what to do next. Policy: [docs/harness-command-behavior.md](docs/harness-command-behavior.md).
+Aliases: `npx aih install`, `aih install` (after global install or link).
 
 ---
 
@@ -110,46 +121,39 @@ Harness commands use **existing local artifacts first**. For example, `harness:d
 | Provider entrypoint | e.g. `.cursor/rules/ai-engineering-harness.mdc` |
 | `.git/info/exclude` | Private mode only — local ignore block (not `.gitignore`) |
 
-Root `commands/`, `skills/`, `workflows/`, and `templates/` are **not** created at the project root.
+Root `commands/`, `skills/`, `workflows/`, and `templates/` are **not** copied to the project root. Details: [docs/private-capability-cache.md](docs/private-capability-cache.md).
 
 ---
 
-## 🧰 Commands
+## Known limitations
 
-| Command | Purpose |
-|---------|---------|
-| `npx ai-engineering-harness install` | Interactive wizard → install |
-| `npx ai-engineering-harness status` | Local install summary |
-| `npx ai-engineering-harness doctor` | Readiness checks |
-| `npx ai-engineering-harness update` | Refresh cache + entrypoints |
-| `npx ai-engineering-harness uninstall` | Remove entrypoints (optional full cleanup) |
-
-Aliases: `npx aih install`, `aih install` (after global install/link).
+- **Slash commands vary by provider** — native `/harness-*` paths exist only where documented; otherwise use hyphen-form IDs and the local catalog.
+- **Shell installer is not fully cross-platform** — `aih.sh` expects POSIX `sh`; on Windows prefer `npx ai-engineering-harness install`.
+- **Windows** may need [Git for Windows](https://git-scm.com/download/win) or WSL for shell fallbacks.
+- **Experimental providers** — Codex and Gemini are validating; Claude and Cursor are the most exercised paths.
 
 ---
 
-## Release discipline
+## Why not a framework?
 
-- **Wording-only doc edits** do not require a version bump.
-- When releasing, keep **README badge**, `package.json`, `CHANGELOG`, and git tags aligned on the same version.
-- Each versioned release should include **install verification** or a short **dogfood note** in release docs (what was actually run).
+This kit is **not** an agent framework, orchestrator, harness OS, or stable universal plugin system. There is no long-running service or runtime that owns sessions, tools, and routing. You get markdown artifacts, a small installer, and provider-native hooks where each agent already supports them.
 
-Current release: [v0.11.0 release notes](docs/v0.11.0-release-notes.md).
+If you need one runtime to orchestrate everything, use a framework. If you want shared **plan → verify → ship** discipline inside repos you already work in, use this pack.
 
 ---
 
-## 📚 Docs
+## Docs
 
 | Topic | Doc |
 |-------|-----|
-| NPX wizard | [docs/npx-cli-ux.md](docs/npx-cli-ux.md) |
-| Slash commands | [docs/runtime-command-surface.md](docs/runtime-command-surface.md) |
-| v0.11.0 release | [docs/v0.11.0-release-notes.md](docs/v0.11.0-release-notes.md) |
-| End-to-end dogfood | [examples/dogfood-tiny-node-api](examples/dogfood-tiny-node-api) |
-| npm publish | [docs/npm-publish.md](docs/npm-publish.md) |
-| Git hygiene | [docs/private-install-git-hygiene.md](docs/private-install-git-hygiene.md) |
+| NPX / wizard | [docs/npx-cli-ux.md](docs/npx-cli-ux.md), [docs/terminal-wizard-ux.md](docs/terminal-wizard-ux.md) |
+| Slash / runtime commands | [docs/runtime-command-surface.md](docs/runtime-command-surface.md) |
+| Command behavior | [docs/harness-command-behavior.md](docs/harness-command-behavior.md) |
 | Capability cache | [docs/private-capability-cache.md](docs/private-capability-cache.md) |
+| v0.11.0 release | [docs/v0.11.0-release-notes.md](docs/v0.11.0-release-notes.md) |
+| Dogfood example | [examples/dogfood-tiny-node-api](examples/dogfood-tiny-node-api) |
 | Shell fallback | [docs/simple-cli-ux.md](docs/simple-cli-ux.md) |
+| Publish | [docs/npm-publish.md](docs/npm-publish.md) |
 
 ---
 
@@ -166,9 +170,9 @@ curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/ma
 ```
 
 - `install.sh` — compatibility wrapper around `aih.sh`
-- `aih.ps1` — experimental Windows bootstrap (downloads `aih.sh`, requires Git Bash / WSL for `sh`)
+- `aih.ps1` — experimental Windows bootstrap (requires Git Bash / WSL for `sh`)
 
-Windows: prefer `npx ai-engineering-harness install`; if `sh` is missing, install [Git for Windows](https://git-scm.com/download/win) or use WSL.
+Prefer `npx ai-engineering-harness install` on Windows when Node is available.
 
 ---
 
@@ -187,8 +191,8 @@ Publish: [docs/npm-publish.md](docs/npm-publish.md)
 
 ## Status
 
-- Current: **v0.11.0** (experimental) — [release notes](docs/v0.11.0-release-notes.md)
+- **v0.11.0 (experimental)** — [release notes](docs/v0.11.0-release-notes.md)
 - Primary UX: `npx ai-engineering-harness install`
-- Stable per-provider guarantees: **No** (validation in progress)
+- Stable per-provider guarantees: **no** (validation in progress)
 
-[CONTRIBUTING.md](CONTRIBUTING.md) · [SECURITY.md](SECURITY.md)
+MIT · [CONTRIBUTING.md](CONTRIBUTING.md) · [SECURITY.md](SECURITY.md)

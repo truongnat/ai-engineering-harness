@@ -20,11 +20,11 @@ See also: [provider-command-matrix.md](provider-command-matrix.md), [provider-na
 
 ## Local catalog (canonical names)
 
-`harness:plan`, `harness:verify`, … — **not** a claim that `/harness:plan` exists in every UI.
+`harness-plan`, `harness-verify`, … — **not** a claim that `/harness-plan` exists in every UI.
 
 ## Command behavior (provider-independent)
 
-How a command runs after routing is defined in `.ai-harness/commands/` — same for every provider. Example: **`harness:discuss`** must synthesize `.harness/REVIEW.md` when present, not ask redundant mode questions. See [harness-command-behavior.md](harness-command-behavior.md).
+How a command runs after routing is defined in `.ai-harness/commands/` — same for every provider. Example: **`harness-discuss`** must synthesize `.harness/REVIEW.md` when present, not ask redundant mode questions. See [harness-command-behavior.md](harness-command-behavior.md).
 
 ## Provider matrix (summary)
 
@@ -42,12 +42,12 @@ How a command runs after routing is defined in `.ai-harness/commands/` — same 
 |----------|-----------|----------|
 | Cursor | `/add-plugin ai-engineering-harness` | npx + rules → `.ai-harness/` |
 | Claude | `/plugin install …` | npx + `.claude/commands/` |
-| Gemini | `gemini extensions install <url>` | ask harness:plan |
+| Gemini | `gemini extensions install <url>` | ask harness-plan |
 
 ## Troubleshooting
 
 | Symptom | Action |
 |---------|--------|
-| `/harness:plan` missing | Expected on most providers — use `/harness-plan` (Claude project file) or ask **harness:plan** |
+| `/harness-plan` missing | Expected on most providers — use `/harness-plan` (Claude project file) or ask **harness-plan** |
 | Cursor slash empty | Install plugin when published; use rules fallback |
 | Doctor WARN plugin-ready | Informational |

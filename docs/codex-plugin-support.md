@@ -2,7 +2,7 @@
 
 ## What failed
 
-Treating Codex like a **project-local slash command** provider (`/harness:plan` via `AGENTS.md` aliases) does not register commands in Codex. Codex uses the **OpenAI plugin model**, not `.codex/commands/` or repo slash files.
+Treating Codex like a **project-local slash command** provider (`/harness-plan` via `AGENTS.md` aliases) does not register commands in Codex. Codex uses the **OpenAI plugin model**, not `.codex/commands/` or repo slash files.
 
 ## Correct Codex model
 
@@ -44,11 +44,11 @@ Creates:
 - `.harness/` project state (if selected)
 - `AGENTS.md` bootstrap pointing at harness workflows
 
-Does **not** create native `/harness:*` slash commands in Codex.
+Does **not** create native `/harness-*` slash commands in Codex.
 
 ## Not supported
 
-- Claimed **`/harness:plan`** in Codex UI from project install
+- Claimed **`/harness-plan`** in Codex UI from project install
 - Fake **`.codex/commands/`** paths
 - Equating Codex with Claude `.claude/commands/*.md` behavior
 

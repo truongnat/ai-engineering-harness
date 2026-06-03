@@ -18,6 +18,8 @@ const {
   DOGFOOD_DEMO_PREFIX,
   assertCommandContractStructure,
   assertDogfoodDemoContract,
+  assertHyphenCommandNamingInActiveDocs,
+  ACTIVE_COMMAND_NAMING_PATHS,
   assertPublicDemoPolish,
   assertPlanTemplateContract,
   assertVerifyTemplateContract,
@@ -396,6 +398,13 @@ runTest("dogfood VERIFY records passed status and npm test evidence", () => {
   assert.match(verify, /status:\s*passed/i);
   assert.match(verify, /npm test/i);
   assert.match(verify, /Exit Code[\s\S]*\|\s*0\s*\|/i);
+});
+
+runTest("active docs use hyphen-form harness command IDs only", () => {
+  const failures = [];
+  assertHyphenCommandNamingInActiveDocs(repoRoot, failures);
+  assert.deepEqual(failures, [], failures.join("\n"));
+  assert.ok(ACTIVE_COMMAND_NAMING_PATHS.includes("README.md"));
 });
 
 runTest("repository command docs pass substantive contract validation", () => {
@@ -2122,7 +2131,7 @@ runTest("cli antigravity provider is disabled planned", () => {
 
 runTest("README primary quickstart is npx ai-engineering-harness install", () => {
   const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
-  const quickstart = readme.slice(readme.indexOf("## 🚀 Quickstart"));
+  const quickstart = readme.slice(readme.indexOf("## Quickstart"));
   const npxPos = quickstart.indexOf("npx ai-engineering-harness install");
   const curlPos = quickstart.indexOf("curl -fsSL");
   assert.ok(npxPos >= 0);
@@ -2133,7 +2142,7 @@ runTest("README primary quickstart is npx ai-engineering-harness install", () =>
 
 runTest("README does not present curl aih.sh as primary quickstart", () => {
   const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
-  const quickstart = readme.slice(readme.indexOf("## 🚀 Quickstart"), readme.indexOf("## What gets installed"));
+  const quickstart = readme.slice(readme.indexOf("## Quickstart"), readme.indexOf("## The loop"));
   const firstFence = quickstart.match(/```bash\n([\s\S]*?)```/);
   assert.ok(firstFence);
   assert.match(firstFence[1], /npx ai-engineering-harness install/);
@@ -2258,10 +2267,10 @@ runTest("cli-backend defaults to capture unless verbose", () => {
   assert.match(src, /verbose/);
 });
 
-runTest("README mentions polished clack wizard", () => {
+runTest("README links wizard UX docs", () => {
   const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
-  assert.match(readme, /clack|polished/i);
   assert.match(readme, /terminal-wizard-ux\.md/);
+  assert.match(readme, /npx-cli-ux\.md/);
 });
 
 runTest("validate requires terminal-wizard-ux doc", () => {
@@ -2296,13 +2305,13 @@ runTest("runtime command catalog generates harness-plan with activation refs", (
   const planPath = path.join(tmp, ".ai-harness/runtime-commands/harness-plan.md");
   assert.ok(fs.existsSync(planPath));
   const text = fs.readFileSync(planPath, "utf8");
-  assert.match(text, /harness:plan/);
-  assert.doesNotMatch(text, /^# \/harness:plan/m);
+  assert.match(text, /harness-plan/);
+  assert.doesNotMatch(text, /^# \/harness-plan/m);
   assert.match(text, /\.ai-harness\/activation\.md/);
   assert.match(text, /\.ai-harness\/commands\/harness-plan\.md/);
   const manifest = JSON.parse(fs.readFileSync(path.join(tmp, ".ai-harness/manifest.json"), "utf8"));
   assert.equal(manifest.commandNamespace, "harness");
-  assert.ok(manifest.canonicalCommands.includes("harness:plan"));
+  assert.ok(manifest.canonicalCommands.includes("harness-plan"));
   assert.ok(manifest.commandSurface);
   assert.equal(manifest.commandSurface.providers.cursor.mode, "plugin-ready");
 });
@@ -2317,9 +2326,9 @@ runTest("runtime-command-surface doc has provider capability matrix", () => {
 
 runTest("README does not claim universal native slash commands", () => {
   const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
-  assert.match(readme, /plugin-ready|plugin packaging|marketplace pending/i);
-  assert.match(readme, /harness:plan/);
-  assert.doesNotMatch(readme, /Native `\/harness:\*`.*Yes/i);
+  assert.match(readme, /Plugin-ready|plugin packaging|marketplace pending|Slash commands vary/i);
+  assert.match(readme, /harness-plan/);
+  assert.doesNotMatch(readme, /Native `\/harness-\*`.*Yes/i);
 });
 
 runTest("pack contains provider plugin manifests", () => {
@@ -2393,21 +2402,22 @@ runTest("generated runtime harness-discuss references review behavior", () => {
 runTest("harness-command-behavior doc exists with one closing question rule", () => {
   const doc = fs.readFileSync(path.join(repoRoot, "docs/harness-command-behavior.md"), "utf8");
   assert.match(doc, /one closing question/i);
-  assert.match(doc, /harness:discuss/);
+  assert.match(doc, /harness-discuss/);
   assert.match(doc, /REVIEW\.md/);
 });
 
-runTest("README mentions discuss uses existing local artifacts", () => {
+runTest("README links command behavior policy for discuss", () => {
   const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
-  assert.match(readme, /harness:discuss/);
-  assert.match(readme, /REVIEW\.md/);
+  assert.match(readme, /harness-discuss/);
   assert.match(readme, /harness-command-behavior/);
+  const behavior = fs.readFileSync(path.join(repoRoot, "docs/harness-command-behavior.md"), "utf8");
+  assert.match(behavior, /REVIEW\.md/);
 });
 
-runTest("README does not claim Codex /harness:plan slash", () => {
+runTest("README does not claim Codex /harness-plan slash", () => {
   const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
   const codexRow = readme.split("| Codex |")[1]?.split("\n")[0] || "";
-  assert.doesNotMatch(codexRow, /\/harness:plan/);
+  assert.doesNotMatch(codexRow, /\/harness-plan/);
   assert.match(readme, /codex-plugin-support/i);
 });
 
@@ -2439,7 +2449,7 @@ runTest("install.sh cursor install creates fallback rule only (no native slash c
     "utf8"
   );
   assert.ok(rule.includes("fallback"));
-  assert.match(rule, /harness:plan/);
+  assert.match(rule, /harness-plan/);
   const manifest = JSON.parse(fs.readFileSync(path.join(tmp, ".ai-harness/manifest.json"), "utf8"));
   assert.equal(manifest.commandSurface.providers.cursor.mode, "plugin-ready");
 });
@@ -2454,7 +2464,7 @@ runTest("AGENTS.md bootstrap includes harness command alias section after generi
   assert.equal(result.status, 0, result.stderr || result.stdout);
   const agents = fs.readFileSync(path.join(tmp, "AGENTS.md"), "utf8");
   assert.match(agents, /Harness commands/);
-  assert.match(agents, /harness:plan/);
+  assert.match(agents, /harness-plan/);
   assert.match(agents, /\.ai-harness\/runtime-commands\/harness-plan\.md/);
   assert.match(agents, /Do not assume a native/);
 });
@@ -2544,13 +2554,12 @@ runTest("aih.sh doctor reports runtime-commands after claude install", () => {
 
 runTest("README provider support lists four active providers without OpenCode install", () => {
   const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
-  const section = readme.slice(readme.indexOf("## Provider support"));
+  const section = readme.slice(readme.indexOf("## Providers"));
   assert.match(section, /Claude Code.*Primary/i);
   assert.match(section, /Cursor.*Secondary/i);
   assert.match(section, /Codex.*Experimental/i);
   assert.match(section, /Gemini.*Experimental/i);
-  assert.match(section, /no longer part of the active provider scope/i);
-  assert.doesNotMatch(section, /\| OpenCode \|/);
+  assert.match(section, /OpenCode.*Out of scope/i);
 });
 
 if (process.exitCode) {

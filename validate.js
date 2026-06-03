@@ -692,6 +692,67 @@ function assertVerifyTemplateContract(baseDir, failures) {
 
 const DOGFOOD_DEMO_PREFIX = "examples/dogfood-tiny-node-api";
 
+const ACTIVE_COMMAND_NAMING_PATHS = [
+  "README.md",
+  "PACK.md",
+  "AGENTS.md",
+  "docs/provider-command-matrix.md",
+  "docs/runtime-command-surface.md",
+  "docs/provider-native-command-research.md",
+  "docs/harness-command-behavior.md",
+  "docs/codex-plugin-support.md",
+  "docs/npx-cli-ux.md",
+  "docs/simple-cli-ux.md",
+  "docs/private-capability-cache.md",
+  "docs/terminal-wizard-ux.md",
+  "runtime-command-catalog.js",
+  "lib/command-surface-report.js",
+  "lib/cli-ui.js"
+];
+
+const FORBIDDEN_COLON_COMMAND_PATTERNS = [
+  { pattern: /\/harness:[a-z][a-z0-9-]*/, label: "/harness:…" },
+  { pattern: /\bharness:[a-z][a-z0-9-]*\b/, label: "harness:…" }
+];
+
+function assertHyphenCommandNamingInActiveDocs(baseDir, failures) {
+  for (const relativePath of ACTIVE_COMMAND_NAMING_PATHS) {
+    const fullPath = resolvePath(baseDir, relativePath);
+    if (!fs.existsSync(fullPath)) {
+      continue;
+    }
+    const content = readFile(baseDir, relativePath);
+    for (const { pattern, label } of FORBIDDEN_COLON_COMMAND_PATTERNS) {
+      if (pattern.test(content)) {
+        failures.push(
+          `${relativePath} must use hyphen-form command IDs (harness-plan), not colon form (${label})`
+        );
+        break;
+      }
+    }
+  }
+
+  const commandsDir = resolvePath(baseDir, "commands");
+  if (!fs.existsSync(commandsDir)) {
+    return;
+  }
+  for (const fileName of fs.readdirSync(commandsDir)) {
+    if (!fileName.endsWith(".md")) {
+      continue;
+    }
+    const relativePath = `commands/${fileName}`;
+    const content = readFile(baseDir, relativePath);
+    for (const { pattern, label } of FORBIDDEN_COLON_COMMAND_PATTERNS) {
+      if (pattern.test(content)) {
+        failures.push(
+          `${relativePath} must use hyphen-form command IDs, not colon form (${label})`
+        );
+        break;
+      }
+    }
+  }
+}
+
 function assertPublicDemoPolish(baseDir, failures) {
   const readmePath = "README.md";
   if (!fs.existsSync(resolvePath(baseDir, readmePath))) {
@@ -880,6 +941,7 @@ function validateHarnessRepository(baseDir = root) {
   assertVerifyTemplateContract(baseDir, failures);
   assertPlanTemplateContract(baseDir, failures);
   assertDogfoodDemoContract(baseDir, failures);
+  assertHyphenCommandNamingInActiveDocs(baseDir, failures);
   assertPublicDemoPolish(baseDir, failures);
 
   for (const relativePath of templateFiles) {
@@ -1172,6 +1234,8 @@ if (require.main === module) {
 module.exports = {
   DOGFOOD_DEMO_PREFIX,
   assertDogfoodDemoContract,
+  assertHyphenCommandNamingInActiveDocs,
+  ACTIVE_COMMAND_NAMING_PATHS,
   assertPublicDemoPolish,
   assertCommandContractStructure,
   assertSkillContractStructure,
