@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`npx ai-engineering-harness` is the **primary** install UX for v0.10.x (experimental). Interactive wizard similar to `npx skills add`: header, detected hints, keyboard selection, plan, confirm.
+`npx ai-engineering-harness` is the **primary** install UX for v0.10.x (experimental). Interactive wizard powered by `@clack/prompts` (intro, detected hints, multiselect, plan, spinner, outro) — see [terminal-wizard-ux.md](terminal-wizard-ux.md).
 
 **Fallbacks:** `aih.sh`, `install.sh`, `aih.ps1` — see [simple-cli-ux.md](simple-cli-ux.md).
 
@@ -18,17 +18,24 @@ Aliases: `npx aih install`, `aih install` (global/link).
 
 Hints (`.cursor/`, `.claude/`, `.gemini/`, `.opencode/`, harness `AGENTS.md`) mark providers **(recommended)** and may preselect in the wizard. The CLI **never** silently installs based on detection alone.
 
+## Slash commands after install
+
+Project-scoped `/harness:plan`, `/harness:verify`, etc. route through `.ai-harness/runtime-commands/` → `.ai-harness/commands/`. See [runtime-command-surface.md](runtime-command-surface.md).
+
 ## Install wizard
+
+Uses `@clack/prompts` when stdin/stdout is a TTY:
 
 1. Package version, target, git repo
 2. Detected provider hints (informational)
-3. Multi-select providers (space / enter)
+3. Multiselect providers (space / enter)
 4. Install mode: project private | project shared | global
 5. Init `.harness/`?
 6. Install `.ai-harness/` cache?
 7. Plan + non-Git warning for private mode
 8. Confirm
-9. Backend: bundled `aih.sh` per provider
+9. Spinner + bundled `aih.sh` per provider
+10. Outro with `/harness:plan` and `doctor` next steps
 
 ```txt
 Will install:
@@ -69,7 +76,7 @@ npx ai-engineering-harness uninstall --all --yes
 | `--provider` | Primary; comma-separated (`--runtime` alias) |
 | `--scope` | `project` \| `global` |
 | `--visibility` | `private` \| `shared` |
-| `--target`, `--ref`, `--dry-run`, `--yes`, `--all` | See `npx ai-engineering-harness --help` |
+| `--target`, `--ref`, `--dry-run`, `--yes`, `--all`, `--verbose` | See `npx ai-engineering-harness --help` |
 
 Without `--provider` in non-interactive mode: `No provider selected. Pass --provider cursor or run interactively.`
 

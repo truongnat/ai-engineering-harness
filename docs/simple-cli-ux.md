@@ -10,7 +10,9 @@ npx ai-engineering-harness update
 npx ai-engineering-harness uninstall
 ```
 
-See [npx-cli-ux.md](npx-cli-ux.md). Detection **recommends** providers; the wizard requires explicit selection.
+See [npx-cli-ux.md](npx-cli-ux.md) and [terminal-wizard-ux.md](terminal-wizard-ux.md). Detection **recommends** providers; the wizard requires explicit selection.
+
+After install, use project-scoped slash commands (`/harness:plan`, `/harness:verify`, …) — [runtime-command-surface.md](runtime-command-surface.md).
 
 ## Shell fallback
 

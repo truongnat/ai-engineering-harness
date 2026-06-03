@@ -8,6 +8,7 @@ const path = require("node:path");
 
 const HARNESS_REPO = "truongnat/ai-engineering-harness";
 const HARNESS_GIT_URL = `https://github.com/${HARNESS_REPO}`;
+const { installProviderCommandSurface } = require("./runtime-command-catalog.js");
 
 const ALL_RUNTIMES = ["opencode", "cursor", "claude", "codex", "gemini", "generic"];
 
@@ -246,6 +247,18 @@ function installOpencode(scope, targetRoot, packRoot, options) {
   mergeJsonFile(targetRoot, "opencode.json", { $schema: "https://opencode.ai/config.json" }, options);
 }
 
+function installProviderCommands(runtime, scope, targetRoot, packRoot, options) {
+  if (scope !== "project") {
+    return;
+  }
+  const results = installProviderCommandSurface(runtime, scope, targetRoot, packRoot, options);
+  for (const entry of results) {
+    if (entry && entry.action && entry.relativePath) {
+      logAction(entry.action, entry.relativePath);
+    }
+  }
+}
+
 function installOne(runtime, scope, targetRoot, packRoot, options) {
   console.log(`\n--- Runtime: ${runtime} (${scope}) ---`);
 
@@ -271,6 +284,8 @@ function installOne(runtime, scope, targetRoot, packRoot, options) {
     default:
       throw new Error(`Unsupported runtime: ${runtime}`);
   }
+
+  installProviderCommands(runtime, scope, targetRoot, packRoot, options);
 }
 
 function installRuntime(options) {
@@ -333,5 +348,6 @@ module.exports = {
   ALL_RUNTIMES,
   deepMerge,
   installRuntime,
+  installProviderCommands,
   parseArgs,
 };

@@ -195,6 +195,23 @@ has_harness_exclude_block() {
   [ -f "$_exclude_file" ] && grep -qxF "$HARNES_IGNORE_BLOCK_START" "$_exclude_file" 2>/dev/null
 }
 
+harness_provider_command_paths() {
+  _rt="$1"
+  case "$_rt" in
+    cursor)
+      printf '%s\n' '.cursor/rules/ai-engineering-harness-commands.mdc' '.cursor/commands/'
+      ;;
+    claude)
+      printf '%s\n' '.claude/commands/harness/'
+      ;;
+    gemini)
+      printf '%s\n' '.gemini/extensions/ai-engineering-harness/commands/'
+      ;;
+    *)
+      ;;
+  esac
+}
+
 harness_ignore_paths_for_runtime() {
   _rt="$1"
   _init="$2"
@@ -206,12 +223,15 @@ harness_ignore_paths_for_runtime() {
   case "$_rt" in
     cursor)
       printf '%s\n' '.cursor/rules/ai-engineering-harness.mdc'
+      harness_provider_command_paths cursor
       ;;
     claude)
       printf '%s\n' '.claude/CLAUDE.md' '.claude/settings.json'
+      harness_provider_command_paths claude
       ;;
     gemini)
       printf '%s\n' '.gemini/extensions/ai-engineering-harness/'
+      harness_provider_command_paths gemini
       ;;
     opencode)
       printf '%s\n' '.opencode/plugins/ai-engineering-harness.js'
@@ -222,8 +242,11 @@ harness_ignore_paths_for_runtime() {
     all)
       printf '%s\n' \
         '.cursor/rules/ai-engineering-harness.mdc' \
+        '.cursor/rules/ai-engineering-harness-commands.mdc' \
+        '.cursor/commands/' \
         '.claude/CLAUDE.md' \
         '.claude/settings.json' \
+        '.claude/commands/harness/' \
         '.gemini/extensions/ai-engineering-harness/' \
         '.opencode/plugins/ai-engineering-harness.js' \
         'AGENTS.md'
@@ -247,12 +270,15 @@ runtime_paths_for_uninstall() {
   case "$_rt" in
     cursor)
       printf '%s\n' '.cursor/rules/ai-engineering-harness.mdc'
+      harness_provider_command_paths cursor
       ;;
     claude)
       printf '%s\n' '.claude/CLAUDE.md' '.claude/settings.json'
+      harness_provider_command_paths claude
       ;;
     gemini)
       printf '%s\n' '.gemini/extensions/ai-engineering-harness/'
+      harness_provider_command_paths gemini
       ;;
     opencode)
       printf '%s\n' '.opencode/plugins/ai-engineering-harness.js'
@@ -263,8 +289,11 @@ runtime_paths_for_uninstall() {
     all)
       printf '%s\n' \
         '.cursor/rules/ai-engineering-harness.mdc' \
+        '.cursor/rules/ai-engineering-harness-commands.mdc' \
+        '.cursor/commands/' \
         '.claude/CLAUDE.md' \
         '.claude/settings.json' \
+        '.claude/commands/harness/' \
         '.gemini/extensions/ai-engineering-harness/' \
         '.opencode/plugins/ai-engineering-harness.js' \
         'AGENTS.md'
@@ -1003,6 +1032,22 @@ print_status() {
   printf '  .ai-harness exists:    %s\n' "$([ -d "${TARGET_ABS}/.ai-harness" ] && printf yes || printf no)"
   printf '  .harness exists:       %s\n' "$([ -d "${TARGET_ABS}/.harness" ] && printf yes || printf no)"
   printf '  exclude block exists:  %s\n' "$_exclude_block"
+  printf '  command namespace:     harness\n'
+  if [ -d "${TARGET_ABS}/.ai-harness/runtime-commands" ]; then
+    printf '  runtime-commands:      yes\n'
+  else
+    printf '  runtime-commands:      no\n'
+  fi
+  if [ -f "${TARGET_ABS}/.ai-harness/manifest.json" ]; then
+    printf '  manifest.json:         yes\n'
+  else
+    printf '  manifest.json:         no\n'
+  fi
+  _provider_cmds=no
+  if [ -d "${TARGET_ABS}/.claude/commands/harness" ] || [ -f "${TARGET_ABS}/.cursor/rules/ai-engineering-harness-commands.mdc" ] || [ -d "${TARGET_ABS}/.cursor/commands" ]; then
+    _provider_cmds=yes
+  fi
+  printf '  provider commands:     %s\n' "$_provider_cmds"
 }
 
 run_doctor() {
@@ -1063,6 +1108,51 @@ run_doctor() {
     printf '%s\n' 'PASS .git/info/exclude harness block exists'
   else
     printf '%s\n' 'WARN .git/info/exclude harness block missing'
+  fi
+
+  if [ -d "${TARGET_ABS}/.ai-harness/runtime-commands" ]; then
+    printf '%s\n' 'PASS .ai-harness/runtime-commands exists'
+  else
+    printf '%s\n' 'FAIL .ai-harness/runtime-commands missing'
+    _fail=1
+  fi
+
+  if [ -f "${TARGET_ABS}/.ai-harness/activation.md" ]; then
+    printf '%s\n' 'PASS .ai-harness/activation.md exists'
+  else
+    printf '%s\n' 'FAIL .ai-harness/activation.md missing'
+    _fail=1
+  fi
+
+  if [ -f "${TARGET_ABS}/.ai-harness/runtime-commands/harness-plan.md" ]; then
+    if grep -q '.ai-harness/activation.md' "${TARGET_ABS}/.ai-harness/runtime-commands/harness-plan.md" 2>/dev/null \
+      && grep -q '.ai-harness/commands/harness-plan.md' "${TARGET_ABS}/.ai-harness/runtime-commands/harness-plan.md" 2>/dev/null; then
+      printf '%s\n' 'PASS /harness:plan runtime command catalog references activation and source command'
+    else
+      printf '%s\n' 'FAIL /harness:plan runtime command catalog incomplete'
+      _fail=1
+    fi
+  fi
+
+  if [ -f "${TARGET_ABS}/.claude/commands/harness/plan.md" ]; then
+    if grep -q '.ai-harness/activation.md' "${TARGET_ABS}/.claude/commands/harness/plan.md" 2>/dev/null; then
+      printf '%s\n' 'PASS claude harness command references .ai-harness/activation.md'
+    else
+      printf '%s\n' 'FAIL claude harness command missing activation reference'
+      _fail=1
+    fi
+  elif [ -f "${TARGET_ABS}/.cursor/commands/harness-plan.md" ]; then
+    if grep -q '.ai-harness/activation.md' "${TARGET_ABS}/.cursor/commands/harness-plan.md" 2>/dev/null; then
+      printf '%s\n' 'PASS cursor harness command references .ai-harness/activation.md'
+    else
+      printf '%s\n' 'WARN cursor harness command missing activation reference'
+    fi
+  elif [ -f "${TARGET_ABS}/.cursor/rules/ai-engineering-harness-commands.mdc" ]; then
+    if grep -q '.ai-harness/activation.md' "${TARGET_ABS}/.cursor/rules/ai-engineering-harness-commands.mdc" 2>/dev/null; then
+      printf '%s\n' 'PASS cursor command mapping rule references activation'
+    else
+      printf '%s\n' 'WARN cursor command mapping rule missing activation reference'
+    fi
   fi
 
   if [ "$_fail" -ne 0 ]; then

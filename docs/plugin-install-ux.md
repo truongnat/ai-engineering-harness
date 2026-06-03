@@ -60,7 +60,7 @@ See:
 
 | Topic | v0.9.2 target |
 |---|---|
-| Install wizard | One command; multi-provider; scope + shared/private |
+| Install wizard | `@clack/prompts` terminal flow — [terminal-wizard-ux.md](terminal-wizard-ux.md); multi-provider; scope + shared/private |
 | Git hygiene | Private → **`.git/info/exclude`** (not tracked); `.gitignore` only explicit — [git-hygiene-policy.md](git-hygiene-policy.md) |
 | Commands | `install` / `uninstall` / `update` — [install-command-model.md](install-command-model.md) |
 | Antigravity | Researched; **planned** until paths verified — [antigravity-provider-research.md](antigravity-provider-research.md) |
@@ -76,6 +76,8 @@ Recommended consumer path (v0.10.x — private project, capability cache, no git
 ```bash
 npx ai-engineering-harness install
 ```
+
+Then invoke project-scoped commands in the AI tool: `/harness:plan`, `/harness:verify`, `/harness:ship` — [runtime-command-surface.md](runtime-command-surface.md). Claude uses native `.claude/commands/harness/`; other providers use alias mappings.
 
 Shell fallback:
 

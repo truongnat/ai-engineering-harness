@@ -4,7 +4,7 @@
 
 ### Runtime-native engineering discipline for AI coding agents
 
-![Version](https://img.shields.io/badge/version-v0.10.1%20experimental-2563eb)
+![Version](https://img.shields.io/badge/version-v0.10.3%20experimental-2563eb)
 ![License](https://img.shields.io/badge/license-MIT-16a34a)
 ![Markdown First](https://img.shields.io/badge/markdown-first-7c3aed)
 ![Stable Runtime Support](https://img.shields.io/badge/stable%20runtime%20support-no-ef4444)
@@ -49,7 +49,28 @@ Non-interactive:
 npx ai-engineering-harness install --provider cursor --yes
 ```
 
-The wizard shows package version, target path, git status, **recommended** providers (from project hints), checkbox selection, install mode, plan, and confirmation. See [docs/npx-cli-ux.md](docs/npx-cli-ux.md).
+The wizard uses [@clack/prompts](https://github.com/natemoo-re/clack) for a polished terminal flow (intro, multiselect, plan, spinner, outro). See [docs/terminal-wizard-ux.md](docs/terminal-wizard-ux.md) and [docs/npx-cli-ux.md](docs/npx-cli-ux.md).
+
+## Slash commands
+
+After install, call the harness from your AI tool:
+
+```txt
+/harness:plan
+/harness:verify
+/harness:ship
+/harness:remember
+```
+
+Commands are **project-scoped**. They activate this repo's `.ai-harness/` and `.harness/` only — not global or sibling-repo skills.
+
+| Provider | Native `/harness:*` |
+|----------|---------------------|
+| Claude Code | Yes — `.claude/commands/harness/` |
+| Cursor | Fallback rule + `.cursor/commands/` (native slash not claimed) |
+| Codex / Generic | Alias table in `AGENTS.md` |
+
+See [docs/runtime-command-surface.md](docs/runtime-command-surface.md).
 
 ---
 
@@ -99,7 +120,8 @@ Aliases: `npx aih install`, `aih install` (after global install/link).
 | Topic | Doc |
 |-------|-----|
 | NPX wizard | [docs/npx-cli-ux.md](docs/npx-cli-ux.md) |
-| v0.10.0 release | [docs/v0.10.0-release-notes.md](docs/v0.10.0-release-notes.md) |
+| Slash commands | [docs/runtime-command-surface.md](docs/runtime-command-surface.md) |
+| v0.10.2 release | [docs/v0.10.2-release-notes.md](docs/v0.10.2-release-notes.md) |
 | npm publish | [docs/npm-publish.md](docs/npm-publish.md) |
 | Git hygiene | [docs/private-install-git-hygiene.md](docs/private-install-git-hygiene.md) |
 | Capability cache | [docs/private-capability-cache.md](docs/private-capability-cache.md) |
@@ -141,7 +163,7 @@ Publish: [docs/npm-publish.md](docs/npm-publish.md)
 
 ## Status
 
-- Current: **v0.10.1** (experimental) — [release notes](docs/v0.10.0-release-notes.md)
+- Current: **v0.10.2** (experimental) — [release notes](docs/v0.10.2-release-notes.md)
 - Primary UX: `npx ai-engineering-harness install`
 - Stable runtime support: **No**
 

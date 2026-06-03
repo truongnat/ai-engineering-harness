@@ -48,6 +48,36 @@
 - `install.sh` verbs: install, uninstall, update
 - Antigravity runtime paths after verification
 
+## [0.10.3] - 2026-06-03
+
+### Added
+
+- Polished terminal wizard via `@clack/prompts` — [terminal-wizard-ux.md](docs/terminal-wizard-ux.md)
+- `lib/cli-ui.js` — intro, multiselect, plan notes, spinner, grouped status/doctor
+- `--verbose` flag streams raw `aih.sh` backend output (default hides unless error)
+
+### Changed
+
+- Interactive install/update/uninstall use clack when TTY; non-interactive stays compact
+- Status/doctor render grouped ✓ / ! / ✗ summary instead of raw shell dump (unless `--verbose`)
+
+## [0.10.2] - 2026-06-03
+
+### Added
+
+- Project-scoped `/harness:*` command surface — [runtime-command-surface.md](docs/runtime-command-surface.md)
+- `runtime-command-catalog.js` generates `.ai-harness/runtime-commands/`, `activation.md`, `manifest.json`
+- Claude project commands: `.claude/commands/harness/*.md`
+- Cursor command files + mapping rule fallback (native slash not claimed)
+- Gemini / OpenCode / AGENTS.md command alias mappings
+- `commands/harness-status.md`, `commands/harness-doctor.md`
+- Status/doctor validate command catalog and activation references
+
+### Changed
+
+- Install/update refresh provider command entrypoints; uninstall removes per-provider command files
+- CLI install plan lists `/harness:*` commands and provider command paths
+
 ## [0.10.1] - 2026-06-03
 
 ### Changed

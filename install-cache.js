@@ -1,5 +1,6 @@
 const fs = require("node:fs");
 const path = require("node:path");
+const { installRuntimeCommandCatalog } = require("./runtime-command-catalog.js");
 
 const CACHE_DIR = ".ai-harness";
 
@@ -157,6 +158,18 @@ function installCapabilityCache(options) {
       ensureDirectory(destinationPath, false);
       fs.copyFileSync(sourcePath, destinationPath);
     }
+  }
+
+  const catalogResults = installRuntimeCommandCatalog(options.target, {
+    dryRun: options.dryRun,
+    force: options.force
+  });
+  for (const entry of catalogResults) {
+    results.push({
+      action: entry.action,
+      relativePath: entry.relativePath,
+      reason: "runtime-command-catalog"
+    });
   }
 
   return results;

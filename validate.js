@@ -1,5 +1,6 @@
 const fs = require("node:fs");
 const path = require("node:path");
+const { fileReferencesActivation } = require("./runtime-command-catalog.js");
 
 const root = __dirname;
 
@@ -80,8 +81,12 @@ const requiredFiles = [
   "aih.ps1",
   "bin/aih.js",
   "docs/npx-cli-ux.md",
+  "docs/terminal-wizard-ux.md",
+  "docs/runtime-command-surface.md",
   "docs/v0.10.0-release-notes.md",
+  "docs/v0.10.2-release-notes.md",
   "docs/npm-publish.md",
+  "runtime-command-catalog.js",
   "install.sh",
   "docs/stable-contract-index.md",
   "docs/breaking-change-policy.md",
@@ -604,6 +609,42 @@ function validateRepository(baseDir = root) {
   return validateHarnessRepository(baseDir);
 }
 
+function validateRuntimeCommandSurface(baseDir, failures) {
+  const cacheDir = path.join(baseDir, ".ai-harness");
+  if (!fs.existsSync(cacheDir)) {
+    return;
+  }
+
+  assertExists(baseDir, ".ai-harness/activation.md", failures);
+  assertExists(baseDir, ".ai-harness/manifest.json", failures);
+  assertExists(baseDir, ".ai-harness/runtime-commands/harness-plan.md", failures);
+
+  const planCatalog = path.join(baseDir, ".ai-harness/runtime-commands/harness-plan.md");
+  if (fs.existsSync(planCatalog)) {
+    const text = fs.readFileSync(planCatalog, "utf8");
+    if (!text.includes(".ai-harness/activation.md")) {
+      failures.push(
+        ".ai-harness/runtime-commands/harness-plan.md must reference .ai-harness/activation.md"
+      );
+    }
+    if (!text.includes(".ai-harness/commands/harness-plan.md")) {
+      failures.push(
+        ".ai-harness/runtime-commands/harness-plan.md must reference .ai-harness/commands/harness-plan.md"
+      );
+    }
+  }
+
+  const claudePlan = path.join(baseDir, ".claude/commands/harness/plan.md");
+  if (fs.existsSync(claudePlan) && !fileReferencesActivation(claudePlan)) {
+    failures.push(".claude/commands/harness/plan.md must reference .ai-harness/activation.md");
+  }
+
+  const cursorPlan = path.join(baseDir, ".cursor/commands/harness-plan.md");
+  if (fs.existsSync(cursorPlan) && !fileReferencesActivation(cursorPlan)) {
+    failures.push(".cursor/commands/harness-plan.md must reference .ai-harness/activation.md");
+  }
+}
+
 function validateTargetHarnessProfile(baseDir) {
   const failures = [];
 
@@ -614,6 +655,8 @@ function validateTargetHarnessProfile(baseDir) {
   for (const [relativePath, headings] of targetProfileHeadingContracts) {
     assertHeadings(baseDir, relativePath, headings, failures);
   }
+
+  validateRuntimeCommandSurface(baseDir, failures);
 
   return failures;
 }
@@ -834,6 +877,7 @@ module.exports = {
   isValidTargetRuntime,
   validateRuntimeBootstrap,
   validateTargetGoal,
+  validateRuntimeCommandSurface,
   validateTargetHarnessProfile,
   validateTargetProfile,
   validateRepository,
