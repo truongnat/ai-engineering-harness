@@ -1,0 +1,14 @@
+{
+  "name": "dogfood-tiny-node-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Minimal Node API for ai-engineering-harness end-to-end dogfood",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test test/health.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

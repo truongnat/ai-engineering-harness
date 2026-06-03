@@ -213,6 +213,17 @@ const requiredFiles = [
   "examples/harness-build/flutter-google-login/goals/google-login/TASKS.md",
   "examples/harness-build/flutter-google-login/goals/google-login/VERIFY.md",
   "examples/harness-build/flutter-google-login/goals/google-login/REMEMBER.md",
+  "examples/dogfood-tiny-node-api/README.md",
+  "examples/dogfood-tiny-node-api/package.json",
+  "examples/dogfood-tiny-node-api/src/server.js",
+  "examples/dogfood-tiny-node-api/test/health.test.js",
+  "examples/dogfood-tiny-node-api/.harness/GOAL.md",
+  "examples/dogfood-tiny-node-api/.harness/DISCUSSION.md",
+  "examples/dogfood-tiny-node-api/.harness/PLAN.md",
+  "examples/dogfood-tiny-node-api/.harness/TASKS.md",
+  "examples/dogfood-tiny-node-api/.harness/VERIFY.md",
+  "examples/dogfood-tiny-node-api/.harness/SHIP.md",
+  "examples/dogfood-tiny-node-api/.harness/REMEMBER.md",
   "commands/harness-build.md",
   "templates/HARNESS.md",
   "templates/TEAM.md",
@@ -677,6 +688,59 @@ function assertVerifyTemplateContract(baseDir, failures) {
   }
 }
 
+const DOGFOOD_DEMO_PREFIX = "examples/dogfood-tiny-node-api";
+
+function assertDogfoodDemoContract(baseDir, failures) {
+  const planPath = `${DOGFOOD_DEMO_PREFIX}/.harness/PLAN.md`;
+  const verifyPath = `${DOGFOOD_DEMO_PREFIX}/.harness/VERIFY.md`;
+  const rememberPath = `${DOGFOOD_DEMO_PREFIX}/.harness/REMEMBER.md`;
+
+  if (!fs.existsSync(resolvePath(baseDir, planPath))) {
+    return;
+  }
+
+  const plan = readFile(baseDir, planPath);
+  if (!/status:\s*approved/i.test(plan)) {
+    failures.push(`${planPath} must include status: approved for dogfood demo`);
+  }
+  if (!/approved_by:\s*dogfood maintainer/i.test(plan)) {
+    failures.push(`${planPath} must include approved_by: dogfood maintainer`);
+  }
+  if (!/approved_at:\s*2026-06-03/i.test(plan)) {
+    failures.push(`${planPath} must include approved_at: 2026-06-03`);
+  }
+
+  if (!fs.existsSync(resolvePath(baseDir, verifyPath))) {
+    return;
+  }
+
+  const verify = readFile(baseDir, verifyPath);
+  if (!/status:\s*passed/i.test(verify)) {
+    failures.push(`${verifyPath} must include status: passed with real verification evidence`);
+  }
+  if (!/npm test/i.test(verify)) {
+    failures.push(`${verifyPath} Tests Run must reference npm test with results`);
+  }
+  if (!/## Evidence/i.test(verify) || !hasSubstantiveSectionBody(extractMarkdownSection(verify, "## Evidence"), { minChars: 20 })) {
+    failures.push(`${verifyPath} Evidence must summarize real command output`);
+  }
+
+  const shipPath = `${DOGFOOD_DEMO_PREFIX}/.harness/SHIP.md`;
+  if (fs.existsSync(resolvePath(baseDir, shipPath))) {
+    const ship = readFile(baseDir, shipPath);
+    if (/production deployment complete/i.test(ship) && !/not shipped/i.test(ship)) {
+      failures.push(`${shipPath} must not overclaim beyond VERIFY evidence`);
+    }
+  }
+
+  if (fs.existsSync(resolvePath(baseDir, rememberPath))) {
+    const remember = readFile(baseDir, rememberPath);
+    if (!hasSubstantiveSectionBody(extractMarkdownSection(remember, "## Reuse Guidance"), { minChars: 15 })) {
+      failures.push(`${rememberPath} must capture at least one durable lesson in Reuse Guidance`);
+    }
+  }
+}
+
 function assertPlanTemplateContract(baseDir, failures) {
   const relativePath = "templates/PLAN.md";
   if (!fs.existsSync(resolvePath(baseDir, relativePath))) {
@@ -786,6 +850,7 @@ function validateHarnessRepository(baseDir = root) {
 
   assertVerifyTemplateContract(baseDir, failures);
   assertPlanTemplateContract(baseDir, failures);
+  assertDogfoodDemoContract(baseDir, failures);
 
   for (const relativePath of templateFiles) {
     assertNonEmpty(baseDir, relativePath, failures);
@@ -1075,6 +1140,8 @@ if (require.main === module) {
 }
 
 module.exports = {
+  DOGFOOD_DEMO_PREFIX,
+  assertDogfoodDemoContract,
   assertCommandContractStructure,
   assertSkillContractStructure,
   assertVerifyTemplateContract,

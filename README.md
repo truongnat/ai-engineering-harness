@@ -130,6 +130,7 @@ Current release: [v0.11.0 release notes](docs/v0.11.0-release-notes.md).
 | NPX wizard | [docs/npx-cli-ux.md](docs/npx-cli-ux.md) |
 | Slash commands | [docs/runtime-command-surface.md](docs/runtime-command-surface.md) |
 | v0.11.0 release | [docs/v0.11.0-release-notes.md](docs/v0.11.0-release-notes.md) |
+| End-to-end dogfood | [examples/dogfood-tiny-node-api](examples/dogfood-tiny-node-api) |
 | npm publish | [docs/npm-publish.md](docs/npm-publish.md) |
 | Git hygiene | [docs/private-install-git-hygiene.md](docs/private-install-git-hygiene.md) |
 | Capability cache | [docs/private-capability-cache.md](docs/private-capability-cache.md) |

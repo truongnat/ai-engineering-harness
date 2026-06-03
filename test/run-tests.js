@@ -15,7 +15,9 @@ const {
   summarizeResults
 } = require(path.join(repoRoot, "install.js"));
 const {
+  DOGFOOD_DEMO_PREFIX,
   assertCommandContractStructure,
+  assertDogfoodDemoContract,
   assertPlanTemplateContract,
   assertVerifyTemplateContract,
   extractMarkdownSection,
@@ -325,6 +327,51 @@ runTest("command contract validation rejects Redirect without harness command", 
   ].join("\n");
   assertCommandContractStructure("commands/harness-test.md", content, failures);
   assert.ok(failures.some((f) => f.includes("Redirect Behavior")));
+});
+
+runTest("dogfood tiny node api project files exist", () => {
+  const root = path.join(repoRoot, DOGFOOD_DEMO_PREFIX);
+  for (const rel of [
+    "package.json",
+    "src/server.js",
+    "test/health.test.js",
+    "README.md",
+    ".harness/GOAL.md",
+    ".harness/DISCUSSION.md",
+    ".harness/PLAN.md",
+    ".harness/TASKS.md",
+    ".harness/VERIFY.md",
+    ".harness/SHIP.md",
+    ".harness/REMEMBER.md"
+  ]) {
+    assert.ok(fs.existsSync(path.join(root, rel)), `missing ${rel}`);
+  }
+});
+
+runTest("dogfood demo passes validate.js contract checks", () => {
+  const failures = [];
+  assertDogfoodDemoContract(repoRoot, failures);
+  assert.deepEqual(failures, [], failures.join("\n"));
+});
+
+runTest("dogfood demo npm test passes", () => {
+  const result = childProcess.spawnSync(process.execPath, ["--test", "test/health.test.js"], {
+    cwd: path.join(repoRoot, DOGFOOD_DEMO_PREFIX),
+    encoding: "utf8",
+    timeout: 30000
+  });
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stdout, /pass 2/);
+});
+
+runTest("dogfood VERIFY records passed status and npm test evidence", () => {
+  const verify = fs.readFileSync(
+    path.join(repoRoot, DOGFOOD_DEMO_PREFIX, ".harness", "VERIFY.md"),
+    "utf8"
+  );
+  assert.match(verify, /status:\s*passed/i);
+  assert.match(verify, /npm test/i);
+  assert.match(verify, /Exit Code[\s\S]*\|\s*0\s*\|/i);
 });
 
 runTest("repository command docs pass substantive contract validation", () => {
