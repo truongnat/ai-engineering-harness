@@ -435,10 +435,15 @@ runTest("validate.js CLI returns conflict usage error for --profile-only with --
 });
 
 const aihShPath = path.join(repoRoot, "aih.sh");
+const aihPs1Path = path.join(repoRoot, "aih.ps1");
 const installShPath = path.join(repoRoot, "install.sh");
 
 runTest("aih.sh exists at repository root", () => {
   assert.ok(fs.existsSync(aihShPath));
+});
+
+runTest("aih.ps1 exists at repository root", () => {
+  assert.ok(fs.existsSync(aihPs1Path));
 });
 
 runTest("install.sh exists at repository root", () => {
@@ -1797,6 +1802,27 @@ runTest("primary docs prefer aih.sh lifecycle commands", () => {
   assert.match(simpleCli, /sh aih\.sh uninstall/);
   assert.doesNotMatch(simpleCli, /sh install\.sh uninstall/);
   assert.match(pluginUx, /sh aih\.sh update/);
+});
+
+runTest("README documents Windows PowerShell bootstrap paths", () => {
+  const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
+
+  assert.match(readme, /curl\.exe|aih\.ps1/);
+  assert.match(readme, /PowerShell/i);
+});
+
+runTest("README does not present bare curl -fsSL as a Windows PowerShell command", () => {
+  const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
+
+  assert.doesNotMatch(readme, /```powershell\s+curl -fsSL/i);
+});
+
+runTest("aih.ps1 includes clear missing sh guidance", () => {
+  const script = fs.readFileSync(aihPs1Path, "utf8");
+
+  assert.match(script, /sh was not found\./);
+  assert.match(script, /Install Git for Windows and run from Git Bash, or install WSL\./);
+  assert.match(script, /Native PowerShell mode is planned\./);
 });
 
 runTest("install-runtime opencode project creates plugin file", () => {

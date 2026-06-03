@@ -73,11 +73,33 @@ Run this inside your target project repo:
 curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- install
 ```
 
+Windows PowerShell:
+
+```powershell
+$script = "$env:TEMP\aih.ps1"
+Invoke-WebRequest https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.ps1 -OutFile $script
+powershell -ExecutionPolicy Bypass -File $script install -Runtime cursor
+```
+
+Notes for Windows:
+
+- PowerShell `curl` is often an alias for `Invoke-WebRequest`, so bare `curl -fsSL ...` is not the right command there.
+- If you want the shell bootstrap path in PowerShell, use `curl.exe`, not `curl`.
+- `aih.ps1` is an experimental wrapper that downloads `aih.sh` and runs it through `sh`.
+- `sh` is still required today. Use Git Bash, Git for Windows, or WSL until native PowerShell mode is dogfooded.
+
 Then check the install:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- status
 curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- doctor
+```
+
+Windows PowerShell alternatives:
+
+```powershell
+curl.exe -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- install
+irm https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.ps1 | iex
 ```
 
 If the provider cannot be detected in non-interactive mode, pass it explicitly:

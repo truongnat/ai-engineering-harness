@@ -29,6 +29,28 @@ curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/ma
 curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- uninstall
 ```
 
+Windows notes:
+
+- In Windows PowerShell, `curl` is usually an alias for `Invoke-WebRequest`, so `curl -fsSL ...` fails there.
+- Use `curl.exe` if you want the shell pipeline form from PowerShell.
+- Use Git Bash or WSL when you want a native `sh` environment.
+- `aih.ps1` is the experimental PowerShell bootstrap wrapper for `install`, `status`, `doctor`, `update`, `uninstall`, and `help`.
+
+Windows PowerShell examples:
+
+```powershell
+curl.exe -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- install
+irm https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.ps1 | iex
+```
+
+Safer explicit PowerShell execution:
+
+```powershell
+$script = "$env:TEMP\aih.ps1"
+Invoke-WebRequest https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.ps1 -OutFile $script
+powershell -ExecutionPolicy Bypass -File $script install -Runtime cursor
+```
+
 Dogfood evidence: [scenario-f1-simple-cli-lifecycle.md](pack-dogfood-reports/scenario-f1-simple-cli-lifecycle.md).
 
 ## Defaults
@@ -86,6 +108,7 @@ Manual fallback is still supported explicitly with `--runtime manual` or `--lega
 ## Entrypoints
 
 - `aih.sh` is the lifecycle dispatcher for `install`, `update`, `uninstall`, `status`, and `doctor`.
+- `aih.ps1` is an experimental PowerShell bootstrap wrapper that downloads `aih.sh` and runs it through `sh`.
 - `install.sh` remains a compatibility wrapper and future CLI installer wrapper surface.
 - The long-term binary name is `aih`.
 
