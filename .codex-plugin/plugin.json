@@ -1,0 +1,39 @@
+{
+  "name": "ai-engineering-harness",
+  "version": "0.10.7",
+  "description": "Project-scoped engineering workflows for AI coding agents: planning, verification, shipping, and memory.",
+  "author": {
+    "name": "truongnat",
+    "url": "https://github.com/truongnat"
+  },
+  "homepage": "https://github.com/truongnat/ai-engineering-harness",
+  "repository": "https://github.com/truongnat/ai-engineering-harness",
+  "license": "MIT",
+  "keywords": [
+    "engineering",
+    "planning",
+    "verification",
+    "workflow",
+    "skills",
+    "codex",
+    "harness"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "AI Engineering Harness",
+    "shortDescription": "Planning, verification, and shipping workflows for coding agents",
+    "longDescription": "Use AI Engineering Harness to guide project-scoped agent work through planning, execution, verification, shipping, and memory workflows. Install via Codex /plugins when published; npm project install provides AGENTS.md + .ai-harness/ fallback only.",
+    "developerName": "truongnat",
+    "category": "Developer Tools",
+    "capabilities": ["Interactive", "Read", "Write"],
+    "defaultPrompt": [
+      "Plan this feature using the AI Engineering Harness.",
+      "Verify this implementation using the AI Engineering Harness."
+    ],
+    "websiteURL": "https://github.com/truongnat/ai-engineering-harness",
+    "privacyPolicyURL": "https://github.com/truongnat/ai-engineering-harness",
+    "termsOfServiceURL": "https://github.com/truongnat/ai-engineering-harness",
+    "brandColor": "#2563eb",
+    "screenshots": []
+  }
+}

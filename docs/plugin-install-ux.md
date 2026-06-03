@@ -77,7 +77,7 @@ Recommended consumer path (v0.10.x — private project, capability cache, no git
 npx ai-engineering-harness install
 ```
 
-Then invoke project-scoped commands in the AI tool: `/harness:plan`, `/harness:verify`, `/harness:ship` — [runtime-command-surface.md](runtime-command-surface.md). Claude uses native `.claude/commands/harness/`; other providers use alias mappings.
+Use provider-native paths where implemented — [provider-command-matrix.md](provider-command-matrix.md). OpenCode: `/harness-plan`; Claude project: `/harness-plan`; Cursor: `/add-plugin` when published; Gemini/Codex: extension/plugin or ask **harness:plan**; local catalog always at `.ai-harness/runtime-commands/`.
 
 Shell fallback:
 

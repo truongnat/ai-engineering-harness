@@ -12,7 +12,7 @@ npx ai-engineering-harness uninstall
 
 See [npx-cli-ux.md](npx-cli-ux.md) and [terminal-wizard-ux.md](terminal-wizard-ux.md). Detection **recommends** providers; the wizard requires explicit selection.
 
-After install, use project-scoped slash commands (`/harness:plan`, `/harness:verify`, …) — [runtime-command-surface.md](runtime-command-surface.md).
+After install, use the local command catalog (`harness:plan`, `harness:verify`, …). Ask the agent explicitly on fallback-only providers — [runtime-command-surface.md](runtime-command-surface.md).
 
 ## Shell fallback
 

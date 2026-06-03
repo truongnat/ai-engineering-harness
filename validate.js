@@ -83,8 +83,21 @@ const requiredFiles = [
   "docs/npx-cli-ux.md",
   "docs/terminal-wizard-ux.md",
   "docs/runtime-command-surface.md",
+  "docs/provider-native-command-research.md",
+  "docs/provider-command-matrix.md",
+  "docs/codex-plugin-support.md",
+  "docs/harness-command-behavior.md",
+  ".cursor-plugin/plugin.json",
+  ".claude-plugin/plugin.json",
+  ".codex-plugin/plugin.json",
+  "gemini-extension.json",
+  ".opencode/INSTALL.md",
+  "hooks/hooks-cursor.json",
   "docs/v0.10.0-release-notes.md",
   "docs/v0.10.2-release-notes.md",
+  "docs/v0.10.6-release-notes.md",
+  "docs/v0.10.7-release-notes.md",
+  "docs/v0.10.8-release-notes.md",
   "docs/npm-publish.md",
   "runtime-command-catalog.js",
   "install.sh",
@@ -634,14 +647,21 @@ function validateRuntimeCommandSurface(baseDir, failures) {
     }
   }
 
-  const claudePlan = path.join(baseDir, ".claude/commands/harness/plan.md");
+  const claudePlan = path.join(baseDir, ".claude/commands/harness-plan.md");
   if (fs.existsSync(claudePlan) && !fileReferencesActivation(claudePlan)) {
-    failures.push(".claude/commands/harness/plan.md must reference .ai-harness/activation.md");
+    failures.push(".claude/commands/harness-plan.md must reference .ai-harness/activation.md");
   }
 
-  const cursorPlan = path.join(baseDir, ".cursor/commands/harness-plan.md");
-  if (fs.existsSync(cursorPlan) && !fileReferencesActivation(cursorPlan)) {
-    failures.push(".cursor/commands/harness-plan.md must reference .ai-harness/activation.md");
+  const opencodePlan = path.join(baseDir, ".opencode/commands/harness-plan.md");
+  if (fs.existsSync(opencodePlan) && !fileReferencesActivation(opencodePlan)) {
+    failures.push(".opencode/commands/harness-plan.md must reference .ai-harness/activation.md");
+  }
+
+  const cursorRule = path.join(baseDir, ".cursor/rules/ai-engineering-harness-commands.mdc");
+  if (fs.existsSync(cursorRule) && !fileReferencesActivation(cursorRule)) {
+    failures.push(
+      ".cursor/rules/ai-engineering-harness-commands.mdc must reference .ai-harness/activation.md"
+    );
   }
 }
 

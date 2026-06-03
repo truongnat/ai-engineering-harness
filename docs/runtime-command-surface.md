@@ -1,72 +1,55 @@
 # Runtime Command Surface
 
-## Why commands exist
+See also: [provider-command-matrix.md](provider-command-matrix.md), [provider-native-command-research.md](provider-native-command-research.md).
 
-Installing `.ai-harness/` gives the agent files to read, but does not tell the tool **which** command to run in a repo with many global skills or multiple projects.
-
-Project-scoped **`/harness:*`** commands route to this repository only:
+## Two layers
 
 ```txt
-.ai-harness/activation.md
-  → .ai-harness/runtime-commands/harness-<id>.md
-  → .ai-harness/commands/harness-<id>.md
-  → .harness/ project state
+1. Provider-native packaging (npm package root)
+   .cursor-plugin/plugin.json
+   .claude-plugin/plugin.json
+   .codex-plugin/plugin.json
+   gemini-extension.json
+   commands/  skills/  hooks/
+
+2. Project-local activation (npx install)
+   .ai-harness/runtime-commands/   ← local command catalog (always)
+   .harness/
+   provider entrypoints + native paths where supported
 ```
 
-## Command namespace
+## Local catalog (canonical names)
 
-| Command | Purpose |
-|---------|---------|
-| `/harness:start` | Start or resume active goal |
-| `/harness:map` | Map affected codebase |
-| `/harness:discuss` | Discuss scope before plan |
-| `/harness:plan` | Create/update plan |
-| `/harness:run` | Execute approved plan |
-| `/harness:verify` | Verify against gates |
-| `/harness:ship` | Ship with proof |
-| `/harness:remember` | Update durable memory |
-| `/harness:status` | Summarize harness state |
-| `/harness:doctor` | Readiness checks |
+`harness:plan`, `harness:verify`, … — **not** a claim that `/harness:plan` exists in every UI.
 
-## Provider support matrix
+## Command behavior (provider-independent)
 
-| Provider | Native slash | Install path | Notes |
-|----------|--------------|--------------|-------|
-| Claude Code | Yes (project) | `.claude/commands/harness/*.md` | `/harness:plan` via Claude command files |
-| Cursor | Fallback | `.cursor/commands/harness-*.md` + `.cursor/rules/ai-engineering-harness-commands.mdc` | Native Cursor slash not claimed stable |
-| Codex / Generic | Alias | `AGENTS.md` command table | Maps to `.ai-harness/runtime-commands/` |
-| Gemini | Alias | `.gemini/extensions/.../commands/` | Extension commands + GEMINI.md |
-| OpenCode | Alias | Plugin comment map | Points agent to runtime-commands |
-| Antigravity | — | planned | Not implemented |
+How a command runs after routing is defined in `.ai-harness/commands/` — same for every provider. Example: **`harness:discuss`** must synthesize `.harness/REVIEW.md` when present, not ask redundant mode questions. See [harness-command-behavior.md](harness-command-behavior.md).
 
-## Local activation rule
+## Provider matrix (summary)
 
-Every command file instructs the agent to:
+| Provider | Mode | Native slash | Project install adds |
+|----------|------|--------------|----------------------|
+| Claude Code | native-plugin | `/harness-plan` (file); plugin namespace TBD | `.claude/commands/harness-*.md` |
+| Cursor | plugin-ready | via plugin when published | `.cursor/rules/` (fallback) |
+| OpenCode | native-command-files | `/harness-plan` | `.opencode/commands/harness-*.md` |
+| Gemini | fallback-only | none | extension `GEMINI.md` + manifest |
+| Codex | plugin-packaging | plugin skills via `/plugins` | `AGENTS.md` fallback |
+| Generic | fallback-only | none | `AGENTS.md` aliases |
 
-1. Read `.ai-harness/manifest.json`
-2. Read `.ai-harness/activation.md`
-3. Use only local `.ai-harness/` and `.harness/`
-4. Refuse or warn if cache/state is missing
-5. Never default to global or sibling-repo harness files
+## Install methods
 
-## Manifest
-
-`.ai-harness/manifest.json` records:
-
-- `commandNamespace`: `harness`
-- `slashCommands`: full list
-- `providerCommandEntrypoints`: paths per provider
+| Provider | Preferred | Fallback |
+|----------|-----------|----------|
+| Cursor | `/add-plugin ai-engineering-harness` | npx + rules → `.ai-harness/` |
+| Claude | `/plugin install …` | npx + `.claude/commands/` |
+| OpenCode | `/harness-plan` in TUI | ask harness:plan |
+| Gemini | `gemini extensions install <url>` | ask harness:plan |
 
 ## Troubleshooting
 
 | Symptom | Action |
 |---------|--------|
-| Agent picks wrong skill | Run `/harness:plan` or reinstall; check activation.md |
-| Command not found (Claude) | Reinstall; verify `.claude/commands/harness/plan.md` |
-| Cursor ignores slash | Use rule fallback or ask: "run /harness:plan using this repo .ai-harness" |
-| Doctor fails runtime-commands | `npx ai-engineering-harness update` |
-
-## Related
-
-- [npx-cli-ux.md](npx-cli-ux.md)
-- [private-capability-cache.md](private-capability-cache.md)
+| `/harness:plan` missing | Expected on most providers — use `/harness-plan` (OpenCode/Claude file) or ask **harness:plan** (colon form: unknown / not claimed unless plugin namespace verified) |
+| Cursor slash empty | Install plugin when published; use rules fallback |
+| Doctor WARN plugin-ready | Informational |

@@ -1,6 +1,7 @@
 {
   "name": "ai-engineering-harness",
-  "description": "Markdown-first AI engineering harness: skills, workflows, commands, and .harness/ project state",
+  "displayName": "AI Engineering Harness",
+  "description": "Project-scoped engineering workflows for AI coding agents",
   "version": "0.10.6",
   "author": {
     "name": "truongnat"
@@ -12,7 +13,10 @@
     "harness",
     "skills",
     "workflows",
-    "agents",
-    "engineering"
-  ]
+    "engineering",
+    "agents"
+  ],
+  "skills": "./skills/",
+  "commands": "./commands/",
+  "hooks": "./hooks/hooks-cursor.json"
 }

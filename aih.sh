@@ -199,10 +199,10 @@ harness_provider_command_paths() {
   _rt="$1"
   case "$_rt" in
     cursor)
-      printf '%s\n' '.cursor/rules/ai-engineering-harness-commands.mdc' '.cursor/commands/'
+      printf '%s\n' '.cursor/rules/ai-engineering-harness-commands.mdc'
       ;;
     claude)
-      printf '%s\n' '.claude/commands/harness/'
+      printf '%s\n' '.claude/commands/'
       ;;
     gemini)
       printf '%s\n' '.gemini/extensions/ai-engineering-harness/commands/'
@@ -243,10 +243,9 @@ harness_ignore_paths_for_runtime() {
       printf '%s\n' \
         '.cursor/rules/ai-engineering-harness.mdc' \
         '.cursor/rules/ai-engineering-harness-commands.mdc' \
-        '.cursor/commands/' \
         '.claude/CLAUDE.md' \
         '.claude/settings.json' \
-        '.claude/commands/harness/' \
+        '.claude/commands/' \
         '.gemini/extensions/ai-engineering-harness/' \
         '.opencode/plugins/ai-engineering-harness.js' \
         'AGENTS.md'
@@ -290,10 +289,9 @@ runtime_paths_for_uninstall() {
       printf '%s\n' \
         '.cursor/rules/ai-engineering-harness.mdc' \
         '.cursor/rules/ai-engineering-harness-commands.mdc' \
-        '.cursor/commands/' \
         '.claude/CLAUDE.md' \
         '.claude/settings.json' \
-        '.claude/commands/harness/' \
+        '.claude/commands/' \
         '.gemini/extensions/ai-engineering-harness/' \
         '.opencode/plugins/ai-engineering-harness.js' \
         'AGENTS.md'
@@ -1044,10 +1042,16 @@ print_status() {
     printf '  manifest.json:         no\n'
   fi
   _provider_cmds=no
-  if [ -d "${TARGET_ABS}/.claude/commands/harness" ] || [ -f "${TARGET_ABS}/.cursor/rules/ai-engineering-harness-commands.mdc" ] || [ -d "${TARGET_ABS}/.cursor/commands" ]; then
+  if [ -f "${TARGET_ABS}/.claude/commands/harness-plan.md" ] \
+    || [ -f "${TARGET_ABS}/.opencode/commands/harness-plan.md" ] \
+    || [ -f "${TARGET_ABS}/.cursor/rules/ai-engineering-harness-commands.mdc" ]; then
     _provider_cmds=yes
   fi
   printf '  provider commands:     %s\n' "$_provider_cmds"
+  _harness_root=$(cd "$(dirname "$0")" && pwd)
+  if command -v node >/dev/null 2>&1 && [ -f "${_harness_root}/lib/command-surface-report.js" ]; then
+    node "${_harness_root}/lib/command-surface-report.js" status "${TARGET_ABS}" 2>/dev/null || true
+  fi
 }
 
 run_doctor() {
@@ -1127,32 +1131,31 @@ run_doctor() {
   if [ -f "${TARGET_ABS}/.ai-harness/runtime-commands/harness-plan.md" ]; then
     if grep -q '.ai-harness/activation.md' "${TARGET_ABS}/.ai-harness/runtime-commands/harness-plan.md" 2>/dev/null \
       && grep -q '.ai-harness/commands/harness-plan.md' "${TARGET_ABS}/.ai-harness/runtime-commands/harness-plan.md" 2>/dev/null; then
-      printf '%s\n' 'PASS /harness:plan runtime command catalog references activation and source command'
+      printf '%s\n' 'PASS harness:plan local catalog references activation and source command'
     else
-      printf '%s\n' 'FAIL /harness:plan runtime command catalog incomplete'
+      printf '%s\n' 'FAIL harness:plan local catalog incomplete'
       _fail=1
     fi
   fi
 
-  if [ -f "${TARGET_ABS}/.claude/commands/harness/plan.md" ]; then
-    if grep -q '.ai-harness/activation.md' "${TARGET_ABS}/.claude/commands/harness/plan.md" 2>/dev/null; then
-      printf '%s\n' 'PASS claude harness command references .ai-harness/activation.md'
-    else
-      printf '%s\n' 'FAIL claude harness command missing activation reference'
-      _fail=1
-    fi
-  elif [ -f "${TARGET_ABS}/.cursor/commands/harness-plan.md" ]; then
-    if grep -q '.ai-harness/activation.md' "${TARGET_ABS}/.cursor/commands/harness-plan.md" 2>/dev/null; then
-      printf '%s\n' 'PASS cursor harness command references .ai-harness/activation.md'
-    else
-      printf '%s\n' 'WARN cursor harness command missing activation reference'
-    fi
-  elif [ -f "${TARGET_ABS}/.cursor/rules/ai-engineering-harness-commands.mdc" ]; then
-    if grep -q '.ai-harness/activation.md' "${TARGET_ABS}/.cursor/rules/ai-engineering-harness-commands.mdc" 2>/dev/null; then
-      printf '%s\n' 'PASS cursor command mapping rule references activation'
-    else
-      printf '%s\n' 'WARN cursor command mapping rule missing activation reference'
-    fi
+  _harness_root=$(cd "$(dirname "$0")" && pwd)
+  if command -v node >/dev/null 2>&1 && [ -f "${_harness_root}/lib/command-surface-report.js" ]; then
+    _rt_args=""
+    _doctor_rt_tmp=$(mktemp "${TMPDIR:-/tmp}/harness-doc-rt.XXXXXX")
+    printf '%s\n' "$_detected" | awk 'NF { print }' > "$_doctor_rt_tmp"
+    while IFS= read -r _rt; do
+      [ -n "$_rt" ] || continue
+      _rt_args="${_rt_args} ${_rt}"
+    done < "$_doctor_rt_tmp"
+    rm -f "$_doctor_rt_tmp"
+    # shellcheck disable=SC2086
+    node "${_harness_root}/lib/command-surface-report.js" doctor "${TARGET_ABS}" ${_rt_args} 2>/dev/null \
+      | while IFS= read -r _line; do
+        case "$_line" in
+          FAIL*) _fail=1 ;;
+        esac
+        printf '%s\n' "$_line"
+      done || true
   fi
 
   if [ "$_fail" -ne 0 ]; then

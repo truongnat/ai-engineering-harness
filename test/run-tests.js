@@ -546,8 +546,8 @@ runTest("runtime payload directories exist", () => {
 
 runTest("install-runtime.js does not reference root pack copy", () => {
   const script = fs.readFileSync(path.join(repoRoot, "install-runtime.js"), "utf8");
-  assert.equal(script.includes("commands/"), false);
-  assert.equal(script.includes("skills/"), false);
+  assert.doesNotMatch(script, /packRoot,\s*["']commands\//);
+  assert.doesNotMatch(script, /packPath\([^)]*["']commands\//);
   assert.equal(script.includes("installHarness"), false);
 });
 
@@ -2002,7 +2002,7 @@ runTest("package.json includes @clack/prompts dependency", () => {
   const pkg = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
   assert.ok(pkg.dependencies);
   assert.ok(pkg.dependencies["@clack/prompts"]);
-  assert.equal(pkg.version, "0.10.4");
+  assert.equal(pkg.version, "0.10.8");
 });
 
 runTest("cli-ui uses clack note(message, title) signature (not object title)", () => {
@@ -2090,15 +2090,121 @@ runTest("runtime command catalog generates harness-plan with activation refs", (
   const planPath = path.join(tmp, ".ai-harness/runtime-commands/harness-plan.md");
   assert.ok(fs.existsSync(planPath));
   const text = fs.readFileSync(planPath, "utf8");
-  assert.match(text, /\/harness:plan/);
+  assert.match(text, /harness:plan/);
+  assert.doesNotMatch(text, /^# \/harness:plan/m);
   assert.match(text, /\.ai-harness\/activation\.md/);
   assert.match(text, /\.ai-harness\/commands\/harness-plan\.md/);
   const manifest = JSON.parse(fs.readFileSync(path.join(tmp, ".ai-harness/manifest.json"), "utf8"));
   assert.equal(manifest.commandNamespace, "harness");
-  assert.ok(manifest.slashCommands.includes("/harness:plan"));
+  assert.ok(manifest.canonicalCommands.includes("harness:plan"));
+  assert.ok(manifest.commandSurface);
+  assert.equal(manifest.commandSurface.providers.cursor.mode, "plugin-ready");
 });
 
-runTest("install.sh claude install creates harness slash command files", () => {
+runTest("runtime-command-surface doc has provider capability matrix", () => {
+  const doc = fs.readFileSync(path.join(repoRoot, "docs/runtime-command-surface.md"), "utf8");
+  assert.match(doc, /plugin-ready/);
+  assert.match(doc, /native-command-files/);
+  assert.match(doc, /unknown \/ not claimed/);
+});
+
+runTest("README does not claim universal native slash commands", () => {
+  const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
+  assert.match(readme, /plugin packaging ready|plugin-ready|marketplace pending/i);
+  assert.match(readme, /harness:plan/);
+  assert.doesNotMatch(readme, /Native `\/harness:\*`.*Yes/i);
+});
+
+runTest("pack contains provider plugin manifests", () => {
+  const cursor = JSON.parse(
+    fs.readFileSync(path.join(repoRoot, ".cursor-plugin/plugin.json"), "utf8")
+  );
+  assert.equal(cursor.commands, "./commands/");
+  assert.equal(cursor.skills, "./skills/");
+  assert.ok(fs.existsSync(path.join(repoRoot, ".claude-plugin/plugin.json")));
+  assert.ok(fs.existsSync(path.join(repoRoot, "gemini-extension.json")));
+  assert.ok(fs.existsSync(path.join(repoRoot, ".opencode/INSTALL.md")));
+});
+
+runTest(".codex-plugin/plugin.json has skills and interface (no commands field)", () => {
+  const codex = JSON.parse(
+    fs.readFileSync(path.join(repoRoot, ".codex-plugin/plugin.json"), "utf8")
+  );
+  assert.equal(codex.name, "ai-engineering-harness");
+  assert.equal(codex.skills, "./skills/");
+  assert.ok(codex.interface);
+  assert.ok(codex.interface.displayName);
+  assert.ok(Array.isArray(codex.interface.defaultPrompt));
+  assert.equal(codex.commands, undefined);
+  const pkg = JSON.parse(fs.readFileSync(path.join(repoRoot, "package.json"), "utf8"));
+  assert.ok(pkg.files.includes(".codex-plugin/"));
+});
+
+runTest("codex provider model says nativeSlashCommands false", () => {
+  const { PROVIDERS } = require(path.join(repoRoot, "lib", "cli-providers.js"));
+  const codex = PROVIDERS.find((p) => p.id === "codex");
+  assert.equal(codex.nativeSlashCommands, false);
+  assert.equal(codex.pluginManifest, ".codex-plugin/plugin.json");
+  assert.match(codex.installMode, /plugin-packaging/);
+});
+
+runTest("install.sh codex dry-run does not create fake slash command paths", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-codex-dry-"));
+  initFakeGitWorkTree(tmp);
+  const result = runInstallSh(
+    ["install", "--runtime", "codex", "--scope", "project", "--yes", "--dry-run", "--target", tmp],
+    { env: { PATH: process.env.PATH } }
+  );
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.equal(fs.existsSync(path.join(tmp, ".codex/commands")), false);
+  assert.equal(fs.existsSync(path.join(tmp, ".opencode/commands/harness-plan.md")), false);
+  assert.match(result.stdout + result.stderr, /\/plugins|plugin/i);
+});
+
+runTest("harness-discuss command is action-oriented when context exists", () => {
+  const discuss = fs.readFileSync(path.join(repoRoot, "commands/harness-discuss.md"), "utf8");
+  assert.match(discuss, /Do not ask for clarification when sufficient local context exists/i);
+  assert.match(discuss, /\.harness\/REVIEW\.md/);
+  assert.match(discuss, /What output do you need/i);
+  assert.match(discuss, /Forbidden when REVIEW\.md exists/);
+  assert.match(discuss, /at most one/i);
+});
+
+runTest("generated runtime harness-discuss references review behavior", () => {
+  const tmp = makeTempDir();
+  const { installRuntimeCommandCatalog } = require(path.join(repoRoot, "runtime-command-catalog.js"));
+  installRuntimeCommandCatalog(tmp, { force: true });
+  const rt = fs.readFileSync(
+    path.join(tmp, ".ai-harness/runtime-commands/harness-discuss.md"),
+    "utf8"
+  );
+  assert.match(rt, /\.harness\/REVIEW\.md/);
+  assert.match(rt, /do not ask what output/i);
+  assert.match(rt, /\.ai-harness\/commands\/harness-discuss\.md/);
+});
+
+runTest("harness-command-behavior doc exists with one closing question rule", () => {
+  const doc = fs.readFileSync(path.join(repoRoot, "docs/harness-command-behavior.md"), "utf8");
+  assert.match(doc, /one closing question/i);
+  assert.match(doc, /harness:discuss/);
+  assert.match(doc, /REVIEW\.md/);
+});
+
+runTest("README mentions discuss uses existing local artifacts", () => {
+  const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
+  assert.match(readme, /harness:discuss/);
+  assert.match(readme, /REVIEW\.md/);
+  assert.match(readme, /harness-command-behavior/);
+});
+
+runTest("README does not claim Codex /harness:plan slash", () => {
+  const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
+  const codexRow = readme.split("| Codex |")[1]?.split("\n")[0] || "";
+  assert.doesNotMatch(codexRow, /\/harness:plan/);
+  assert.match(readme, /codex-plugin-support/i);
+});
+
+runTest("install.sh claude install creates native command files harness-plan.md", () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-claude-cmd-"));
   initFakeGitWorkTree(tmp);
   const result = runInstallSh(
@@ -2106,13 +2212,13 @@ runTest("install.sh claude install creates harness slash command files", () => {
     { env: { PATH: process.env.PATH } }
   );
   assert.equal(result.status, 0, result.stderr || result.stdout);
-  const claudePlan = path.join(tmp, ".claude/commands/harness/plan.md");
+  const claudePlan = path.join(tmp, ".claude/commands/harness-plan.md");
   assert.ok(fs.existsSync(claudePlan));
   assert.match(fs.readFileSync(claudePlan, "utf8"), /\.ai-harness\/activation\.md/);
   assert.ok(fs.existsSync(path.join(tmp, ".ai-harness/runtime-commands/harness-plan.md")));
 });
 
-runTest("install.sh cursor install creates command mapping fallback", () => {
+runTest("install.sh cursor install creates fallback rule only (no native slash claim)", () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-cursor-cmd-"));
   initFakeGitWorkTree(tmp);
   const result = runInstallSh(
@@ -2120,8 +2226,15 @@ runTest("install.sh cursor install creates command mapping fallback", () => {
     { env: { PATH: process.env.PATH } }
   );
   assert.equal(result.status, 0, result.stderr || result.stdout);
-  assert.ok(fs.existsSync(path.join(tmp, ".cursor/commands/harness-plan.md")));
-  assert.ok(fs.existsSync(path.join(tmp, ".cursor/rules/ai-engineering-harness-commands.mdc")));
+  assert.equal(fs.existsSync(path.join(tmp, ".cursor/commands/harness-plan.md")), false);
+  const rule = fs.readFileSync(
+    path.join(tmp, ".cursor/rules/ai-engineering-harness-commands.mdc"),
+    "utf8"
+  );
+  assert.ok(rule.includes("fallback"));
+  assert.match(rule, /harness:plan/);
+  const manifest = JSON.parse(fs.readFileSync(path.join(tmp, ".ai-harness/manifest.json"), "utf8"));
+  assert.equal(manifest.commandSurface.providers.cursor.mode, "plugin-ready");
 });
 
 runTest("AGENTS.md bootstrap includes harness command alias section after generic install", () => {
@@ -2133,9 +2246,10 @@ runTest("AGENTS.md bootstrap includes harness command alias section after generi
   );
   assert.equal(result.status, 0, result.stderr || result.stdout);
   const agents = fs.readFileSync(path.join(tmp, "AGENTS.md"), "utf8");
-  assert.match(agents, /Harness slash commands/);
-  assert.match(agents, /\/harness:plan/);
+  assert.match(agents, /Harness commands/);
+  assert.match(agents, /harness:plan/);
   assert.match(agents, /\.ai-harness\/runtime-commands\/harness-plan\.md/);
+  assert.match(agents, /Do not assume a native/);
 });
 
 runTest("uninstall claude removes harness command directory", () => {
@@ -2147,19 +2261,74 @@ runTest("uninstall claude removes harness command directory", () => {
     }).status,
     0
   );
-  assert.ok(fs.existsSync(path.join(tmp, ".claude/commands/harness/plan.md")));
+  assert.ok(fs.existsSync(path.join(tmp, ".claude/commands/harness-plan.md")));
   const result = runInstallSh(["uninstall", "--runtime", "claude", "--yes", "--target", tmp], {
     env: { PATH: process.env.PATH }
   });
   assert.equal(result.status, 0, result.stderr || result.stdout);
-  assert.equal(fs.existsSync(path.join(tmp, ".claude/commands/harness/plan.md")), false);
+  assert.equal(fs.existsSync(path.join(tmp, ".claude/commands/harness-plan.md")), false);
   assert.ok(fs.existsSync(path.join(tmp, ".ai-harness/runtime-commands/harness-plan.md")));
 });
 
-runTest("README mentions harness slash plan command", () => {
-  const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
-  assert.match(readme, /\/harness:plan/);
-  assert.match(readme, /project-scoped/i);
+runTest("providerCommandSupport marks cursor plugin-ready and opencode native-command-files", () => {
+  const { providerCommandSupport } = require(path.join(repoRoot, "runtime-command-catalog.js"));
+  assert.equal(providerCommandSupport("cursor").status, "plugin-ready");
+  assert.equal(providerCommandSupport("opencode").status, "native-command-files");
+  assert.equal(providerCommandSupport("claude").status, "native-plugin");
+  assert.equal(providerCommandSupport("codex").status, "plugin-packaging");
+  assert.equal(providerCommandSupport("codex").nativeSlashCommands, false);
+});
+
+runTest("install.sh opencode creates .opencode/commands/harness-plan.md", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-oc-cmd-"));
+  initFakeGitWorkTree(tmp);
+  const result = runInstallSh(
+    ["install", "--runtime", "opencode", "--scope", "project", "--yes", "--target", tmp],
+    { env: { PATH: process.env.PATH } }
+  );
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  const ocPlan = path.join(tmp, ".opencode/commands/harness-plan.md");
+  assert.ok(fs.existsSync(ocPlan));
+  assert.match(fs.readFileSync(ocPlan, "utf8"), /\.ai-harness\/activation\.md/);
+});
+
+runTest("doctor warns cursor plugin-ready via command-surface-report", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-doc-cursor-"));
+  initFakeGitWorkTree(tmp);
+  assert.equal(
+    runInstallSh(["install", "--runtime", "cursor", "--scope", "project", "--yes", "--target", tmp], {
+      env: { PATH: process.env.PATH }
+    }).status,
+    0
+  );
+  const { formatDoctorCommandLines } = require(path.join(
+    repoRoot,
+    "lib/command-surface-report.js"
+  ));
+  const lines = formatDoctorCommandLines(tmp, ["cursor"]);
+  assert.ok(lines.some((l) => /WARN.*Cursor.*plugin-ready/i.test(l)));
+});
+
+runTest("docs provider-native-command-research exists", () => {
+  const doc = fs.readFileSync(
+    path.join(repoRoot, "docs/provider-native-command-research.md"),
+    "utf8"
+  );
+  assert.match(doc, /superpowers/i);
+  assert.match(doc, /opencode\.ai\/docs\/commands/i);
+});
+
+runTest("manifest separates nativeCommands from fallbackActivation", () => {
+  const tmp = makeTempDir();
+  const { installRuntimeCommandCatalog, installProviderCommandSurface } = require(
+    path.join(repoRoot, "runtime-command-catalog.js")
+  );
+  installRuntimeCommandCatalog(tmp, { force: true });
+  installProviderCommandSurface("opencode", "project", tmp, repoRoot, { force: true });
+  const manifest = JSON.parse(fs.readFileSync(path.join(tmp, ".ai-harness/manifest.json"), "utf8"));
+  const oc = manifest.commandSurface.providers.opencode;
+  assert.equal(oc.nativeCommands, true);
+  assert.equal(oc.fallbackActivation, true);
 });
 
 runTest("aih.sh doctor reports runtime-commands after claude install", () => {

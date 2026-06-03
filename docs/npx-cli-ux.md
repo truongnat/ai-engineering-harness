@@ -20,7 +20,7 @@ Hints (`.cursor/`, `.claude/`, `.gemini/`, `.opencode/`, harness `AGENTS.md`) ma
 
 ## Slash commands after install
 
-Project-scoped `/harness:plan`, `/harness:verify`, etc. route through `.ai-harness/runtime-commands/` → `.ai-harness/commands/`. See [runtime-command-surface.md](runtime-command-surface.md).
+Project-scoped **canonical commands** (`harness:plan`, `harness:verify`, …) route through `.ai-harness/runtime-commands/` → `.ai-harness/commands/`. Native slash support is provider-dependent — see [runtime-command-surface.md](runtime-command-surface.md).
 
 ## Install wizard
 
@@ -35,7 +35,7 @@ Uses `@clack/prompts` when stdin/stdout is a TTY:
 7. Plan + non-Git warning for private mode
 8. Confirm
 9. Spinner + bundled `aih.sh` per provider
-10. Outro with `/harness:plan` and `doctor` next steps
+10. Outro with `harness:plan` (ask agent) and `doctor` next steps
 
 ```txt
 Will install:

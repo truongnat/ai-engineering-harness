@@ -20,11 +20,17 @@ Example prompt:
 
 ## `harness-discuss`
 
-Use when the goal, scope, or tradeoffs are not fully clear.
+When `.harness/REVIEW.md` exists, discuss **synthesizes the review for decisions** (verdict, SHOULD FIX, P0 status, recommendation) — it does not ask "what output do you need?". See [harness-command-behavior.md](harness-command-behavior.md).
 
-Example prompt:
+Use before planning when goal/scope are unclear, or after a review when you need a merge decision discussion.
+
+Example (pre-plan):
 
 > Run `harness-discuss` for “add Google login while preserving guest mode.” Clarify scope boundaries, identify risks, compare options, and write the agreed direction into `.harness/DISCUSSION.md`.
+
+Example (review exists):
+
+> Run `harness-discuss`. Use `.harness/REVIEW.md` as baseline; summarize verdict, blockers, and recommend next step — one closing question only.
 
 ## `harness-plan`
 

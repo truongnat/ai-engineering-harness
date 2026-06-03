@@ -4,7 +4,7 @@
 
 ### Runtime-native engineering discipline for AI coding agents
 
-![Version](https://img.shields.io/badge/version-v0.10.4%20experimental-2563eb)
+![Version](https://img.shields.io/badge/version-v0.10.8%20experimental-2563eb)
 ![License](https://img.shields.io/badge/license-MIT-16a34a)
 ![Markdown First](https://img.shields.io/badge/markdown-first-7c3aed)
 ![Stable Runtime Support](https://img.shields.io/badge/stable%20runtime%20support-no-ef4444)
@@ -51,26 +51,26 @@ npx ai-engineering-harness install --provider cursor --yes
 
 The wizard uses [@clack/prompts](https://github.com/natemoo-re/clack) for a polished terminal flow (intro, multiselect, plan, spinner, outro). See [docs/terminal-wizard-ux.md](docs/terminal-wizard-ux.md) and [docs/npx-cli-ux.md](docs/npx-cli-ux.md).
 
-## Slash commands
+## Command support
 
-After install, call the harness from your AI tool:
+Provider-native commands use **plugin packaging** at the npm package root (`.cursor-plugin/`, `.claude-plugin/`, etc.). Project `npx install` adds **activation** (`.ai-harness/`) plus provider-native paths where documented.
 
-```txt
-/harness:plan
-/harness:verify
-/harness:ship
-/harness:remember
-```
+| Provider | Command mode | Invocation |
+|----------|--------------|------------|
+| Claude Code | native plugin + project command files | `/harness-plan` (project file); `/plugin install` for pack skills |
+| Cursor | plugin packaging ready / marketplace pending | `/add-plugin ai-engineering-harness` when published; else rules → `.ai-harness/` |
+| OpenCode | native command files | `/harness-plan` (`.opencode/commands/harness-plan.md`) |
+| Gemini | extension context | no universal slash — `gemini extensions install` + ask **harness:plan** |
+| Codex | plugin skills via `/plugins` (marketplace pending) | no project-local `/harness:*` — see [codex-plugin-support.md](docs/codex-plugin-support.md) |
+| Generic | fallback only | `AGENTS.md` + ask **harness:plan** |
 
-Commands are **project-scoped**. They activate this repo's `.ai-harness/` and `.harness/` only — not global or sibling-repo skills.
+Local catalog (always): `.ai-harness/runtime-commands/` — canonical `harness:plan`, not a universal `/harness:plan` slash.
 
-| Provider | Native `/harness:*` |
-|----------|---------------------|
-| Claude Code | Yes — `.claude/commands/harness/` |
-| Cursor | Fallback rule + `.cursor/commands/` (native slash not claimed) |
-| Codex / Generic | Alias table in `AGENTS.md` |
+See [docs/provider-command-matrix.md](docs/provider-command-matrix.md) and [docs/provider-native-command-research.md](docs/provider-native-command-research.md).
 
-See [docs/runtime-command-surface.md](docs/runtime-command-surface.md).
+## Command behavior
+
+Harness commands use **existing local artifacts first**. For example, `harness:discuss` summarizes and discusses `.harness/REVIEW.md` when present, instead of asking what to do next. Policy: [docs/harness-command-behavior.md](docs/harness-command-behavior.md).
 
 ---
 

@@ -6,7 +6,7 @@ Runtime-native installs place **provider entrypoints** (Cursor rule, Claude `CLA
 
 Without `.ai-harness/`, every provider only gets an entrypoint that says “go read something” — with no local `commands/`, `skills/`, or `workflows/`. **v0.9.2+** installs the pack surface into a namespaced cache shared by **all** runtimes (via `npx ai-engineering-harness install` or `aih.sh`).
 
-**v0.10.2+** also installs `.ai-harness/runtime-commands/` and `.ai-harness/activation.md` for project-scoped `/harness:*` slash commands — see [runtime-command-surface.md](runtime-command-surface.md).
+**v0.10.2+** also installs `.ai-harness/runtime-commands/` and `.ai-harness/activation.md` for the **local command catalog** (`harness:plan`, …). Native slash commands are not claimed for all providers — see [runtime-command-surface.md](runtime-command-surface.md).
 
 ```txt
 .ai-harness/

@@ -48,6 +48,47 @@
 - `install.sh` verbs: install, uninstall, update
 - Antigravity runtime paths after verification
 
+## [0.10.8] - 2026-06-03
+
+### Fixed
+
+- `harness-discuss` contract: action-oriented synthesis when `.harness/REVIEW.md` (or plan/status) exists — no redundant "what do you want?" prompts
+- Runtime catalog discuss stub includes behavior hint; [harness-command-behavior.md](docs/harness-command-behavior.md) documents act-first policy
+
+## [0.10.7] - 2026-06-03
+
+### Fixed
+
+- Codex support model: **plugin-packaging** (`.codex-plugin/plugin.json` + `skills/`) — not project-local `/harness:*` slash
+- Codex `interface` metadata aligned with OpenAI plugin examples; removed `commands` from Codex manifest
+- Wizard/plan/status/doctor: Codex shows plugin + AGENTS fallback; no fake slash claim
+- [codex-plugin-support.md](docs/codex-plugin-support.md)
+
+## [0.10.6] - 2026-06-03
+
+### Added
+
+- Provider-native plugin packaging: `.cursor-plugin/`, `.claude-plugin/`, `.codex-plugin/`, `gemini-extension.json`, `.opencode/INSTALL.md`, `hooks/`
+- [provider-native-command-research.md](docs/provider-native-command-research.md), [provider-command-matrix.md](docs/provider-command-matrix.md)
+
+### Changed
+
+- OpenCode: native `.opencode/commands/harness-*.md` → `/harness-plan` per OpenCode docs
+- Claude: flat `.claude/commands/harness-*.md` (not nested `harness/plan.md`); plugin via `.claude-plugin/`
+- Cursor: plugin-ready via `.cursor-plugin/plugin.json`; no project `.cursor/commands/` native claim
+- Gemini: stop inventing extension `commands/*.md` slash files
+- Manifest `commandSurface` includes `nativeCommands`, `fallbackActivation`, `packagingPath`, `installMethod`
+
+## [0.10.5] - 2026-06-03
+
+### Fixed
+
+- Stop overclaiming universal `/harness:*` native slash commands — separate local catalog from provider-native registration
+- Provider command capability matrix in [runtime-command-surface.md](docs/runtime-command-surface.md) (`native-verified`, `native-unverified`, `fallback-only`)
+- Cursor installs fallback rule only (no `.cursor/commands/` as native slash)
+- Manifest `commandSurface` + `canonicalCommands`; status/doctor report per-provider modes
+- CLI install plan shows honest command support per provider
+
 ## [0.10.4] - 2026-06-03
 
 ### Fixed

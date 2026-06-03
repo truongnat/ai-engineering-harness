@@ -161,9 +161,15 @@ function installCodex(scope, targetRoot, packRoot, options) {
   if (scope === "global") {
     const destRoot = path.join(os.homedir(), ".codex");
     writeFileAction(destRoot, "AGENTS.md", readPackBootstrap(packRoot, "AGENTS.global.codex.md"), options);
+    console.log(
+      "NEXT: Codex native support — install plugin via /plugins (marketplace pending). Package: .codex-plugin/plugin.json + skills/"
+    );
     return;
   }
   writeFileAction(targetRoot, "AGENTS.md", readPackBootstrap(packRoot, "AGENTS.project.md"), options);
+  console.log(
+    "NEXT: Codex — project install is AGENTS.md + .ai-harness/ fallback only. Native: /plugins → ai-engineering-harness plugin (not /harness:* slash)."
+  );
 }
 
 function installGeneric(scope, targetRoot, packRoot, options) {
@@ -244,7 +250,18 @@ function installOpencode(scope, targetRoot, packRoot, options) {
   }
 
   writeFileAction(targetRoot, ".opencode/plugins/ai-engineering-harness.js", pluginBody, options);
-  mergeJsonFile(targetRoot, "opencode.json", { $schema: "https://opencode.ai/config.json" }, options);
+  mergeJsonFile(
+    targetRoot,
+    "opencode.json",
+    {
+      $schema: "https://opencode.ai/config.json",
+      plugin: [`ai-engineering-harness@git+${HARNESS_GIT_URL}.git`]
+    },
+    options
+  );
+  console.log(
+    "NEXT: OpenCode native command files under .opencode/commands/ (see .opencode/INSTALL.md); plugin optional in opencode.json"
+  );
 }
 
 function installProviderCommands(runtime, scope, targetRoot, packRoot, options) {

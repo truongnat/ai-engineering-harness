@@ -7,90 +7,323 @@ const COMMAND_NAMESPACE = "harness";
 const CACHE_DIR = ".ai-harness";
 const RUNTIME_COMMANDS_DIR = `${CACHE_DIR}/runtime-commands`;
 
-/** @type {readonly { id: string, slash: string, title: string, sourceCommand: string, description: string }[]} */
+/** @typedef {'native-verified'|'native-unverified'|'native-plugin'|'native-command-files'|'plugin-ready'|'plugin-packaging'|'fallback-only'|'planned'|'unsupported'} ProviderCommandStatus */
+
+/**
+ * Provider command capability matrix (honest; do not claim native slash unless verified).
+ * @type {Record<string, {
+ *   provider: string,
+ *   status: ProviderCommandStatus,
+ *   nativeCommandSupport: boolean,
+ *   installedPaths: string[],
+ *   actualInvocation: string | null,
+ *   useInstruction: string,
+ *   notes: string,
+ *   invocations?: Record<string, string | null>
+ * }>}
+ */
+const PACK_PLUGIN_PATHS = Object.freeze({
+  cursor: ".cursor-plugin/plugin.json",
+  claude: ".claude-plugin/plugin.json",
+  codex: ".codex-plugin/plugin.json",
+  gemini: "gemini-extension.json",
+  opencode: ".opencode/INSTALL.md"
+});
+
+const PROVIDER_COMMAND_SUPPORT = Object.freeze({
+  claude: {
+    provider: "Claude Code",
+    status: "native-plugin",
+    nativeCommandSupport: true,
+    nativeCommands: true,
+    fallbackActivation: true,
+    packagingPath: ".claude-plugin/plugin.json",
+    installMethod: "/plugin install ai-engineering-harness (marketplace) or project .claude/commands/harness-<id>.md",
+    installedPaths: [".claude/commands/", ".claude-plugin/ (npm package root)"],
+    actualInvocation: "/harness-plan (project command file); /ai-engineering-harness:<skill> when plugin installed",
+    useInstruction:
+      "Prefer /plugin install from repo marketplace; project install adds .claude/commands/harness-plan.md → /harness-plan per Claude docs.",
+    notes:
+      "Pack ships .claude-plugin/ + skills/ + commands/. Colon namespace /harness:plan only via plugin skill namespace when verified.",
+    invocations: { plan: "/harness-plan" }
+  },
+  cursor: {
+    provider: "Cursor",
+    status: "plugin-ready",
+    nativeCommandSupport: false,
+    nativeCommands: false,
+    fallbackActivation: true,
+    packagingPath: ".cursor-plugin/plugin.json",
+    installMethod: "/add-plugin ai-engineering-harness (marketplace pending) or npx project install + rules",
+    installedPaths: [
+      ".cursor-plugin/plugin.json (package)",
+      ".cursor/rules/ai-engineering-harness.mdc",
+      ".cursor/rules/ai-engineering-harness-commands.mdc"
+    ],
+    actualInvocation: null,
+    useInstruction:
+      "Install plugin: /add-plugin ai-engineering-harness when published. Project npx install: .cursor/rules activate .ai-harness/ (fallback).",
+    notes: "Native commands come from Cursor plugin manifest commands field — not project .cursor/commands/.",
+    invocations: {}
+  },
+  codex: {
+    provider: "Codex",
+    status: "plugin-packaging",
+    nativeCommandSupport: false,
+    nativeCommands: false,
+    nativeSlashCommands: false,
+    fallbackActivation: true,
+    packagingPath: ".codex-plugin/plugin.json",
+    pluginManifest: ".codex-plugin/plugin.json",
+    installMethod: "Codex /plugins marketplace (install plugin when published) — skills surface",
+    installedPaths: ["AGENTS.md (project fallback)"],
+    actualInvocation: null,
+    useInstruction:
+      "Native: open Codex /plugins, install ai-engineering-harness plugin (marketplace pending). Use plugin skills. Project npx install: AGENTS.md + .ai-harness/ fallback only — no /harness:* slash.",
+    notes:
+      "Codex is not a project-local slash-command provider. Package ships .codex-plugin/plugin.json + skills/ per openai/plugins layout.",
+    invocations: {}
+  },
+  generic: {
+    provider: "Generic AGENTS.md",
+    status: "fallback-only",
+    nativeCommandSupport: false,
+    nativeCommands: false,
+    nativeSlashCommands: false,
+    fallbackActivation: true,
+    packagingPath: null,
+    installMethod: "AGENTS.md activation + .ai-harness/ catalog",
+    installedPaths: ["AGENTS.md"],
+    actualInvocation: null,
+    useInstruction: 'Ask the agent: "Use harness:plan for this repository."',
+    notes: "Generic bootstrap — not Codex plugin UI. For Codex native skills use codex provider + /plugins.",
+    invocations: {}
+  },
+  gemini: {
+    provider: "Gemini",
+    status: "fallback-only",
+    nativeCommandSupport: false,
+    nativeCommands: false,
+    fallbackActivation: true,
+    packagingPath: "gemini-extension.json",
+    installMethod: "gemini extensions install <git-url> or project .gemini/extensions/...",
+    installedPaths: [".gemini/extensions/ai-engineering-harness/gemini-extension.json", "GEMINI.md"],
+    actualInvocation: null,
+    useInstruction:
+      'gemini extensions install https://github.com/truongnat/ai-engineering-harness — context via GEMINI.md; ask "use harness:plan".',
+    notes: "Extension context/skills — no invented slash commands under extension commands/.",
+    invocations: {}
+  },
+  opencode: {
+    provider: "OpenCode",
+    status: "native-command-files",
+    nativeCommandSupport: true,
+    nativeCommands: true,
+    fallbackActivation: true,
+    packagingPath: ".opencode/commands/",
+    installMethod: "npx install writes .opencode/commands/harness-*.md; optional plugin in opencode.json",
+    installedPaths: [".opencode/commands/", ".opencode/plugins/ai-engineering-harness.js"],
+    actualInvocation: "/harness-plan",
+    useInstruction: "Run /harness-plan in OpenCode TUI after project install (filename → command per OpenCode docs).",
+    notes: "OpenCode docs: test.md → /test; harness-plan.md → /harness-plan. Colon names not claimed.",
+    invocations: { plan: "/harness-plan" }
+  },
+  antigravity: {
+    provider: "Antigravity",
+    status: "planned",
+    nativeCommandSupport: false,
+    installedPaths: [],
+    actualInvocation: null,
+    useInstruction: "Not implemented.",
+    notes: "Planned provider research only.",
+    invocations: {}
+  }
+});
+
+/** @type {readonly { id: string, canonical: string, title: string, sourceCommand: string, description: string }[]} */
 const HARNESS_COMMANDS = Object.freeze([
   {
     id: "start",
-    slash: "/harness:start",
+    canonical: "harness:start",
     title: "Harness Start",
     sourceCommand: "commands/harness-start.md",
     description: "Start or resume work on the active goal in this repository."
   },
   {
     id: "map",
-    slash: "/harness:map",
+    canonical: "harness:map",
     title: "Harness Map",
     sourceCommand: "commands/harness-map.md",
     description: "Map affected codebase areas for the current goal."
   },
   {
     id: "discuss",
-    slash: "/harness:discuss",
+    canonical: "harness:discuss",
     title: "Harness Discuss",
     sourceCommand: "commands/harness-discuss.md",
     description: "Discuss scope, constraints, and approach before planning."
   },
   {
     id: "plan",
-    slash: "/harness:plan",
+    canonical: "harness:plan",
     title: "Harness Plan",
     sourceCommand: "commands/harness-plan.md",
     description: "Create or update a project-scoped implementation plan."
   },
   {
     id: "run",
-    slash: "/harness:run",
+    canonical: "harness:run",
     title: "Harness Run",
     sourceCommand: "commands/harness-run.md",
     description: "Execute the approved plan with evidence-backed progress."
   },
   {
     id: "verify",
-    slash: "/harness:verify",
+    canonical: "harness:verify",
     title: "Harness Verify",
     sourceCommand: "commands/harness-verify.md",
     description: "Verify implementation against gates and proof requirements."
   },
   {
     id: "ship",
-    slash: "/harness:ship",
+    canonical: "harness:ship",
     title: "Harness Ship",
     sourceCommand: "commands/harness-ship.md",
     description: "Ship completed work with status aligned to proof."
   },
   {
     id: "remember",
-    slash: "/harness:remember",
+    canonical: "harness:remember",
     title: "Harness Remember",
     sourceCommand: "commands/harness-remember.md",
     description: "Record durable lessons in project memory."
   },
   {
     id: "status",
-    slash: "/harness:status",
+    canonical: "harness:status",
     title: "Harness Status",
     sourceCommand: "commands/harness-status.md",
     description: "Summarize harness install and project state for this repo."
   },
   {
     id: "doctor",
-    slash: "/harness:doctor",
+    canonical: "harness:doctor",
     title: "Harness Doctor",
     sourceCommand: "commands/harness-doctor.md",
     description: "Check harness readiness for this repository."
   }
 ]);
 
-const SLASH_COMMANDS = HARNESS_COMMANDS.map((c) => c.slash);
+const CANONICAL_COMMANDS = HARNESS_COMMANDS.map((c) => c.canonical);
+
+/** @deprecated Display-only; not a claim of native slash support */
+const SLASH_COMMANDS = CANONICAL_COMMANDS.map((c) => `/${c}`);
+
+function providerCommandSupport(providerId) {
+  return PROVIDER_COMMAND_SUPPORT[providerId] || PROVIDER_COMMAND_SUPPORT.generic;
+}
+
+function providerInvocationFor(providerId, commandId) {
+  const spec = providerCommandSupport(providerId);
+  if (!spec.invocations) {
+    return null;
+  }
+  const hit = spec.invocations[commandId];
+  return hit === undefined ? null : hit;
+}
+
+function formatProviderUseLine(providerId) {
+  return providerCommandSupport(providerId).useInstruction;
+}
+
+function buildCommandSurface(installedProviderEntrypoints = {}) {
+  /** @type {Record<string, object>} */
+  const providers = {};
+  for (const [id, spec] of Object.entries(PROVIDER_COMMAND_SUPPORT)) {
+    if (id === "generic" && providers.codex) {
+      continue;
+    }
+    providers[id] = {
+      mode: spec.status,
+      nativeCommandSupport: spec.nativeCommandSupport,
+      nativeCommands: spec.nativeCommands ?? false,
+      nativeSlashCommands: spec.nativeSlashCommands ?? false,
+      fallbackActivation: spec.fallbackActivation ?? true,
+      pluginManifest: spec.pluginManifest || null,
+      packagingPath: spec.packagingPath || null,
+      installMethod: spec.installMethod || null,
+      installedPaths: [...spec.installedPaths],
+      actualInvocation: spec.actualInvocation,
+      useInstruction: spec.useInstruction,
+      invocations: { ...(spec.invocations || {}) }
+    };
+    if (installedProviderEntrypoints[id]) {
+      providers[id].installed = true;
+      providers[id].installedPathsOnDisk = installedProviderEntrypoints[id];
+    }
+  }
+  return {
+    canonicalNamespace: COMMAND_NAMESPACE,
+    localCatalog: RUNTIME_COMMANDS_DIR,
+    canonicalCommands: [...CANONICAL_COMMANDS],
+    providers
+  };
+}
+
+function readInstalledCommandSurface(targetRoot) {
+  const manifestPath = path.join(targetRoot, `${CACHE_DIR}/manifest.json`);
+  if (!fs.existsSync(manifestPath)) {
+    return null;
+  }
+  try {
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+    const surface = manifest.commandSurface || {};
+    const installedProviders = Object.keys(manifest.providerCommandEntrypoints || {});
+    return { ...surface, installedProviders };
+  } catch {
+    return null;
+  }
+}
+
+function formatCommandSupportForPlan(providerIds) {
+  const lines = [
+    "Commands:",
+    "  Local catalog (always):",
+    `    ${RUNTIME_COMMANDS_DIR}/`,
+    `    ${CACHE_DIR}/activation.md`,
+    ""
+  ];
+  for (const providerId of providerIds) {
+    const spec = providerCommandSupport(providerId);
+    lines.push(`  ${spec.provider}:`);
+    lines.push(`    mode: ${spec.status}`);
+    if (providerId === "codex") {
+      lines.push("    native /harness:* slash: not claimed");
+      lines.push("    Codex plugin: .codex-plugin/plugin.json + skills/ (install via /plugins when published)");
+      lines.push("    project install: AGENTS.md + .ai-harness/ fallback only");
+    }
+    lines.push(`    use: ${spec.useInstruction}`);
+    if (spec.installedPaths.length) {
+      lines.push(`    files: ${spec.installedPaths.join(", ")}`);
+    }
+    lines.push("");
+  }
+  lines.push(
+    "Canonical command names (local):",
+    ...CANONICAL_COMMANDS.slice(0, 6).map((c) => `  ${c}`),
+    "  …"
+  );
+  return lines.join("\n");
+}
 
 function activationMarkdown() {
   return `# ai-engineering-harness — project activation
 
-This repository uses a **project-local** harness install. Every \`/harness:*\` command applies **only to this repo**.
+This repository uses a **project-local** harness install. Canonical command names (\`harness:plan\`, \`harness:verify\`, …) apply **only to this repo** via the local catalog below.
 
-## Before any /harness:* command
+## Before any harness:* command
 
-1. Read \`.ai-harness/manifest.json\`.
+1. Read \`.ai-harness/manifest.json\` (see \`commandSurface\` for provider-specific support).
 2. Read this file (\`.ai-harness/activation.md\`).
 3. Use only \`.ai-harness/commands/\`, \`.ai-harness/skills/\`, \`.ai-harness/workflows/\`, and \`.ai-harness/patterns/\` under **this** repository.
 4. Use only \`.harness/\` for project-specific state (goals, memory, gates).
@@ -101,19 +334,25 @@ This repository uses a **project-local** harness install. Every \`/harness:*\` c
 - If \`.ai-harness/\` is missing: stop and tell the user to run \`npx ai-engineering-harness install\`.
 - If \`.harness/\` is missing: warn; some commands need project state — offer to init or continue with reduced context.
 
-## Command routing
+## Command routing (local catalog)
 
-Slash commands map to \`.ai-harness/runtime-commands/harness-<id>.md\`, which points at the matching \`.ai-harness/commands/harness-<id>.md\` file.
+Canonical names map to \`.ai-harness/runtime-commands/harness-<id>.md\`, which points at \`.ai-harness/commands/harness-<id>.md\`.
+
+**Native slash commands are provider-dependent.** See \`docs/runtime-command-surface.md\`. If the tool has no verified native command, ask the user to request \`harness:<id>\` for this repository.
 
 ## Namespace
 
-Command namespace: \`${COMMAND_NAMESPACE}\` (e.g. \`/harness:plan\`, \`/harness:verify\`).
+Command namespace: \`${COMMAND_NAMESPACE}\` (canonical: \`harness:plan\`, \`harness:verify\`, …).
 `;
 }
 
 function renderRuntimeCommandFile(spec) {
   const sourcePath = `.ai-harness/${spec.sourceCommand}`;
-  return `# ${spec.slash}
+  const behaviorHint =
+    spec.id === "discuss"
+      ? "\n## Behavior (discuss)\n\nIf \`.harness/REVIEW.md\` (or PLAN/STATUS/DISCUSSION) exists: **synthesize and discuss immediately** — do not ask what output the user wants. Max one closing question. See \`docs/harness-command-behavior.md\`.\n"
+      : "";
+  return `# ${spec.canonical}
 
 **${spec.title}** — ${spec.description}
 
@@ -123,40 +362,48 @@ This command is **project-scoped** for the repository that contains this \`.ai-h
 
 1. Read \`.ai-harness/manifest.json\`.
 2. Read \`.ai-harness/activation.md\`.
-3. Read \`${sourcePath}\`.
-4. Read relevant artifacts under \`.harness/\` (goals, STATE, PLAN, etc.).
+3. Read \`${sourcePath}\` (full command contract).
+4. Read relevant artifacts under \`.harness/\` (REVIEW, PLAN, STATE, GOAL, etc.).
 5. Do **not** use global or sibling-repo harness files unless the user explicitly requests it.
-
+${behaviorHint}
 ## Then
 
-Execute the workflow defined in \`${sourcePath}\` for **this repository only**.
+Execute the workflow defined in \`${sourcePath}\` for **this repository only**. Use existing local artifacts first; ask only when blocked.
 `;
 }
 
 function renderClaudeCommandFile(spec) {
   return `---
-description: ${spec.title} — project-scoped (${spec.slash})
+description: ${spec.title} — project-scoped (${spec.canonical})
 ---
 
 ${renderRuntimeCommandFile(spec)}
 `;
 }
 
-function renderCursorCommandFile(spec) {
-  return renderRuntimeCommandFile(spec);
+function renderOpencodeNativeCommandFile(spec) {
+  const sourcePath = `.ai-harness/${spec.sourceCommand}`;
+  return `---
+description: ${spec.title} — routes to project .ai-harness/ catalog
+---
+
+Before doing anything, read @.ai-harness/activation.md and @.ai-harness/runtime-commands/harness-${spec.id}.md, then @${sourcePath}.
+
+Execute the harness workflow in **this repository only**. Do not use global or sibling-repo harness files unless the user asks.
+`;
 }
 
 function renderCursorCommandsRuleMdc() {
   const lines = [
     "---",
-    "description: ai-engineering-harness slash command mappings (fallback — native Cursor slash commands not claimed)",
+    "description: ai-engineering-harness command routing (fallback — native Cursor slash commands not claimed)",
     "globs:",
     "alwaysApply: true",
     "---",
     "",
-    "# Harness slash commands (this repo)",
+    "# Harness commands (this repo)",
     "",
-    "When the user invokes a harness command (e.g. `/harness:plan`), treat it as **project-scoped** for this repository.",
+    "When the user asks to run a harness command (e.g. **harness:plan**), treat it as **project-scoped** for this repository.",
     "",
     "Always read `.ai-harness/activation.md` first, then the matching file under `.ai-harness/runtime-commands/`, then `.ai-harness/commands/`.",
     "",
@@ -167,7 +414,7 @@ function renderCursorCommandsRuleMdc() {
   ];
   for (const spec of HARNESS_COMMANDS) {
     lines.push(
-      `- **${spec.slash}** → read \`.ai-harness/runtime-commands/harness-${spec.id}.md\` → \`.ai-harness/${spec.sourceCommand}\``
+      `- **${spec.canonical}** → read \`.ai-harness/runtime-commands/harness-${spec.id}.md\` → \`.ai-harness/${spec.sourceCommand}\``
     );
   }
   return `${lines.join("\n")}\n`;
@@ -176,24 +423,25 @@ function renderCursorCommandsRuleMdc() {
 function renderAgentsCommandAliasesSection() {
   const lines = [
     "",
-    "## Harness slash commands (project-scoped)",
+    "## Harness commands (project-scoped, fallback aliases)",
     "",
-    "This repository exposes deterministic **local** command aliases. They activate **only** this repo's harness:",
+    "This repository exposes a **local command catalog** under `.ai-harness/runtime-commands/`. These names activate **only** this repo's harness:",
     "",
     "1. `.ai-harness/activation.md`",
     "2. `.ai-harness/runtime-commands/harness-<command>.md`",
     "3. `.ai-harness/commands/harness-<command>.md`",
     "4. `.harness/` project state",
     "",
-    "Do not use global or sibling-repo harness files unless the user explicitly asks.",
+    "Ask the agent explicitly, e.g. **Use harness:plan for this repository.**",
+    "Do not assume a native `/harness:*` slash command exists in this tool.",
     "",
-    "| Command | Local routing |",
-    "|---------|---------------|",
+    "| Canonical | Local routing |",
+    "|-----------|---------------|",
     ""
   ];
   for (const spec of HARNESS_COMMANDS) {
     lines.push(
-      `| ${spec.slash} | \`.ai-harness/runtime-commands/harness-${spec.id}.md\` → \`.ai-harness/${spec.sourceCommand}\` |`
+      `| ${spec.canonical} | \`.ai-harness/runtime-commands/harness-${spec.id}.md\` → \`.ai-harness/${spec.sourceCommand}\` |`
     );
   }
   return `${lines.join("\n")}\n`;
@@ -201,16 +449,19 @@ function renderAgentsCommandAliasesSection() {
 
 function renderGeminiCommandsReadme() {
   const lines = [
-    "# Harness slash commands (Gemini)",
+    "# Harness commands (Gemini fallback)",
     "",
-    "Project-scoped commands for this extension. Read `.ai-harness/activation.md` first.",
+    "Project-scoped **local catalog** for this extension. Read `.ai-harness/activation.md` first.",
+    "Ask: **Use harness:plan** — native slash commands are not claimed.",
     "",
-    "| Command | File |",
-    "|---------|------|",
+    "| Canonical | File |",
+    "|-----------|------|",
     ""
   ];
   for (const spec of HARNESS_COMMANDS) {
-    lines.push(`| ${spec.slash} | \`commands/harness-${spec.id}.md\` (in extension) or \`.ai-harness/runtime-commands/harness-${spec.id}.md\` |`);
+    lines.push(
+      `| ${spec.canonical} | \`commands/harness-${spec.id}.md\` (extension) or \`.ai-harness/runtime-commands/harness-${spec.id}.md\` |`
+    );
   }
   return `${lines.join("\n")}\n`;
 }
@@ -218,11 +469,12 @@ function renderGeminiCommandsReadme() {
 function renderOpencodeCommandAppendix() {
   return [
     "",
-    "/* Harness slash commands — project-scoped; read .ai-harness/activation.md first */",
+    "/* Harness commands — project-scoped fallback; read .ai-harness/activation.md first */",
+    "/* Ask: use harness:plan for this repo. Native slash not claimed. */",
     "/*",
     ...HARNESS_COMMANDS.map(
       (s) =>
-        ` * ${s.slash} -> .ai-harness/runtime-commands/harness-${s.id}.md -> .ai-harness/${s.sourceCommand}`
+        ` * ${s.canonical} -> .ai-harness/runtime-commands/harness-${s.id}.md -> .ai-harness/${s.sourceCommand}`
     ),
     " */",
     ""
@@ -234,8 +486,9 @@ function buildManifest(providerEntrypoints = {}) {
     package: "ai-engineering-harness",
     commandNamespace: COMMAND_NAMESPACE,
     commandsInstalled: true,
-    slashCommands: [...SLASH_COMMANDS],
+    canonicalCommands: [...CANONICAL_COMMANDS],
     runtimeCommandsDir: RUNTIME_COMMANDS_DIR,
+    commandSurface: buildCommandSurface(providerEntrypoints),
     providerCommandEntrypoints: providerEntrypoints
   };
 }
@@ -324,6 +577,7 @@ function mergeManifestProviders(targetRoot, runtime, paths, options = {}) {
   }
   manifest.providerCommandEntrypoints = manifest.providerCommandEntrypoints || {};
   manifest.providerCommandEntrypoints[runtime] = paths;
+  manifest.commandSurface = buildCommandSurface(manifest.providerCommandEntrypoints);
   return writeFile(targetRoot, `${CACHE_DIR}/manifest.json`, `${JSON.stringify(manifest, null, 2)}\n`, {
     ...options,
     force: true
@@ -334,79 +588,57 @@ function providerCommandPathsForRuntime(runtime, scope) {
   if (scope !== "project") {
     return [];
   }
-  switch (runtime) {
-    case "claude":
-      return [".claude/commands/harness/"];
-    case "cursor":
-      return [
-        ".cursor/rules/ai-engineering-harness-commands.mdc",
-        ".cursor/commands/"
-      ];
-    case "gemini":
-      return [".gemini/extensions/ai-engineering-harness/commands/"];
-    case "opencode":
-      return [".opencode/plugins/ai-engineering-harness.js"];
-    case "codex":
-    case "generic":
-      return ["AGENTS.md"];
-    default:
-      return [];
-  }
+  return [...(providerCommandSupport(runtime).installedPaths || [])];
 }
 
-function installClaudeHarnessCommands(targetRoot, packRoot, options) {
+function installClaudeNativeCommands(targetRoot, packRoot, options) {
   const results = [];
   for (const spec of HARNESS_COMMANDS) {
     results.push(
       writeFile(
         targetRoot,
-        `.claude/commands/harness/${spec.id}.md`,
+        `.claude/commands/harness-${spec.id}.md`,
         renderClaudeCommandFile(spec),
         options
       )
     );
   }
-  results.push(mergeManifestProviders(targetRoot, "claude", providerCommandPathsForRuntime("claude", "project"), options));
+  results.push(
+    mergeManifestProviders(targetRoot, "claude", providerCommandPathsForRuntime("claude", "project"), options)
+  );
   return results;
 }
 
-function installCursorHarnessCommands(targetRoot, options) {
-  const results = [];
-  for (const spec of HARNESS_COMMANDS) {
-    results.push(
-      writeFile(
-        targetRoot,
-        `.cursor/commands/harness-${spec.id}.md`,
-        renderCursorCommandFile(spec),
-        options
-      )
-    );
-  }
-  results.push(
+function installCursorHarnessFallback(targetRoot, options) {
+  const results = [
     writeFile(
       targetRoot,
       ".cursor/rules/ai-engineering-harness-commands.mdc",
       renderCursorCommandsRuleMdc(),
       options
     )
+  ];
+  results.push(
+    mergeManifestProviders(targetRoot, "cursor", providerCommandPathsForRuntime("cursor", "project"), options)
   );
-  results.push(mergeManifestProviders(targetRoot, "cursor", providerCommandPathsForRuntime("cursor", "project"), options));
   return results;
 }
 
 function appendAgentsCommandAliases(agentsPath, options) {
-  const marker = "## Harness slash commands (project-scoped)";
+  const marker = "## Harness commands (project-scoped, fallback aliases)";
+  const legacyMarker = "## Harness slash commands (project-scoped)";
   const harnessMarker = "ai-engineering-harness";
   let content = fs.existsSync(agentsPath) ? fs.readFileSync(agentsPath, "utf8") : "";
-  if (content && !content.includes(harnessMarker) && !content.includes(marker)) {
+  if (content && !content.includes(harnessMarker) && !content.includes(marker) && !content.includes(legacyMarker)) {
     return {
       action: options.dryRun ? "WOULD SKIP" : "SKIP",
       relativePath: path.basename(agentsPath),
       reason: "no-harness-marker"
     };
   }
-  if (content.includes(marker)) {
-    const before = content.split(marker)[0].trimEnd();
+  if (content.includes(marker) || content.includes(legacyMarker)) {
+    const splitMarker = content.includes(marker) ? marker : legacyMarker;
+    const before = content.split(splitMarker)[0].trimEnd();
     content = `${before}\n${renderAgentsCommandAliasesSection()}`;
   } else if (
     fs.existsSync(agentsPath) &&
@@ -424,73 +656,72 @@ function appendAgentsCommandAliases(agentsPath, options) {
   return { action: options.dryRun ? "WOULD UPDATE" : "UPDATE", relativePath: path.basename(agentsPath) };
 }
 
-function installGeminiHarnessCommands(targetRoot, options) {
+function installGeminiHarnessFallback(targetRoot, options) {
   const extRoot = path.join(targetRoot, ".gemini/extensions/ai-engineering-harness");
+  const results = [];
+  const geminiMd = path.join(extRoot, "GEMINI.md");
+  if (fs.existsSync(geminiMd)) {
+    let body = fs.readFileSync(geminiMd, "utf8");
+    const marker = "## Harness commands";
+    if (!body.includes(marker)) {
+      body = `${body.trimEnd()}\n\n## Harness commands\n\nRead \`.ai-harness/activation.md\` first. Use **gemini extensions install** from pack \`gemini-extension.json\` or project extension dir. Ask: **use harness:plan** — no slash claim.\n`;
+      results.push(
+        writeFile(targetRoot, ".gemini/extensions/ai-engineering-harness/GEMINI.md", body, {
+          ...options,
+          force: true
+        })
+      );
+    }
+  }
+  results.push(
+    mergeManifestProviders(targetRoot, "gemini", providerCommandPathsForRuntime("gemini", "project"), options)
+  );
+  return results;
+}
+
+function installOpencodeNativeCommands(targetRoot, options) {
   const results = [];
   for (const spec of HARNESS_COMMANDS) {
     results.push(
       writeFile(
         targetRoot,
-        `.gemini/extensions/ai-engineering-harness/commands/harness-${spec.id}.md`,
-        renderRuntimeCommandFile(spec),
+        `.opencode/commands/harness-${spec.id}.md`,
+        renderOpencodeNativeCommandFile(spec),
         options
       )
     );
   }
   results.push(
-    writeFile(
-      targetRoot,
-      ".gemini/extensions/ai-engineering-harness/commands/README.md",
-      renderGeminiCommandsReadme(),
-      options
-    )
+    mergeManifestProviders(targetRoot, "opencode", providerCommandPathsForRuntime("opencode", "project"), options)
   );
-  const geminiMd = path.join(extRoot, "GEMINI.md");
-  if (fs.existsSync(geminiMd)) {
-    let body = fs.readFileSync(geminiMd, "utf8");
-    const marker = "## Harness slash commands";
-    if (!body.includes(marker)) {
-      body = `${body.trimEnd()}\n\n## Harness slash commands\n\nRead \`.ai-harness/activation.md\` first. Use extension \`commands/harness-*.md\` or \`.ai-harness/runtime-commands/\` for ${SLASH_COMMANDS.join(", ")}.\n`;
-      results.push(writeFile(targetRoot, ".gemini/extensions/ai-engineering-harness/GEMINI.md", body, { ...options, force: true }));
-    }
-  }
-  results.push(mergeManifestProviders(targetRoot, "gemini", providerCommandPathsForRuntime("gemini", "project"), options));
   return results;
 }
 
-function installOpencodeHarnessCommands(targetRoot, options) {
-  const pluginPath = path.join(targetRoot, ".opencode/plugins/ai-engineering-harness.js");
-  if (!fs.existsSync(pluginPath)) {
-    return [];
-  }
-  let body = fs.readFileSync(pluginPath, "utf8");
-  const marker = "Harness slash commands — project-scoped";
-  if (!body.includes(marker)) {
-    body = body.replace(
-      /export const AiEngineeringHarnessPlugin/,
-      `${renderOpencodeCommandAppendix()}export const AiEngineeringHarnessPlugin`
-    );
-  }
-  const results = [
-    writeFile(targetRoot, ".opencode/plugins/ai-engineering-harness.js", body, { ...options, force: true })
-  ];
-  results.push(mergeManifestProviders(targetRoot, "opencode", providerCommandPathsForRuntime("opencode", "project"), options));
-  return results;
-}
-
-function installProviderCommandSurface(runtime, scope, targetRoot, packRoot, options) {
+function installProviderNativeCommands(runtime, scope, targetRoot, packRoot, options) {
   if (scope !== "project") {
     return [];
   }
   switch (runtime) {
     case "claude":
-      return installClaudeHarnessCommands(targetRoot, packRoot, options);
-    case "cursor":
-      return installCursorHarnessCommands(targetRoot, options);
-    case "gemini":
-      return installGeminiHarnessCommands(targetRoot, options);
+      return installClaudeNativeCommands(targetRoot, packRoot, options);
     case "opencode":
-      return installOpencodeHarnessCommands(targetRoot, options);
+      return installOpencodeNativeCommands(targetRoot, options);
+    default:
+      return [];
+  }
+}
+
+function installProviderFallbackCommands(runtime, scope, targetRoot, packRoot, options) {
+  if (scope !== "project") {
+    return [];
+  }
+  switch (runtime) {
+    case "cursor":
+      return installCursorHarnessFallback(targetRoot, options);
+    case "gemini":
+      return installGeminiHarnessFallback(targetRoot, options);
+    case "opencode":
+      return [];
     case "codex":
     case "generic": {
       const agentsPath = path.join(targetRoot, "AGENTS.md");
@@ -508,32 +739,33 @@ function installProviderCommandSurface(runtime, scope, targetRoot, packRoot, opt
   }
 }
 
+function installProviderCommandSurface(runtime, scope, targetRoot, packRoot, options) {
+  const native = installProviderNativeCommands(runtime, scope, targetRoot, packRoot, options);
+  const fallback = installProviderFallbackCommands(runtime, scope, targetRoot, packRoot, options);
+  return [...native, ...fallback];
+}
+
 function runtimeCommandCatalogPathsForPlan(providerId, scope) {
   const paths = [];
   if (scope === "project") {
     paths.push(`${RUNTIME_COMMANDS_DIR}/`);
     paths.push(`${CACHE_DIR}/activation.md`);
     paths.push(`${CACHE_DIR}/manifest.json`);
-    for (const spec of HARNESS_COMMANDS) {
-      switch (providerId) {
-        case "claude":
-          paths.push(`.claude/commands/harness/${spec.id}.md`);
-          break;
-        case "cursor":
-          paths.push(`.cursor/commands/harness-${spec.id}.md`);
-          break;
-        case "gemini":
-          paths.push(`.gemini/extensions/ai-engineering-harness/commands/harness-${spec.id}.md`);
-          break;
-        default:
-          break;
+    const spec = providerCommandSupport(providerId);
+    for (const rel of spec.installedPaths) {
+      if (providerId === "claude") {
+        for (const cmd of HARNESS_COMMANDS) {
+          paths.push(`.claude/commands/harness-${cmd.id}.md`);
+        }
+      } else if (providerId === "opencode") {
+        for (const cmd of HARNESS_COMMANDS) {
+          paths.push(`.opencode/commands/harness-${cmd.id}.md`);
+        }
+      } else if (rel.endsWith("/")) {
+        paths.push(rel);
+      } else {
+        paths.push(rel);
       }
-    }
-    if (providerId === "cursor") {
-      paths.push(".cursor/rules/ai-engineering-harness-commands.mdc");
-    }
-    if (providerId === "codex" || providerId === "generic") {
-      paths.push("AGENTS.md (command aliases)");
     }
   }
   return [...new Set(paths)];
@@ -550,14 +782,26 @@ function fileReferencesActivation(filePath) {
 module.exports = {
   COMMAND_NAMESPACE,
   HARNESS_COMMANDS,
+  CANONICAL_COMMANDS,
   SLASH_COMMANDS,
+  PROVIDER_COMMAND_SUPPORT,
+  PACK_PLUGIN_PATHS,
+  renderOpencodeNativeCommandFile,
   RUNTIME_COMMANDS_DIR,
   activationMarkdown,
   renderAgentsCommandAliasesSection,
   renderRuntimeCommandFile,
   installRuntimeCommandCatalog,
   installProviderCommandSurface,
+  installProviderNativeCommands,
+  installProviderFallbackCommands,
+  providerCommandSupport,
+  providerInvocationFor,
   providerCommandPathsForRuntime,
+  formatCommandSupportForPlan,
+  formatProviderUseLine,
+  buildCommandSurface,
+  readInstalledCommandSurface,
   runtimeCommandCatalogPathsForPlan,
   fileReferencesActivation,
   buildManifest
