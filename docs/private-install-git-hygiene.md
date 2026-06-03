@@ -79,11 +79,14 @@ Prints `WOULD UPDATE .git/info/exclude` and `ignore:` lines — does not write e
 
 ## Non-Git Targets
 
-If target is not a Git repo:
+`.git/info/exclude` only exists in Git repositories. If the target folder has no `.git/`:
 
-- Install continues
+- Install continues (files are still written)
 - Warning + manual exclude instructions printed
-- No `.git/info/exclude` write
+- No `.git/info/exclude` write — generated harness/runtime files may show up in `git status` later once you initialize Git
+- Run `git init` (or install inside a cloned repo) before private install when you want a clean `git status` without manual exclude steps
+- `aih.ps1` prints an early warning when private project install/update targets a non-Git directory
+- `doctor` reports: `FAIL target is not a Git repo — run git init or run inside a cloned repository`
 
 ## Existing Tracked Files
 

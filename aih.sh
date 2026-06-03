@@ -1022,7 +1022,7 @@ run_doctor() {
   if is_git_repo; then
     printf '%s\n' 'PASS target is a Git repo'
   else
-    printf '%s\n' 'FAIL target is not a Git repo'
+    printf '%s\n' 'FAIL target is not a Git repo — run git init or run inside a cloned repository'
     _fail=1
   fi
 

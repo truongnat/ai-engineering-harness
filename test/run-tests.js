@@ -1825,6 +1825,36 @@ runTest("aih.ps1 includes clear missing sh guidance", () => {
   assert.match(script, /Native PowerShell mode is planned\./);
 });
 
+runTest("README Windows example includes -Yes", () => {
+  const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
+
+  assert.match(readme, /install -Runtime cursor -Yes/);
+});
+
+runTest("aih.ps1 help includes -Yes", () => {
+  const script = fs.readFileSync(aihPs1Path, "utf8");
+
+  assert.match(script, /install -Runtime cursor -Yes/);
+  assert.match(script, /Without -Yes/);
+});
+
+runTest("aih.ps1 warns about non-Git target in private project mode", () => {
+  const script = fs.readFileSync(aihPs1Path, "utf8");
+
+  assert.match(script, /target is not a Git repo/);
+  assert.match(script, /private \.git\/info\/exclude cannot be updated/);
+  assert.match(script, /git init/);
+});
+
+runTest("aih.sh doctor message includes git init remediation", () => {
+  const script = fs.readFileSync(aihShPath, "utf8");
+
+  assert.match(
+    script,
+    /FAIL target is not a Git repo — run git init or run inside a cloned repository/
+  );
+});
+
 runTest("install-runtime opencode project creates plugin file", () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "rt-opencode-"));
   installRuntime({

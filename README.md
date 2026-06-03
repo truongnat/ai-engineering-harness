@@ -73,32 +73,48 @@ Run this inside your target project repo:
 curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- install
 ```
 
-Windows PowerShell:
+Windows PowerShell (recommended):
 
 ```powershell
 $script = "$env:TEMP\aih.ps1"
 Invoke-WebRequest https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.ps1 -OutFile $script
-powershell -ExecutionPolicy Bypass -File $script install -Runtime cursor
+powershell -ExecutionPolicy Bypass -File $script install -Runtime cursor -Yes
+```
+
+Then check the install:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File $script status
+powershell -ExecutionPolicy Bypass -File $script doctor
 ```
 
 Notes for Windows:
 
+- Add `-Yes` to skip the `Proceed? [y/N]` confirmation prompt (copy-paste friendly).
+- Private git hygiene requires the target folder to be a Git repo (`.git/`). If you see “not a Git repo”, run `git init` or install inside a cloned repository.
 - PowerShell `curl` is often an alias for `Invoke-WebRequest`, so bare `curl -fsSL ...` is not the right command there.
 - If you want the shell bootstrap path in PowerShell, use `curl.exe`, not `curl`.
 - `aih.ps1` is an experimental wrapper that downloads `aih.sh` and runs it through `sh`.
 - `sh` is still required today. Use Git Bash, Git for Windows, or WSL until native PowerShell mode is dogfooded.
+- Warnings from your PowerShell profile (for example PSReadLine prediction) are unrelated to ai-engineering-harness.
 
-Then check the install:
+Git Bash on Windows:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- install --runtime cursor
+```
+
+Unix / macOS status and doctor:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- status
 curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- doctor
 ```
 
-Windows PowerShell alternatives:
+Other Windows alternatives:
 
 ```powershell
-curl.exe -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- install
+curl.exe -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- install --runtime cursor --yes
 irm https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.ps1 | iex
 ```
 

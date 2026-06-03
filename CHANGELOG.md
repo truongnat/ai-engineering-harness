@@ -52,6 +52,9 @@
 
 ### Changed
 
+- Windows bootstrap docs and `aih.ps1` help: recommended PowerShell install includes `-Yes` for copy-paste flows
+- `aih.ps1` warns when private project install/update targets a non-Git directory (`.git/info/exclude` unavailable)
+- `doctor` and docs: clearer non-Git target messaging (`git init` or cloned repo)
 - Final cleanup pass: stale “installer not shipped” docs updated; pin examples use `v0.9.1`; `.gitignore` excludes local `harness-dogfood-*` dirs
 - README landing page cleaned up after `v0.9.2`
 - `PACK.md` now describes `aih.sh` + runtime entrypoint + `.ai-harness/` + `.harness/` as the current consumption model

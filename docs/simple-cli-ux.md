@@ -32,23 +32,28 @@ curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/ma
 Windows notes:
 
 - In Windows PowerShell, `curl` is usually an alias for `Invoke-WebRequest`, so `curl -fsSL ...` fails there.
-- Use `curl.exe` if you want the shell pipeline form from PowerShell.
+- Use `curl.exe` if you want the shell pipeline form from PowerShell, or use `aih.ps1` for a copy-paste-friendly bootstrap.
 - Use Git Bash or WSL when you want a native `sh` environment.
 - `aih.ps1` is the experimental PowerShell bootstrap wrapper for `install`, `status`, `doctor`, `update`, `uninstall`, and `help`.
+- Pass `-Yes` (maps to `--yes`) to skip the `Proceed? [y/N]` confirmation in non-interactive copy-paste flows.
+- Private git hygiene (`.git/info/exclude`) requires the target to be a Git repo; run `git init` or install inside a cloned repository.
+- PowerShell profile warnings (for example PSReadLine prediction) are unrelated to ai-engineering-harness.
 
 Windows PowerShell examples:
 
 ```powershell
-curl.exe -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- install
+curl.exe -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- install --runtime cursor --yes
 irm https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.ps1 | iex
 ```
 
-Safer explicit PowerShell execution:
+Recommended explicit PowerShell execution:
 
 ```powershell
 $script = "$env:TEMP\aih.ps1"
 Invoke-WebRequest https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.ps1 -OutFile $script
-powershell -ExecutionPolicy Bypass -File $script install -Runtime cursor
+powershell -ExecutionPolicy Bypass -File $script install -Runtime cursor -Yes
+powershell -ExecutionPolicy Bypass -File $script status
+powershell -ExecutionPolicy Bypass -File $script doctor
 ```
 
 Dogfood evidence: [scenario-f1-simple-cli-lifecycle.md](pack-dogfood-reports/scenario-f1-simple-cli-lifecycle.md).

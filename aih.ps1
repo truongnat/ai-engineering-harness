@@ -36,13 +36,16 @@ Usage:
   .\aih.ps1 uninstall
 
 Examples:
-  powershell -ExecutionPolicy Bypass -File .\aih.ps1 install -Runtime cursor
+  powershell -ExecutionPolicy Bypass -File .\aih.ps1 install -Runtime cursor -Yes
   powershell -ExecutionPolicy Bypass -File .\aih.ps1 status
+  powershell -ExecutionPolicy Bypass -File .\aih.ps1 doctor
 
 Notes:
   - This wrapper is experimental.
   - It downloads aih.sh, then runs it through sh.
   - Native PowerShell install logic is planned, not shipped.
+  - Without -Yes, the installer may prompt for confirmation.
+  - Private mode needs a Git repo for .git/info/exclude.
 "@
 }
 
@@ -70,6 +73,23 @@ function Invoke-AihBootstrap {
   $shCommand = Get-Command sh -ErrorAction SilentlyContinue
   if (-not $shCommand) {
     throw "sh was not found. Install Git for Windows and run from Git Bash, or install WSL. Native PowerShell mode is planned."
+  }
+
+  if (
+    ($Command -eq "install" -or $Command -eq "update") -and
+    $Scope -eq "project" -and
+    $Visibility -eq "private"
+  ) {
+    $targetAbs = if ([System.IO.Path]::IsPathRooted($Target)) {
+      [System.IO.Path]::GetFullPath($Target)
+    } else {
+      [System.IO.Path]::GetFullPath((Join-Path (Get-Location).Path $Target))
+    }
+    $gitDir = Join-Path $targetAbs ".git"
+    if (-not (Test-Path -LiteralPath $gitDir)) {
+      Write-Host "aih.ps1: warning: target is not a Git repo; private .git/info/exclude cannot be updated."
+      Write-Host "Run ``git init`` first or run inside a cloned repository."
+    }
   }
 
   $scriptUrl = "https://raw.githubusercontent.com/truongnat/ai-engineering-harness/$Ref/aih.sh"
