@@ -61,11 +61,11 @@ See:
 | Topic | v0.9.2 target |
 |---|---|
 | Install wizard | One command; multi-provider; scope + shared/private |
-| Git hygiene | Delimited `.gitignore` block when user chooses private — [git-hygiene-policy.md](git-hygiene-policy.md) |
+| Git hygiene | Private → **`.git/info/exclude`** (not tracked); `.gitignore` only explicit — [git-hygiene-policy.md](git-hygiene-policy.md) |
 | Commands | `install` / `uninstall` / `update` — [install-command-model.md](install-command-model.md) |
 | Antigravity | Researched; **planned** until paths verified — [antigravity-provider-research.md](antigravity-provider-research.md) |
 
-`v0.9.1` remains **experimental**; real Cursor install showed Git dirty state and no ignore policy — fix in `v0.9.2`, not deferred.
+`v0.9.1` remains **experimental**; real Cursor install showed Git dirty state — `v0.9.2` fixes via `.git/info/exclude` for private mode (not default `.gitignore` edit).
 
 ## Installer Status (v0.9.x)
 

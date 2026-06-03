@@ -2,19 +2,17 @@
 
 ## Purpose
 
-Define how `ai-engineering-harness` installs should interact with Git in product repositories: when generated files are intended to be committed, when they should stay private/local, and how the installer may update `.gitignore`.
+Define how `ai-engineering-harness` installs interact with Git in product repositories: private/local vs team-shared generated files, and **where** ignore rules live.
 
-This policy is **first-class** for `v0.9.2` — not an afterthought.
+**v0.9.2 principle:** `.gitignore` is usually **tracked** — editing it creates a repo change. Private/local installs should prefer **`.git/info/exclude`**, which is local to the checkout and **not committed**.
 
 ## Problem
 
 After real Cursor project install (`v0.9.1`):
 
-- `.harness/` was created but **not** auto-ignored — Git shows new untracked files without a clear team vs private policy.
-- Runtime files (e.g. `.cursor/rules/ai-engineering-harness.mdc`) appear as **dirty** working tree changes — correct Git behavior, but surprising if the user expected a “private/local” install.
-- Users may want **team-shared** harness config (commit) or **private** harness (ignore) — the installer must ask, not assume.
-
-Global install must **not** modify project `.gitignore`.
+- `.harness/` and runtime files show up in `git status` — expected for **shared** mode, surprising for **private** mode.
+- Auto-editing `.gitignore` as the default private strategy is **wrong**: `.gitignore` itself becomes a tracked change and encodes a team policy the installer should not impose silently.
+- Users need: personal harness in a shared repo **without** dirtying the working tree or committing installer policy.
 
 ## Generated Files
 
@@ -35,32 +33,59 @@ Global scope writes under home directories only — see [project-state-policy.md
 
 ## Project Shared vs Project Private
 
-### Team-shared (visibility: `shared`)
+### Team-shared (`--visibility shared`)
 
-- User intends generated harness/runtime files to be **committed** and reviewed with the team.
-- Installer **does not** add paths to `.gitignore`.
-- Installer prints which files are intended for version control.
-- Typical for: `.harness/TEAM.md`, `.cursor/rules/ai-engineering-harness.mdc`, team `AGENTS.md`.
+- Generated harness/runtime files are **intended to appear** in `git status` so the user can review and commit.
+- Installer **does not** add ignore rules to `.git/info/exclude` or `.gitignore`.
+- Installer explains which paths are meant for version control.
 
-### Project private (visibility: `private`)
+### Project private (`--visibility private`)
 
-- User does **not** want Git noise from harness install in day-to-day work (or wants local-only trial).
-- Installer adds a **delimited** block to `.gitignore` (only with explicit consent — see below).
-- `.harness/` and runtime bootstrap paths for selected providers go in the block.
-- User can still commit later by removing lines from `.gitignore`.
+- User wants harness/runtime files **on disk** but **not** in day-to-day `git status` noise for this checkout.
+- Installer prefers **`.git/info/exclude`** (see below).
+- **Does not** modify `.gitignore` unless user explicitly chooses that strategy.
+
+Interactive question (recommended wording):
+
+> Should generated harness/runtime files be **private to this checkout** or **shared with the repo** (commit)?
 
 ## Global Install
 
 - Writes to `~/.cursor/`, `~/.claude/`, `~/.codex/`, `~/.gemini/`, `~/.config/opencode/`, etc.
 - **Must not** create `.harness/` at global scope (already rejected).
-- **Must not** edit project `.gitignore`.
+- **Must not** edit project `.gitignore` or `.git/info/exclude`.
 - Each product repo still needs project `.harness/` init when the team wants per-repo state.
 
-## .gitignore Strategy
+## Git Exclude Strategy
 
-### Delimited block (private mode)
+Priority order for **private** project installs:
 
-When user chooses **project private** (or `--visibility private` / `--ignore-generated`), installer may append:
+```txt
+1. Git repo + .git/info/exclude available
+   → append delimited block to .git/info/exclude
+   → no tracked file changes from ignore policy
+
+2. Not a Git repo, or exclude unavailable, or user chose --ignore-strategy none
+   → print manual ignore instructions; still install files
+
+3. User explicitly chooses .gitignore (interactive or --ignore-strategy gitignore)
+   → ask/confirm; then append delimited block to .gitignore only with consent
+```
+
+| Mode | Ignore target | Tracked repo change from ignore policy? |
+|---|---|---|
+| `private` + `info-exclude` (default for private) | `.git/info/exclude` | **No** |
+| `private` + `gitignore` (explicit only) | `.gitignore` | **Yes** (`.gitignore` diff) |
+| `shared` | none | N/A — files visible in status |
+| `global` | none (project) | N/A |
+
+## `.git/info/exclude`
+
+Per-repo, local ignore file (same syntax as `.gitignore`). **Not committed.**
+
+### Delimited block (private mode, preferred)
+
+When user chooses **private/local** and strategy is `info-exclude` (default for private):
 
 ```gitignore
 # ai-engineering-harness start
@@ -75,85 +100,91 @@ When user chooses **project private** (or `--visibility private` / `--ignore-gen
 
 Rules:
 
-- Only include paths for **runtimes actually installed** in this run (subset of block).
-- If block already exists, **merge** new paths into existing block — do not duplicate markers.
-- **Never** auto-ignore unrelated project files.
-- **Never** auto-ignore user-owned files that pre-existed without confirmation (see Existing File Handling).
+- Only paths for **runtimes actually installed** in this run.
+- Merge into existing block if markers already present.
+- **Never** silently edit `.git/info/exclude` without `--visibility private` or interactive private choice.
+- Create `.git/info/` if missing (Git creates on first exclude write).
+
+After install + exclude block, `git status` should **not** list those generated paths (unless already tracked — see Existing File Handling).
+
+## `.gitignore`
+
+Use **only** when:
+
+- User explicitly selects “use `.gitignore`” in interactive flow, or
+- `--ignore-strategy gitignore` with `--visibility private`, or
+- `.git/info/exclude` unavailable **and** user confirms `.gitignore` edit in interactive mode.
+
+**Never** edit `.gitignore` by default for private mode.
+
+Team-wide “nobody commits `.harness/`” is a **project policy** decision — not the installer’s default.
+
+Same delimited marker format as exclude file.
 
 ### `opencode.json` exception
 
-`opencode.json` may contain non-harness project configuration. Policy:
-
-- **Default private mode:** do **not** ignore whole `opencode.json`; ignore only `.opencode/plugins/ai-engineering-harness.js` unless user explicitly opts in to ignore `opencode.json` (interactive sub-prompt).
-- **Shared mode:** do not ignore; user commits merged `opencode.json` if desired.
-
-### Opt-out flags
-
-| Flag | Behavior |
-|---|---|
-| `--visibility private` | Apply gitignore block for installed paths (after consent in interactive) |
-| `--visibility shared` | No gitignore changes |
-| `--ignore-generated` | Alias for private gitignore behavior |
-| `--no-ignore` | Never edit `.gitignore` even in private mode |
-
-Interactive default question:
-
-> Do you want generated harness/runtime files committed to this repo?
-> 1) Yes — team-shared (commit runtime + `.harness/`)
-> 2) No — private/local (add to `.gitignore`)
-> 3) Ask me per path (future; v0.9.2 may use runtime subset only)
+- **Private + info-exclude:** ignore `.opencode/plugins/ai-engineering-harness.js` only; not whole `opencode.json` unless user opts in.
+- **Shared:** do not ignore.
 
 ## What Installer May Edit
 
-- `.gitignore` — append or update **only** the delimited `# ai-engineering-harness start` … `end` block, when user chose private or passed `--visibility private` / `--ignore-generated`.
-- Files listed in [runtime-native-install-audit.md](runtime-native-install-audit.md) for selected runtime + scope.
-- `.harness/` skeleton when `--init-harness` (project scope).
+| File | When |
+|---|---|
+| `.git/info/exclude` | Private/local + `info-exclude` strategy + Git repo + user consent (flag or interactive) |
+| `.gitignore` | Private + explicit `gitignore` strategy only |
+| Runtime/harness paths | Per [runtime-native-install-audit.md](runtime-native-install-audit.md) |
 
 ## What Installer Must Never Edit
 
-- Unrelated `.gitignore` lines outside the harness block.
-- `.env`, secrets, credentials, customer data.
-- User source code, lockfiles, CI config (unless future explicit feature).
-- Existing user-owned config without `--force` and clear dry-run disclosure.
+- `.gitignore` by default (private or shared)
+- `.git/info/exclude` without private mode / confirmation
+- Unrelated lines outside harness delimited block
+- `.env`, secrets, user source, lockfiles
+- Global install: project exclude files
 
 ## Dirty Working Tree Handling
 
-Before write install (non-dry-run):
+Before write install:
 
-1. If Git repo detected and working tree has changes under paths we will write:
-   - Print warning listing paths.
-   - In interactive mode: offer abort, continue, or switch to private + gitignore.
-2. Do not claim install is “git clean” after project writes — only that private mode **intends** to reduce future noise via `.gitignore`.
+1. If Git repo and paths to write are already tracked → warn; exclude may not hide them until untracked.
+2. If user wanted private but files will show anyway → suggest exclude or abort.
+3. After private install + info-exclude → expect clean status for **new untracked** generated paths.
 
 ## Existing File Handling
 
 | Situation | Policy |
 |---|---|
-| Path exists, no `--force` | Skip with message (current behavior) |
-| Path exists, user-owned content differs | Do not overwrite; suggest `--force` or manual merge |
-| `.gitignore` exists, no harness block | Append block at EOF |
-| `.gitignore` exists, harness block present | Merge paths into block |
-| Not a Git repo | Skip gitignore update with note; still allow install |
+| Path already **tracked** | Exclude/gitignore does not untrack; warn user |
+| Path exists, no `--force` | Skip install write |
+| `.git/info/exclude` missing | Create or append block |
+| Not a Git repo | Skip exclude; print manual instructions |
+| User-owned `.gitignore` harness block | Only touch with explicit `gitignore` strategy |
 
 ## Recommended Defaults
 
-| Context | Default visibility | `.gitignore` |
+| Context | Visibility | Ignore strategy |
 |---|---|---|
-| Interactive, Git repo, first install | **Ask** (no silent default) | Only if user picks private |
-| Non-interactive `--visibility private` | private | Yes (if Git repo) |
-| Non-interactive `--visibility shared` | shared | No |
-| Global scope | N/A | Never touch project `.gitignore` |
-| CI / `--yes` without visibility | **Fail** or require `--visibility` — do not guess |
+| Interactive project | **Ask** | `auto` → `info-exclude` if private |
+| `--visibility private --yes` | private | `info-exclude` (require explicit flags; warn if strategy omitted in CI) |
+| `--visibility shared` | shared | `none` |
+| `--ignore-strategy none` | either | No exclude/gitignore edits |
+| Global | N/A | ignored |
+
+Non-interactive without `--visibility`: **fail or warn** — do not guess.
 
 ## Examples
 
-**Private Cursor + harness init:**
+**Private Cursor + harness (preferred — no tracked ignore change):**
 
 ```bash
-sh install.sh install --runtime cursor --scope project --visibility private --init-harness --yes
+sh install.sh install --runtime cursor --scope project --visibility private --ignore-strategy info-exclude --init-harness --yes
 ```
 
-Expected: `.cursor/rules/ai-engineering-harness.mdc`, `.harness/`, gitignore block with those paths.
+Expected:
+
+1. Block appended to `.git/info/exclude`
+2. `.cursor/rules/ai-engineering-harness.mdc` + `.harness/` created
+3. `git status` does not list those paths (untracked + excluded)
 
 **Shared team install:**
 
@@ -161,18 +192,19 @@ Expected: `.cursor/rules/ai-engineering-harness.mdc`, `.harness/`, gitignore blo
 sh install.sh install --runtime cursor --scope project --visibility shared --init-harness --yes
 ```
 
-Expected: files created; `.gitignore` unchanged; message explains files are for commit.
+Expected: files created; exclude and `.gitignore` unchanged; paths visible in `git status`.
 
-**Global Cursor — no project git changes:**
+**Explicit `.gitignore` (team policy, user opted in):**
 
 ```bash
-sh install.sh install --runtime cursor --scope global --yes
+sh install.sh install --runtime cursor --scope project --visibility private --ignore-strategy gitignore --init-harness --yes
 ```
 
-Expected: writes under `~/.cursor/` only; project `.gitignore` untouched.
+Expected: delimited block in `.gitignore` — user knows `.gitignore` will show as modified.
 
 ## Related Docs
 
 - [installer-ux-v0.9.2-plan.md](installer-ux-v0.9.2-plan.md)
+- [install-command-model.md](install-command-model.md)
 - [project-state-policy.md](project-state-policy.md)
 - [uninstall-update-design.md](uninstall-update-design.md)

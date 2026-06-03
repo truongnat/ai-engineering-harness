@@ -12,8 +12,9 @@ Observed after installing into a real product repo with Cursor (project scope):
 
 | Issue | Evidence |
 |---|---|
-| `.harness/` not auto-ignored | `init_harness_profile()` in [install.sh](../install.sh) creates skeleton only; no `.gitignore` logic ([harness-init-usage.md](harness-init-usage.md)) |
-| Runtime files dirty Git | `.cursor/rules/ai-engineering-harness.mdc` created at project root — correct write, wrong **expectation** if user wanted private install |
+| `.harness/` not local-ignored | `init_harness_profile()` creates skeleton only; no exclude logic ([harness-init-usage.md](harness-init-usage.md)) |
+| Runtime files dirty Git | `.cursor/rules/ai-engineering-harness.mdc` — correct write; wrong if user wanted **private checkout** install |
+| `.gitignore` as default ignore | **Rejected** — `.gitignore` is tracked; editing it creates repo change; use `.git/info/exclude` for private mode |
 | Antigravity missing | [install.sh](../install.sh) supports `claude`, `codex`, `cursor`, `windsurf`, `gemini`, `opencode`, `generic`, `all`, `manual` — no `antigravity` |
 | Install too complex | Runtime/scope picker exists but no single wizard, multi-provider, visibility, uninstall, or update |
 | Uninstall/update missing | No verb model; users cannot cleanly remove or refresh harness files |
@@ -24,7 +25,7 @@ User expectation:
 
 ## Problems To Fix
 
-1. **Git hygiene** — explicit shared vs private; optional delimited `.gitignore` block ([git-hygiene-policy.md](git-hygiene-policy.md)).
+1. **Git hygiene** — shared vs private; private → **`.git/info/exclude`** first; `.gitignore` only explicit ([git-hygiene-policy.md](git-hygiene-policy.md)).
 2. **Command model** — `install` / `uninstall` / `update` ([install-command-model.md](install-command-model.md)).
 3. **Provider multi-select** — comma-separated and interactive checkboxes.
 4. **Scope + visibility** — global vs project; shared vs private; smart `--scope auto` where safe.
@@ -60,21 +61,24 @@ Choose provider(s):
   [ ] Antigravity (planned)
   [ ] Generic
 
+Harness files in this repo?
+  1) Private to this checkout — use .git/info/exclude (no tracked ignore change)
+  2) Shared with team — show in git status; may commit
+  3) Global runtime only — no project harness paths
+
 Install scope:
-  1) Global — available across repos
-  2) Project shared — commit runtime + harness files
-  3) Project private — add generated files to .gitignore
+  1) Global
+  2) Project
 
 Initialize .harness?
-  1) Yes, private (gitignored with runtime files)
-  2) Yes, team-shared (commit)
-  3) No
+  1) Yes
+  2) No
 ```
 
 ### Non-interactive
 
 ```bash
-sh install.sh install --runtime cursor,generic --scope project --visibility private --init-harness --yes
+sh install.sh install --runtime cursor,generic --scope project --visibility private --ignore-strategy info-exclude --init-harness --yes
 sh install.sh uninstall --runtime cursor --scope project --yes
 sh install.sh update --runtime cursor --scope project --ref v0.9.2 --yes
 ```
@@ -107,26 +111,35 @@ Legacy: `install.sh --runtime cursor ...` → `install.sh install --runtime curs
 
 | Value | Git |
 |---|---|
-| `shared` | No `.gitignore` edits; explain commit intent |
-| `private` | Delimited `.gitignore` block for installed paths |
+| `shared` | No exclude/gitignore edits; files visible in `git status` |
+| `private` | Prefer `.git/info/exclude` delimited block — **not** `.gitignore` by default |
 
 See [git-hygiene-policy.md](git-hygiene-policy.md).
 
 ## Git Hygiene
 
-Implementation order **#1**:
+Implementation order **#1** — **Private project ignore via `.git/info/exclude`**:
 
-- `append_gitignore_block()` in shell or small Node helper (no new npm deps)
-- Only paths for installed runtimes
-- Consent via interactive or `--visibility private`
-- Global install never touches project `.gitignore`
+- `append_info_exclude_block()` in shell (no new npm deps)
+- Only paths for installed runtimes; delimited `# ai-engineering-harness start` … `end`
+- Requires `--visibility private` + `--ignore-strategy info-exclude` (or interactive private + `auto`)
+- **Never** edit `.gitignore` by default
+- Global install: never touch project `.git/info/exclude` or `.gitignore`
+
+Expected after Step 1:
+
+```bash
+sh install.sh install --runtime cursor --scope project --visibility private --ignore-strategy info-exclude --init-harness --yes
+```
+
+→ exclude block written → `.mdc` + `.harness/` installed → `git status` clean for generated paths.
 
 ## Uninstall
 
 Implementation order **#5** (after install verb + visibility):
 
 - Known path list per runtime
-- Optional `.gitignore` block cleanup
+- Optional `.git/info/exclude` block cleanup; `.gitignore` block only if installer created it (`gitignore` strategy)
 - Dry-run first
 
 ## Update
@@ -147,17 +160,17 @@ Implementation order **#6**:
 |---|---|
 | `install.sh --runtime X` | `install.sh install --runtime X` (alias kept) |
 | No visibility flag | `--visibility private\|shared` |
-| Git dirty by default | Ask or flag |
+| Git dirty by default | Private → info-exclude; shared → visible in status |
 | No uninstall | `uninstall` verb |
 | Tag `v0.9.1` | Remains experimental; use `v0.9.2` after UX ship |
 
-Existing installs: re-run `install` with `--visibility private` to add gitignore block; or `uninstall` then reinstall.
+Existing installs: re-run `install` with `--visibility private --ignore-strategy info-exclude`; or `uninstall` then reinstall.
 
 ## Implementation Order (strict)
 
 Do **not** implement everything at once:
 
-1. **Git hygiene** + `.gitignore` delimited block
+1. **Git hygiene** — `.git/info/exclude` for private project install (**Step 1**)
 2. **`install.sh` command model** — `install` / `uninstall` / `update` verbs + backward compat
 3. **Provider multi-select** (comma + wizard)
 4. **Project private/shared** (`--visibility`)
@@ -168,8 +181,9 @@ Do **not** implement everything at once:
 ## Definition Of Done (v0.9.2 release)
 
 - [ ] Design docs merged (this plan, git hygiene, command model, uninstall/update, Antigravity research)
-- [ ] Private install adds gitignore block with user consent
-- [ ] Shared install does not modify `.gitignore`
+- [ ] Private install adds `.git/info/exclude` block (default); `.gitignore` only with explicit strategy
+- [ ] Shared install does not modify exclude or `.gitignore`
+- [ ] `.gitignore` never edited by default
 - [ ] `install` / `uninstall` / `update` verbs work with tests
 - [ ] Multi-runtime `--runtime a,b` works for implemented runtimes
 - [ ] README/plugin-install-ux state experimental; no stable claim

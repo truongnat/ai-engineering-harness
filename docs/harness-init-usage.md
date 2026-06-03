@@ -106,7 +106,7 @@ Checks `.harness/` paths and required headings per [frozen-target-profile-contra
 
 ## Commit Policy
 
-**v0.9.1:** Installer does **not** modify `.gitignore`. **v0.9.2:** project **private** mode may append a delimited gitignore block with user consent — [git-hygiene-policy.md](git-hygiene-policy.md). Teams choose whether to commit `.harness/` (shared vs private). See [project-state-policy.md](project-state-policy.md).
+**v0.9.1:** Installer does **not** modify ignore files. **v0.9.2:** project **private** mode prefers `.git/info/exclude` (not tracked); `.gitignore` only with `--ignore-strategy gitignore` — [git-hygiene-policy.md](git-hygiene-policy.md). See [project-state-policy.md](project-state-policy.md).
 
 ## Related
 

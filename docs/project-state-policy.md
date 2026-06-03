@@ -68,20 +68,22 @@ Installer must **not** assume one policy for all teams. Ask: commit harness/runt
 | Mode | `.harness/` | Runtime project files | `.gitignore` |
 |---|---|---|---|
 | **Team-shared** (`--visibility shared`) | Intended for commit | Intended for commit | Installer does not edit |
-| **Project private** (`--visibility private`) | Local trial / personal | Local | Installer may append delimited block (with consent) |
+| **Project private** (`--visibility private`) | Local to checkout | Local | Installer prefers **`.git/info/exclude`** — not committed |
 
 See [installer-ux-v0.9.2-plan.md](installer-ux-v0.9.2-plan.md).
 
 ## What Should Be Ignored
 
-Teams may add to `.gitignore` (their choice), or use installer **private** mode:
+**Private checkout (v0.9.2):** installer appends to `.git/info/exclude` — personal harness in a shared repo without tracked ignore changes.
 
-- `.harness/` when not team-shared
-- harness-created runtime paths (Cursor rule, Claude bootstrap, etc.)
+**Team policy:** teams may commit `.gitignore` rules themselves; installer does **not** edit `.gitignore` by default.
+
+Also ignore manually:
+
 - personal experiment files under `.harness/`
-- machine-specific paths in MEMORY.md content (policy: [memory-safety.md](memory-safety.md))
+- machine-specific paths in MEMORY.md ([memory-safety.md](memory-safety.md))
 
-**v0.9.1:** installer does not edit `.gitignore`. **v0.9.2:** private mode with explicit consent — [git-hygiene-policy.md](git-hygiene-policy.md). Global install never edits project `.gitignore`.
+**v0.9.1:** no exclude logic. **v0.9.2:** [git-hygiene-policy.md](git-hygiene-policy.md). Global install never edits project `.git/info/exclude` or `.gitignore`.
 
 ## Team-shared vs Personal State
 

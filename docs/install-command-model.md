@@ -4,15 +4,15 @@
 
 Define the `install.sh` **verb** model for `v0.9.2`: `install`, `uninstall`, and `update`, with backward compatibility for `v0.9.1` flags.
 
-Design only in this milestone — implementation follows [installer-ux-v0.9.2-plan.md](installer-ux-v0.9.2-plan.md).
+Design only — implementation follows [installer-ux-v0.9.2-plan.md](installer-ux-v0.9.2-plan.md).
 
 ## Commands
 
 ```bash
-install.sh install    # default verb — runtime-native or manual fallback
-install.sh uninstall  # remove harness-owned files for selected runtime/scope
-install.sh update     # refresh payloads from pack ref (pin or main)
-install.sh help       # usage
+install.sh install
+install.sh uninstall
+install.sh update
+install.sh help
 ```
 
 ### Backward compatibility
@@ -24,105 +24,79 @@ install.sh help       # usage
 | `curl \| sh` (no args) | `install.sh install` with fallback warning if non-interactive |
 | `--legacy-root` | `install --runtime manual` |
 
-First positional argument, if present and not a flag, is the verb:
-
-```bash
-sh install.sh install --runtime cursor --scope project --yes
-sh install.sh uninstall --runtime cursor --scope project --yes
-sh install.sh update --runtime cursor --scope project --ref v0.9.2 --yes
-```
-
 ## Flags (install / uninstall / update)
 
 | Flag | Applies to | Meaning |
 |---|---|---|
 | `--target <path>` | all | Product repo or cwd (default `.`) |
-| `--runtime <list>` | all | Comma-separated: `cursor`, `claude`, `codex`, `gemini`, `opencode`, `antigravity`, `generic`, `all`, `manual` |
+| `--runtime <list>` | all | Comma-separated providers |
 | `--scope <name>` | install, uninstall, update | `global` \| `project` \| `auto` |
-| `--visibility <name>` | install | `private` \| `shared` — git hygiene ([git-hygiene-policy.md](git-hygiene-policy.md)) |
-| `--init-harness` | install | Scaffold `.harness/` (project scope only) |
-| `--ignore-generated` | install | Alias: private + gitignore block |
-| `--no-ignore` | install | Never edit `.gitignore` |
+| `--visibility <name>` | install | `private` \| `shared` |
+| `--ignore-strategy <name>` | install | `info-exclude` \| `gitignore` \| `none` \| `auto` |
+| `--init-harness` | install | Scaffold `.harness/` (project scope) |
 | `--dry-run` | all | Plan only |
-| `--force` | all | Overwrite existing harness-owned files |
+| `--force` | all | Overwrite harness-owned files |
 | `--yes` | all | Skip prompts |
-| `--ref <git-ref>` | install, update | Pack version (tag/branch) for tarball |
-| `--help` | all | Usage |
+| `--ref <git-ref>` | install, update | Pack tarball ref |
 
-### Scope `auto`
+Removed / deprecated aliases:
 
-Detection order (design):
+- `--ignore-generated` → use `--visibility private --ignore-strategy info-exclude`
+- `--no-ignore` → `--ignore-strategy none`
 
-1. If `--scope` set explicitly → use it.
-2. Interactive wizard → user picks global / project shared / project private.
-3. Non-interactive `--scope auto`:
-   - If only global paths would be written and no `--init-harness` → suggest `global` (or fail if ambiguous).
-   - If `--init-harness` → force `project`.
-   - Default safe choice: `project` with warning when `auto` cannot decide.
+### `--ignore-strategy`
 
-## Provider Selection
+| Value | Behavior |
+|---|---|
+| `info-exclude` | Append delimited block to `.git/info/exclude` (private + Git repo) |
+| `gitignore` | Append delimited block to `.gitignore` — **explicit only** |
+| `none` | No exclude/gitignore edits |
+| `auto` | Interactive: private → `info-exclude`; shared → `none` |
 
-- **Multi-runtime:** `--runtime cursor,claude` runs install sequence per runtime (same scope/visibility unless overridden later).
-- **Interactive:** checkbox-style multi-select (see [installer-ux-v0.9.2-plan.md](installer-ux-v0.9.2-plan.md)).
-- **`all`:** sequential install — still **experimental**; not recommended without explicit `--yes`.
-- **`manual`:** legacy root copy via `install.js` — separate code path; visibility/shared applies to `.harness/` only if `--init-harness`.
+Global install: ignore strategy **ignored** for project files.
+
+### Recommended defaults
+
+| Context | Defaults |
+|---|---|
+| Interactive project | Ask visibility; private → `info-exclude` via `auto` |
+| `--visibility private --yes` | Require `--ignore-strategy info-exclude` (or `auto`) — warn if omitted |
+| `--visibility shared` | `--ignore-strategy none` |
+| Global | visibility N/A; no project exclude |
+
+**Do not** default to editing `.gitignore`.
 
 ## Project Visibility
 
-Maps to [git-hygiene-policy.md](git-hygiene-policy.md):
-
-| `--visibility` | `.gitignore` | User intent |
+| `--visibility` | Exclude / ignore | `git status` |
 |---|---|---|
-| `shared` | no auto-edit | Commit harness + runtime files |
-| `private` | delimited block | Local/private; reduce Git noise |
-| (unset) interactive | ask | — |
-| (unset) CI `--yes` | error or require flag | Avoid silent wrong policy |
-
-Harness init sub-choice (interactive):
-
-1. Yes — private (ignore `.harness/`)
-2. Yes — team-shared (commit `.harness/`)
-3. No — skip init
+| `shared` | none | Shows new generated files |
+| `private` | `.git/info/exclude` preferred | Hides new untracked generated paths |
 
 ## Non-Interactive Examples
 
 ```bash
-# Install Cursor privately in current repo
-sh install.sh install --runtime cursor --scope project --visibility private --init-harness --yes
+# Private Cursor — no tracked ignore file change (v0.9.2 Step 1 target)
+sh install.sh install --runtime cursor --scope project --visibility private --ignore-strategy info-exclude --init-harness --yes
 
-# Multi-provider shared team install
-sh install.sh install --runtime cursor,generic --scope project --visibility shared --init-harness --yes
+# Shared team install
+sh install.sh install --runtime cursor --scope project --visibility shared --init-harness --yes
 
-# Uninstall Cursor project files only
+# Explicit .gitignore (user opted in — creates .gitignore diff)
+sh install.sh install --runtime cursor --scope project --visibility private --ignore-strategy gitignore --init-harness --yes
+
 sh install.sh uninstall --runtime cursor --scope project --yes
-
-# Update from tag
 sh install.sh update --runtime cursor --scope project --ref v0.9.2 --yes
-
-# Legacy v0.9.1 style (still valid)
-sh install.sh --runtime cursor --scope project --init-harness --yes
 ```
 
 ## Remote One-Line
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install.sh | sh -s -- install --runtime cursor --scope project --visibility private --init-harness --yes
+curl -fsSL .../install.sh | sh -s -- install --runtime cursor --scope project --visibility private --ignore-strategy info-exclude --init-harness --yes
 ```
-
-Pin:
-
-```bash
-curl -fsSL .../install.sh | sh -s -- --ref v0.9.2 install --runtime cursor --scope project --visibility private --init-harness --yes
-```
-
-## What Does Not Change in v0.9.2 Design Step
-
-- No new `install-runtime.js` writes in design-only milestone.
-- `validate.js` target validation flags unchanged until implementation.
-- `install.js` export surface unchanged.
 
 ## Related Docs
 
+- [git-hygiene-policy.md](git-hygiene-policy.md)
 - [uninstall-update-design.md](uninstall-update-design.md)
 - [installer-ux-v0.9.2-plan.md](installer-ux-v0.9.2-plan.md)
-- [install-sh-usage.md](install-sh-usage.md) — update when implemented

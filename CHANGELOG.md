@@ -5,14 +5,18 @@
 ### Added
 
 - v0.9.2 installer UX and git hygiene design — [installer-ux-v0.9.2-plan.md](docs/installer-ux-v0.9.2-plan.md)
-- git hygiene policy — [git-hygiene-policy.md](docs/git-hygiene-policy.md)
-- install command model (`install` / `uninstall` / `update`) — [install-command-model.md](docs/install-command-model.md)
+- git hygiene policy — [git-hygiene-policy.md](docs/git-hygiene-policy.md); **`.git/info/exclude` preferred** for private/local project installs
+- install command model (`install` / `uninstall` / `update`) — [install-command-model.md](docs/install-command-model.md); `--ignore-strategy info-exclude|gitignore|none|auto`
 - uninstall and update design — [uninstall-update-design.md](docs/uninstall-update-design.md)
-- Antigravity provider research — [antigravity-provider-research.md](docs/antigravity-provider-research.md) (planned runtime, not implemented)
+- Antigravity provider research — [antigravity-provider-research.md](docs/antigravity-provider-research.md) (planned, not implemented)
+
+### Changed
+
+- private-mode ignore policy: do **not** edit `.gitignore` by default (tracked file); use `.git/info/exclude` instead
 
 ### Planned (implementation)
 
-- delimited `.gitignore` block for project private installs
+- **Step 1:** private project ignore via `.git/info/exclude`
 - provider multi-select and install wizard
 - `install.sh` verbs: install, uninstall, update
 - Antigravity runtime paths after verification

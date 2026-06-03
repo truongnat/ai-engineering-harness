@@ -18,7 +18,7 @@ Uninstall **does not** remove:
 
 - User-edited content outside known harness paths
 - Full `opencode.json` unless harness-only file (prefer remove plugin + revert merge — future)
-- Arbitrary lines in `.gitignore` except harness delimited block (optional cleanup)
+- Arbitrary lines in `.git/info/exclude` or `.gitignore` except harness delimited blocks we created
 
 ## Update Scope
 
@@ -30,7 +30,7 @@ Update refreshes **harness-owned** payloads from a pack ref:
 
 Update does **not**:
 
-- Change `.gitignore` policy (visibility frozen unless `--visibility` passed — TBD in impl)
+- Change exclude/gitignore policy unless `--visibility` / `--ignore-strategy` passed on update (TBD)
 - Run uninstall of other runtimes
 
 ## Manifest / Ownership Tracking
@@ -43,25 +43,16 @@ Ownership rules use:
 
 1. **Exact known paths** per runtime + scope ([runtime-native-install-audit.md](runtime-native-install-audit.md))
 2. **Marker comments** inside files we create (e.g. header in `.mdc`, `CLAUDE.md` banner) — optional future
-3. **`.gitignore` delimited block** — uninstall may remove block if empty
+3. **`.git/info/exclude` or `.gitignore` delimited block** — uninstall may remove harness block if empty
 
 ### Future (optional)
 
-`.harness/install-manifest.json` (project scope):
+| Manifest | Use |
+|---|---|
+| `.harness/install-manifest.json` | **Shared** mode — committed with team harness |
+| `.git/ai-engineering-harness/manifest.json` or metadata in exclude header | **Private** mode — not committed; records paths + strategy |
 
-```json
-{
-  "packVersion": "0.9.2",
-  "runtimes": [
-    { "name": "cursor", "scope": "project", "paths": [".cursor/rules/ai-engineering-harness.mdc"] }
-  ],
-  "visibility": "private",
-  "gitignoreBlock": true
-}
-```
-
-- Useful when `.harness/` is gitignored (manifest still ignored with harness — consider `.harness/install-manifest.json` always written with note in private mode).
-- **Not implemented** in v0.9.2 design step unless trivial.
+- **Not implemented** in v0.9.2 Step 1.
 
 ## Without Manifest Behavior
 
@@ -94,17 +85,25 @@ Conservative rule: **when in doubt, skip and print**.
 ### Global uninstall
 
 - Remove files under home paths that match install paths for runtime
-- Never touch project repo except optional `.gitignore` block cleanup on separate `--target` project uninstall
+- Never touch project repo except optional exclude/gitignore block cleanup on project uninstall
 
-## .gitignore Block Cleanup
+## `.git/info/exclude` Block Cleanup
 
-On `uninstall --scope project`:
+On `uninstall --scope project` (private installs):
 
-1. If harness delimited block exists, remove paths that match uninstalled runtimes.
-2. If block empty, remove start/end markers and block.
+1. If harness delimited block exists in `.git/info/exclude`, remove paths for uninstalled runtimes.
+2. If block empty, remove start/end markers.
 3. Never remove non-harness lines.
 
-Dry-run prints would-remove lines.
+Preferred cleanup target for default private strategy.
+
+## `.gitignore` Block Cleanup (only if explicitly created)
+
+Same rules as exclude, but **only** when install used `--ignore-strategy gitignore`.
+
+Do not remove `.gitignore` harness block if install only used `info-exclude`.
+
+Dry-run prints would-remove lines for both.
 
 ## Version Pinning
 
