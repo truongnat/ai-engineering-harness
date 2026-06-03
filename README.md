@@ -4,7 +4,7 @@
 
 ### Runtime-native engineering discipline for AI coding agents
 
-![Version](https://img.shields.io/badge/version-v0.10.3%20experimental-2563eb)
+![Version](https://img.shields.io/badge/version-v0.10.4%20experimental-2563eb)
 ![License](https://img.shields.io/badge/license-MIT-16a34a)
 ![Markdown First](https://img.shields.io/badge/markdown-first-7c3aed)
 ![Stable Runtime Support](https://img.shields.io/badge/stable%20runtime%20support-no-ef4444)

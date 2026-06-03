@@ -48,6 +48,12 @@
 - `install.sh` verbs: install, uninstall, update
 - Antigravity runtime paths after verification
 
+## [0.10.4] - 2026-06-03
+
+### Fixed
+
+- Interactive wizard no longer hangs on Windows after `intro()` — `note()` now uses Clack v1.5 signature `note(message, title)` instead of `note(message, { title })`
+
 ## [0.10.3] - 2026-06-03
 
 ### Added

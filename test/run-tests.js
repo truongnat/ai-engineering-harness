@@ -2002,7 +2002,12 @@ runTest("package.json includes @clack/prompts dependency", () => {
   const pkg = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
   assert.ok(pkg.dependencies);
   assert.ok(pkg.dependencies["@clack/prompts"]);
-  assert.equal(pkg.version, "0.10.3");
+  assert.equal(pkg.version, "0.10.4");
+});
+
+runTest("cli-ui uses clack note(message, title) signature (not object title)", () => {
+  const uiSrc = fs.readFileSync(path.join(repoRoot, "lib", "cli-ui.js"), "utf8");
+  assert.doesNotMatch(uiSrc, /note\([^)]*,\s*\{\s*title:/);
 });
 
 runTest("cli-ui exports wizard helpers", () => {
