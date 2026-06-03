@@ -1882,9 +1882,10 @@ runTest("bin/aih.js exists with Node shebang", () => {
   assert.match(head, /^#!\/usr\/bin\/env node/);
 });
 
-runTest("aih cli help mentions npx ai-engineering-harness install", () => {
+runTest("aih cli help mentions GitHub npx and registry install", () => {
   const result = runAihCli(["--help"]);
   assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stdout, /github:truongnat\/ai-engineering-harness/);
   assert.match(result.stdout, /npx ai-engineering-harness install/);
 });
 
@@ -1902,11 +1903,16 @@ runTest("cli antigravity provider is disabled planned", () => {
   assert.match(ag.description, /planned/i);
 });
 
-runTest("README primary quickstart is npx ai-engineering-harness install", () => {
+runTest("README documents GitHub npx until npm publish", () => {
   const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
   const quickstart = readme.slice(readme.indexOf("## 🚀 Quickstart"));
-  assert.match(quickstart, /npx ai-engineering-harness install/);
-  assert.ok(quickstart.indexOf("npx ai-engineering-harness install") < quickstart.indexOf("curl -fsSL"));
+  assert.match(quickstart, /github:truongnat\/ai-engineering-harness/);
+  assert.match(quickstart, /not on the npm registry|npm publish/i);
+});
+
+runTest("README still documents post-publish npx command", () => {
+  const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
+  assert.match(readme, /npx ai-engineering-harness install/);
 });
 
 runTest("README keeps aih.sh as shell fallback", () => {

@@ -6,13 +6,51 @@
 
 Shell scripts (`aih.sh`, `install.sh`, `aih.ps1`) remain as fallbacks.
 
-## Primary command
+## npm registry status
+
+The package defines correct `name` and `bin` in `package.json`, but **`ai-engineering-harness` is not published to npm yet**. Running:
 
 ```bash
 npx ai-engineering-harness install
 ```
 
-Aliases: `npx aih install`, local `node bin/aih.js install`.
+returns `404 Not Found` until a maintainer runs `npm publish --access public`.
+
+## Primary command (today: GitHub)
+
+Until publish, install from GitHub:
+
+```bash
+npx --yes github:truongnat/ai-engineering-harness install
+```
+
+```bash
+npx --yes github:truongnat/ai-engineering-harness#main install
+```
+
+**After npm publish:**
+
+```bash
+npx ai-engineering-harness install
+```
+
+Aliases: `npx aih install` (after publish), local `node bin/aih.js install`, or `npm link` then `aih install` from a clone.
+
+## Local development
+
+```bash
+git clone https://github.com/truongnat/ai-engineering-harness.git
+cd ai-engineering-harness
+npm link
+cd /path/to/target-project
+aih install
+```
+
+Without link:
+
+```bash
+node /path/to/ai-engineering-harness/bin/aih.js install
+```
 
 ## Screenshot-style flow
 

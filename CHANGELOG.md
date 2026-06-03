@@ -66,6 +66,7 @@
 
 ### Changed
 
+- Docs: `npx ai-engineering-harness` requires npm publish; until then use `npx github:truongnat/ai-engineering-harness` or local `bin/aih.js` / `npm link`
 - Windows bootstrap docs and `aih.ps1` help: recommended PowerShell install includes `-Yes` for copy-paste flows
 - `aih.ps1` warns when private project install/update targets a non-Git directory (`.git/info/exclude` unavailable)
 - `doctor` and docs: clearer non-Git target messaging (`git init` or cloned repo)

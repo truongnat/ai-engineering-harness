@@ -67,26 +67,47 @@ Primary references:
 
 ## 🚀 Quickstart
 
-Run this inside your target project repo:
+Run this inside your target project repo.
+
+> **npm:** `ai-engineering-harness` is **not on the npm registry yet** (`npx ai-engineering-harness` returns 404 until `npm publish`). Use GitHub or a local checkout below.
+
+**Install wizard (from GitHub, works today):**
+
+```bash
+npx --yes github:truongnat/ai-engineering-harness install
+```
+
+Pin a branch or tag:
+
+```bash
+npx --yes github:truongnat/ai-engineering-harness#main install
+```
+
+**After npm publish** (same UX, registry package name):
 
 ```bash
 npx ai-engineering-harness install
-```
-
-Then:
-
-```bash
 npx ai-engineering-harness status
 npx ai-engineering-harness doctor
 ```
 
-The install wizard shows detected context, lets you **choose provider(s)** with keyboard selection, shows a plan, and asks for confirmation — it does not auto-install based on detection alone. See [docs/npx-cli-ux.md](docs/npx-cli-ux.md).
+The wizard shows detected context, lets you **choose provider(s)** with keyboard selection, shows a plan, and asks for confirmation — it does not auto-install based on detection alone. See [docs/npx-cli-ux.md](docs/npx-cli-ux.md).
 
-Non-interactive example:
+Non-interactive example (GitHub until published):
 
 ```bash
-npx ai-engineering-harness install --provider cursor --yes
+npx --yes github:truongnat/ai-engineering-harness install --provider cursor --yes
 ```
+
+**Local checkout** (repo clone or development):
+
+```bash
+git clone https://github.com/truongnat/ai-engineering-harness.git
+cd ai-engineering-harness && npm link
+cd /path/to/your-project && aih install
+```
+
+Or without link: `node /path/to/ai-engineering-harness/bin/aih.js install`
 
 ### Shell fallback
 
