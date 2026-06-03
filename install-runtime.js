@@ -9,6 +9,7 @@ const path = require("node:path");
 const HARNESS_REPO = "truongnat/ai-engineering-harness";
 const HARNESS_GIT_URL = `https://github.com/${HARNESS_REPO}`;
 
+// Windsurf uses Cursor rule paths until a dedicated payload is verified.
 const RUNTIME_ALIASES = {
   windsurf: "cursor"
 };

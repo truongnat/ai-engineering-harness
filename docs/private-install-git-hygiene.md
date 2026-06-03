@@ -56,7 +56,7 @@ Expect `WOULD UPDATE .git/info/exclude` before file writes.
 
 Paths included when applicable:
 
-- `.ai-harness/` when capability cache is installed (default for private project runtime-native)
+- `.ai-harness/` when capability cache is installed (default for all project runtime-native installs)
 - `.harness/` when `--init-harness`
 - Runtime bootstrap paths for selected `--runtime`
 

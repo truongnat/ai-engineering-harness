@@ -37,7 +37,7 @@ Options:
   --ignore-strategy <name>  info-exclude | none | auto (private project; default auto → info-exclude)
   --init-harness        Scaffold project-local .harness/ profile files
   --install-cache       Install capability pack under .ai-harness/ (project scope)
-  --no-install-cache    Skip .ai-harness/ cache (private default is to install cache)
+  --no-install-cache    Skip .ai-harness/ cache (project runtime-native default installs cache)
   --legacy-root         Alias for --runtime manual (root copy fallback)
   --dry-run             Show plan or preview without writing
   --force               Overwrite existing .harness/ files; runtime/manual may overwrite their files
@@ -265,12 +265,10 @@ resolve_install_cache_settings() {
     return 0
   fi
 
-  if [ "$VISIBILITY" = private ]; then
+  # All project runtime-native installs need capability source (every provider).
+  if [ "$SCOPE" = project ]; then
     INSTALL_CACHE=1
-    return 0
   fi
-
-  INSTALL_CACHE=0
 }
 
 run_capability_cache_install() {

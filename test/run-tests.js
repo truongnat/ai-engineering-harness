@@ -1016,7 +1016,7 @@ runTest("install.sh private cursor install creates .ai-harness capability cache"
   assert.match(mdc, /\.ai-harness\/AGENTS\.md/);
 });
 
-runTest("install.sh shared cursor without --install-cache skips .ai-harness", () => {
+runTest("install.sh shared cursor project install creates .ai-harness by default", () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-cache-shared-"));
   initFakeGitWorkTree(tmp);
   const result = runInstallSh(
@@ -1035,7 +1035,9 @@ runTest("install.sh shared cursor without --install-cache skips .ai-harness", ()
   );
 
   assert.equal(result.status, 0, result.stderr || result.stdout);
-  assert.equal(fs.existsSync(path.join(tmp, ".ai-harness")), false);
+  assert.ok(fs.existsSync(path.join(tmp, ".ai-harness", "AGENTS.md")));
+  const exclude = readInfoExclude(tmp);
+  assert.doesNotMatch(exclude, /ai-engineering-harness start/);
 });
 
 runTest("install.sh private --no-install-cache skips .ai-harness", () => {
@@ -1114,6 +1116,91 @@ runTest("install.sh private cache force overwrites existing file", () => {
 
   assert.equal(result.status, 0, result.stderr || result.stdout);
   assert.equal(fs.readFileSync(path.join(tmp, ".ai-harness", "AGENTS.md"), "utf8"), packAgents);
+});
+
+runTest("install.sh claude private project creates .ai-harness and bootstrap points to cache", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-cache-claude-"));
+  initFakeGitWorkTree(tmp);
+  const result = runInstallSh(
+    [
+      "--runtime",
+      "claude",
+      "--scope",
+      "project",
+      "--visibility",
+      "private",
+      "--init-harness",
+      "--yes",
+      "--target",
+      tmp
+    ],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.ok(fs.existsSync(path.join(tmp, ".ai-harness", "skills")));
+  const claudeMd = fs.readFileSync(path.join(tmp, ".claude", "CLAUDE.md"), "utf8");
+  assert.match(claudeMd, /\.ai-harness\/AGENTS\.md/);
+  assert.match(claudeMd, /\.harness\//);
+  const exclude = readInfoExclude(tmp);
+  assert.match(exclude, /\.claude\/CLAUDE\.md/);
+  assert.match(exclude, /\.ai-harness\//);
+});
+
+runTest("install.sh generic project creates .ai-harness and AGENTS.md points to cache", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-cache-generic-"));
+  const result = runInstallSh(
+    [
+      "--runtime",
+      "generic",
+      "--scope",
+      "project",
+      "--init-harness",
+      "--yes",
+      "--target",
+      tmp
+    ],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.ok(fs.existsSync(path.join(tmp, ".ai-harness", "commands")));
+  const agents = fs.readFileSync(path.join(tmp, "AGENTS.md"), "utf8");
+  assert.match(agents, /\.ai-harness\/commands/);
+  assert.equal(fs.existsSync(path.join(tmp, "commands")), false);
+});
+
+runTest("install.sh gemini project creates .ai-harness and GEMINI.md points to cache", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-cache-gemini-"));
+  const result = runInstallSh(
+    ["--runtime", "gemini", "--scope", "project", "--init-harness", "--yes", "--target", tmp],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.ok(fs.existsSync(path.join(tmp, ".ai-harness", "workflows")));
+  const geminiMd = fs.readFileSync(
+    path.join(tmp, ".gemini", "extensions", "ai-engineering-harness", "GEMINI.md"),
+    "utf8"
+  );
+  assert.match(geminiMd, /\.ai-harness\/AGENTS\.md/);
+});
+
+runTest("install.sh opencode project creates .ai-harness and plugin references cache", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-cache-opencode-"));
+  const result = runInstallSh(
+    ["--runtime", "opencode", "--scope", "project", "--init-harness", "--yes", "--target", tmp],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.ok(fs.existsSync(path.join(tmp, ".ai-harness", "AGENTS.md")));
+  const plugin = fs.readFileSync(
+    path.join(tmp, ".opencode", "plugins", "ai-engineering-harness.js"),
+    "utf8"
+  );
+  assert.match(plugin, /\.ai-harness\/AGENTS\.md/);
+  assert.match(plugin, /\.harness\//);
 });
 
 runTest("install-cache.js copies AGENTS.md under .ai-harness", () => {

@@ -22,7 +22,8 @@
 - `install` verb alias; warning when `--visibility` omitted (defaults shared)
 - [private-install-git-hygiene.md](docs/private-install-git-hygiene.md)
 - **Step 2:** private `.ai-harness/` capability cache — [install-cache.js](install-cache.js), [private-capability-cache.md](docs/private-capability-cache.md)
-- `--install-cache` / `--no-install-cache`; default cache for project + private + runtime-native
+- `--install-cache` / `--no-install-cache`; default cache for all project runtime-native providers
+- provider-agnostic model: entrypoint → `.ai-harness/` → `.harness/` (docs + runtime README)
 - runtime bootstraps (Cursor, generic, Claude, Gemini, OpenCode) point to `.ai-harness/` + `.harness/`
 
 ### Planned (implementation)

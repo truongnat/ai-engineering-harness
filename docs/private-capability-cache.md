@@ -1,10 +1,10 @@
-# Private Capability Cache (`.ai-harness/`)
+# Capability Cache (`.ai-harness/`)
 
 ## Purpose
 
-Runtime-native installs (v0.9.1+) place **provider entrypoints** under `.cursor/`, `.claude/`, etc., and **project state** under `.harness/`. They do **not** copy the full capability pack into the product repo root.
+Runtime-native installs place **provider entrypoints** (Cursor rule, Claude `CLAUDE.md`, `AGENTS.md`, Gemini extension, OpenCode plugin) and **project state** under `.harness/`. They do **not** copy the full capability pack into the product repo root.
 
-Without a local capability source, agents only see thin bootstrap text pointing at empty `.harness/` skeletons. **v0.9.2 Step 2** installs the pack surface into a **private, namespaced cache**:
+Without `.ai-harness/`, every provider only gets an entrypoint that says “go read something” — with no local `commands/`, `skills/`, or `workflows/`. **v0.9.2 Step 2** installs the pack surface into a namespaced cache shared by **all** runtimes:
 
 ```txt
 .ai-harness/
@@ -30,7 +30,7 @@ Agents should read `.ai-harness/AGENTS.md` first, use `.ai-harness/commands/` an
 
 ## Installed Layout
 
-After a **private project** Cursor install (default cache on):
+After a **project** install (cache on by default for every runtime):
 
 ```txt
 your-project/
@@ -55,6 +55,19 @@ your-project/
 
 Root must **not** contain `commands/`, `skills/`, `workflows/`, or `templates/` from the pack.
 
+## Per-provider layout (project + `--init-harness`)
+
+| Runtime | Entrypoint | Also installed |
+|---|---|---|
+| `cursor` | `.cursor/rules/ai-engineering-harness.mdc` | `.ai-harness/`, `.harness/` |
+| `windsurf` | Same as cursor (alias in `install-runtime.js` until dedicated payload) | same |
+| `claude` | `.claude/CLAUDE.md`, `.claude/settings.json` | `.ai-harness/`, `.harness/` |
+| `codex`, `generic` | `AGENTS.md` (bootstrap → `.ai-harness/`) | `.ai-harness/`, `.harness/` |
+| `gemini` | `.gemini/extensions/ai-engineering-harness/` | `.ai-harness/`, `.harness/` |
+| `opencode` | `.opencode/plugins/ai-engineering-harness.js`, `opencode.json` | `.ai-harness/`, `.harness/` |
+
+Install order in [install.sh](../install.sh): (1) `.git/info/exclude` when private, (2) `.ai-harness/` cache, (3) `.harness/` if `--init-harness`, (4) runtime entrypoint.
+
 ## Install Behavior
 
 Implemented in [install-cache.js](../install-cache.js), invoked from [install.sh](../install.sh).
@@ -62,9 +75,9 @@ Implemented in [install-cache.js](../install-cache.js), invoked from [install.sh
 | Flag / setting | Behavior |
 |---|---|
 | `--install-cache` | Force capability cache install (project scope, non-manual) |
-| `--no-install-cache` | Skip cache even for private project |
-| Default | **On** for `project` + `private` + runtime-native; **off** for `global`, `manual`, `--legacy-root` |
-| Shared visibility | Cache **off** unless `--install-cache` |
+| `--no-install-cache` | Skip cache on project install |
+| Default | **On** for all `project` + runtime-native (every provider); **off** for `global`, `manual` |
+| Shared visibility | Cache still installed; files visible in `git status` unless paths are in team policy |
 | `--dry-run` | Prints `WOULD COPY .ai-harness/...` |
 | `--force` | Overwrites existing cache files |
 

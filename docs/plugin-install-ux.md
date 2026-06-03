@@ -78,7 +78,7 @@ sh install.sh install --runtime cursor --scope project --visibility private --in
 node validate.js --target <repo> --runtime <name> --profile-only   # from source pack
 ```
 
-Private project installs **default** to `.ai-harness/` capability cache ([private-capability-cache.md](private-capability-cache.md)). Runtime bootstrap (e.g. Cursor rule) points agents at `.ai-harness/` for commands/skills and `.harness/` for project state.
+All **project** runtime-native installs **default** to `.ai-harness/` capability cache ([private-capability-cache.md](private-capability-cache.md)) — Cursor, Claude, Codex, Generic, Gemini, OpenCode, Windsurf (cursor alias). Each runtime entrypoint only adapts the provider; capabilities live under `.ai-harness/`, project state under `.harness/`.
 
 Team-shared (files visible in `git status`):
 

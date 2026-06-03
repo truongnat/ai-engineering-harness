@@ -134,19 +134,19 @@ sh install.sh install --runtime cursor --scope project --visibility private --ig
 
 → exclude block written → `.mdc` + `.harness/` installed → `git status` clean for generated paths.
 
-## Step 2 — Private Capability Cache (`.ai-harness/`)
+## Step 2 — Provider-Agnostic Capability Cache + Runtime Bootstrap
 
-**Problem:** Runtime-native install only wrote bootstrap + `.harness/` skeleton. Agents had **no local** `commands/`, `skills/`, `workflows/`, etc.
+**Problem:** Runtime-native install only wrote provider entrypoint + `.harness/` skeleton. Every provider lacked local `commands/`, `skills/`, `workflows/`.
 
-**Fix:** Install capability surface under `.ai-harness/` via [install-cache.js](../install-cache.js). Do **not** copy pack dirs to product repo root.
+**Fix:** Install capability surface under `.ai-harness/` via [install-cache.js](../install-cache.js). Each runtime entrypoint (Cursor, Claude, Codex/Generic, Gemini, OpenCode) points at `.ai-harness/` + `.harness/`. Do **not** copy pack dirs to product repo root.
 
 | Piece | Role |
 |---|---|
-| `.ai-harness/` | Capability source (pack surface) |
+| `.ai-harness/` | Capability source (all providers) |
 | `.harness/` | Project state |
-| Runtime bootstrap | Points to both |
+| Runtime entrypoint | Provider adapter only |
 
-Default: **project + private + runtime-native** installs cache. Shared needs `--install-cache`. Global/manual: no project cache.
+Default: **all project runtime-native** installs cache. Global/manual: no project cache. Use `--no-install-cache` to opt out.
 
 Private exclude also lists `.ai-harness/` when cache is on.
 
