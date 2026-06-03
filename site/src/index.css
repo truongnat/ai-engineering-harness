@@ -1,0 +1,210 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap');
+
+/* ── Design tokens ── */
+:root {
+  --bg: #060810;
+  --surface: rgba(255, 255, 255, 0.03);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(99, 102, 241, 0.35);
+  --accent-1: #6366f1;
+  --accent-2: #7c3aed;
+  --accent-3: #0891b2;
+  --text-muted: #94a3b8;
+  --text-dim: #475569;
+  --success: #4ade80;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: #e2e8f0;
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.3); border-radius: 2px; }
+
+/* ── Perspective grid ── */
+.grid-perspective {
+  position: absolute;
+  inset: -50%;
+  background-image:
+    linear-gradient(rgba(99, 102, 241, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.12) 1px, transparent 1px);
+  background-size: 60px 60px;
+  transform: perspective(600px) rotateX(55deg) translateY(-10%);
+  transform-origin: center top;
+  animation: gridScroll 8s linear infinite;
+}
+
+@keyframes gridScroll {
+  from { transform: perspective(600px) rotateX(55deg) translateY(-10%); }
+  to   { transform: perspective(600px) rotateX(55deg) translateY(calc(-10% + 60px)); }
+}
+
+/* ── Ambient orbs ── */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+  animation: orbFloat 10s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.orb-1 { width: 500px; height: 500px; background: #4f46e5; top: -150px; left: -100px; animation-delay: 0s; }
+.orb-2 { width: 400px; height: 400px; background: #7c3aed; top: 20%; right: -80px;  animation-delay: -4s; }
+.orb-3 { width: 300px; height: 300px; background: #0891b2; bottom: 10%; left: 30%;  animation-delay: -7s; }
+
+@keyframes orbFloat {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50%       { transform: translateY(-30px) scale(1.05); }
+}
+
+/* ── Glass card ── */
+.glass-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s, background 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+/* Top highlight line */
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+  pointer-events: none;
+}
+
+/* Liquid shimmer on hover */
+.glass-card::after {
+  content: '';
+  position: absolute;
+  top: -50%; left: -60%;
+  width: 40%; height: 200%;
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.04), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+
+.glass-card:hover {
+  border-color: var(--border-hover);
+  background: rgba(99, 102, 241, 0.05);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(99, 102, 241, 0.15);
+}
+
+.glass-card:hover::after { left: 160%; }
+
+/* ── 3D artifact panel ── */
+.artifact-3d {
+  transform: perspective(800px) rotateX(6deg) rotateY(-4deg);
+  transform-style: preserve-3d;
+  box-shadow:
+    0 40px 80px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: artifact3dBreath 6s ease-in-out infinite;
+}
+
+@keyframes artifact3dBreath {
+  0%, 100% { transform: perspective(800px) rotateX(6deg) rotateY(-4deg); }
+  50%       { transform: perspective(800px) rotateX(2deg) rotateY(4deg); }
+}
+
+/* ── Command card (pipeline) ── */
+.cmd-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+  border-radius: 12px;
+  transition: all 0.3s;
+}
+
+.cmd-card:hover,
+.cmd-card.active {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.45);
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+  transform: perspective(400px) rotateY(-6deg) translateY(-4px);
+}
+
+/* ── Pulsing dot ── */
+.pulse-dot {
+  animation: pulseDot 2s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px currentColor; }
+  50%       { opacity: 0.4; box-shadow: none; }
+}
+
+/* ── Arrow pulse ── */
+.arrow-pulse {
+  animation: arrowColor 2s ease-in-out infinite;
+}
+
+@keyframes arrowColor {
+  0%, 100% { color: #334155; }
+  50%       { color: var(--accent-1); }
+}
+
+/* ── Terminal block ── */
+.terminal {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  font-family: 'Fira Code', monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  overflow: hidden;
+}
+
+.terminal-header {
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.terminal-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+}
+
+/* ── Section spacing ── */
+.section-gap { padding: 80px 0; }
+
+@media (max-width: 768px) {
+  .section-gap { padding: 56px 0; }
+  .orb-1 { width: 300px; height: 300px; }
+  .orb-2 { width: 250px; height: 250px; }
+  .artifact-3d { animation: none; transform: perspective(800px) rotateX(3deg) rotateY(-2deg); }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .grid-perspective { animation: none; }
+  .orb { animation: none; }
+  .artifact-3d { animation: none; }
+  .pulse-dot { animation: none; }
+  .arrow-pulse { animation: none; }
+}
