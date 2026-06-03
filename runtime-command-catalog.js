@@ -16,8 +16,9 @@ const RUNTIME_COMMANDS_DIR = `${CACHE_DIR}/runtime-commands`;
  *   status: ProviderCommandStatus,
  *   nativeCommandSupport: boolean,
  *   installedPaths: string[],
- *   actualInvocation: string | null,
- *   useInstruction: string,
+ *   workflowInvocation: string | null,
+ *   pluginSkillNamespace: string | null,
+ *   fallbackInstruction: string,
  *   notes: string,
  *   invocations?: Record<string, string | null>
  * }>}
@@ -39,8 +40,9 @@ const PROVIDER_COMMAND_SUPPORT = Object.freeze({
     packagingPath: ".claude-plugin/plugin.json",
     installMethod: "/plugin install ai-engineering-harness (marketplace) or project .claude/commands/harness-<id>.md",
     installedPaths: [".claude/commands/", ".claude-plugin/ (npm package root)"],
-    actualInvocation: "/harness-plan (project command file); /ai-engineering-harness:<skill> when plugin installed",
-    useInstruction:
+    workflowInvocation: "/harness-plan (project command file)",
+    pluginSkillNamespace: "/ai-engineering-harness:<skill> when plugin installed",
+    fallbackInstruction:
       "Prefer /plugin install from repo marketplace; project install adds .claude/commands/harness-plan.md → /harness-plan per Claude docs.",
     notes:
       "Pack ships .claude-plugin/ + skills/ + commands/. Plugin skill namespace may use colon form; project command IDs use harness-plan hyphen form.",
@@ -59,8 +61,9 @@ const PROVIDER_COMMAND_SUPPORT = Object.freeze({
       ".cursor/rules/ai-engineering-harness.mdc",
       ".cursor/rules/ai-engineering-harness-commands.mdc"
     ],
-    actualInvocation: null,
-    useInstruction:
+    workflowInvocation: null,
+    pluginSkillNamespace: null,
+    fallbackInstruction:
       "Install plugin: /add-plugin ai-engineering-harness when published. Project npx install: .cursor/rules activate .ai-harness/ (fallback).",
     notes: "Native commands come from Cursor plugin manifest commands field — not project .cursor/commands/.",
     invocations: {}
@@ -76,8 +79,9 @@ const PROVIDER_COMMAND_SUPPORT = Object.freeze({
     pluginManifest: ".codex-plugin/plugin.json",
     installMethod: "Codex /plugins marketplace (install plugin when published) — skills surface",
     installedPaths: ["AGENTS.md (project fallback)"],
-    actualInvocation: null,
-    useInstruction:
+    workflowInvocation: null,
+    pluginSkillNamespace: "/plugins marketplace skill surface",
+    fallbackInstruction:
       "Native: open Codex /plugins, install ai-engineering-harness plugin (marketplace pending). Use plugin skills. Project npx install: AGENTS.md + .ai-harness/ fallback only — no /harness-* slash.",
     notes:
       "Codex is not a project-local slash-command provider. Package ships .codex-plugin/plugin.json + skills/ per openai/plugins layout.",
@@ -93,8 +97,9 @@ const PROVIDER_COMMAND_SUPPORT = Object.freeze({
     packagingPath: null,
     installMethod: "AGENTS.md activation + .ai-harness/ catalog",
     installedPaths: ["AGENTS.md"],
-    actualInvocation: null,
-    useInstruction: 'Ask the agent: "Use harness-plan for this repository."',
+    workflowInvocation: null,
+    pluginSkillNamespace: null,
+    fallbackInstruction: 'Ask the agent: "Use harness-plan for this repository."',
     notes: "Generic bootstrap — not Codex plugin UI. For Codex native skills use codex provider + /plugins.",
     invocations: {}
   },
@@ -107,8 +112,9 @@ const PROVIDER_COMMAND_SUPPORT = Object.freeze({
     packagingPath: "gemini-extension.json",
     installMethod: "gemini extensions install <git-url> or project .gemini/extensions/...",
     installedPaths: [".gemini/extensions/ai-engineering-harness/gemini-extension.json", "GEMINI.md"],
-    actualInvocation: null,
-    useInstruction:
+    workflowInvocation: null,
+    pluginSkillNamespace: null,
+    fallbackInstruction:
       'gemini extensions install https://github.com/truongnat/ai-engineering-harness — context via GEMINI.md; ask "use harness-plan".',
     notes: "Extension context/skills — no invented slash commands under extension commands/.",
     invocations: {}
@@ -118,15 +124,16 @@ const PROVIDER_COMMAND_SUPPORT = Object.freeze({
     status: "planned",
     nativeCommandSupport: false,
     installedPaths: [],
-    actualInvocation: null,
-    useInstruction: "Not implemented.",
+    workflowInvocation: null,
+    pluginSkillNamespace: null,
+    fallbackInstruction: "Not implemented.",
     notes: "Planned provider research only.",
     invocations: {}
   }
 });
 
 /** @type {readonly { id: string, canonical: string, title: string, sourceCommand: string, description: string }[]} */
-const HARNESS_COMMANDS = Object.freeze([
+const WORKFLOW_COMMANDS = Object.freeze([
   {
     id: "start",
     canonical: "harness-start",
@@ -182,24 +189,11 @@ const HARNESS_COMMANDS = Object.freeze([
     title: "Harness Remember",
     sourceCommand: "commands/harness-remember.md",
     description: "Record durable lessons in project memory."
-  },
-  {
-    id: "status",
-    canonical: "harness-status",
-    title: "Harness Status",
-    sourceCommand: "commands/harness-status.md",
-    description: "Summarize harness install and project state for this repo."
-  },
-  {
-    id: "doctor",
-    canonical: "harness-doctor",
-    title: "Harness Doctor",
-    sourceCommand: "commands/harness-doctor.md",
-    description: "Check harness readiness for this repository."
   }
 ]);
 
-const CANONICAL_COMMANDS = HARNESS_COMMANDS.map((c) => c.canonical);
+const CLI_DIAGNOSTIC_COMMANDS = Object.freeze(["status", "doctor"]);
+const CANONICAL_COMMANDS = WORKFLOW_COMMANDS.map((c) => c.canonical);
 
 /** @deprecated Display-only; not a claim of native slash support */
 const SLASH_COMMANDS = CANONICAL_COMMANDS.map((c) => `/${c}`);
@@ -218,7 +212,7 @@ function providerInvocationFor(providerId, commandId) {
 }
 
 function formatProviderUseLine(providerId) {
-  return providerCommandSupport(providerId).useInstruction;
+  return providerCommandSupport(providerId).fallbackInstruction;
 }
 
 function buildCommandSurface(installedProviderEntrypoints = {}) {
@@ -238,8 +232,9 @@ function buildCommandSurface(installedProviderEntrypoints = {}) {
       packagingPath: spec.packagingPath || null,
       installMethod: spec.installMethod || null,
       installedPaths: [...spec.installedPaths],
-      actualInvocation: spec.actualInvocation,
-      useInstruction: spec.useInstruction,
+      workflowInvocation: spec.workflowInvocation || null,
+      pluginSkillNamespace: spec.pluginSkillNamespace || null,
+      fallbackInstruction: spec.fallbackInstruction,
       invocations: { ...(spec.invocations || {}) }
     };
     if (installedProviderEntrypoints[id]) {
@@ -287,7 +282,7 @@ function formatCommandSupportForPlan(providerIds) {
       lines.push("    Codex plugin: .codex-plugin/plugin.json + skills/ (install via /plugins when published)");
       lines.push("    project install: AGENTS.md + .ai-harness/ fallback only");
     }
-    lines.push(`    use: ${spec.useInstruction}`);
+    lines.push(`    use: ${spec.fallbackInstruction}`);
     if (spec.installedPaths.length) {
       lines.push(`    files: ${spec.installedPaths.join(", ")}`);
     }
@@ -385,7 +380,7 @@ function renderCursorCommandsRuleMdc() {
     "## Command map",
     ""
   ];
-  for (const spec of HARNESS_COMMANDS) {
+  for (const spec of WORKFLOW_COMMANDS) {
     lines.push(
       `- **${spec.canonical}** → read \`.ai-harness/runtime-commands/harness-${spec.id}.md\` → \`.ai-harness/${spec.sourceCommand}\``
     );
@@ -412,7 +407,7 @@ function renderAgentsCommandAliasesSection() {
     "|-----------|---------------|",
     ""
   ];
-  for (const spec of HARNESS_COMMANDS) {
+  for (const spec of WORKFLOW_COMMANDS) {
     lines.push(
       `| ${spec.canonical} | \`.ai-harness/runtime-commands/harness-${spec.id}.md\` → \`.ai-harness/${spec.sourceCommand}\` |`
     );
@@ -431,7 +426,7 @@ function renderGeminiCommandsReadme() {
     "|-----------|------|",
     ""
   ];
-  for (const spec of HARNESS_COMMANDS) {
+  for (const spec of WORKFLOW_COMMANDS) {
     lines.push(
       `| ${spec.canonical} | \`commands/harness-${spec.id}.md\` (extension) or \`.ai-harness/runtime-commands/harness-${spec.id}.md\` |`
     );
@@ -484,7 +479,7 @@ function installRuntimeCommandCatalog(targetRoot, options = {}) {
   results.push(
     writeFile(targetRoot, `${CACHE_DIR}/activation.md`, activationMarkdown(), opts)
   );
-  for (const spec of HARNESS_COMMANDS) {
+  for (const spec of WORKFLOW_COMMANDS) {
     results.push(
       writeFile(
         targetRoot,
@@ -551,7 +546,7 @@ function providerCommandPathsForRuntime(runtime, scope) {
 
 function installClaudeNativeCommands(targetRoot, packRoot, options) {
   const results = [];
-  for (const spec of HARNESS_COMMANDS) {
+  for (const spec of WORKFLOW_COMMANDS) {
     results.push(
       writeFile(
         targetRoot,
@@ -688,7 +683,7 @@ function runtimeCommandCatalogPathsForPlan(providerId, scope) {
     const spec = providerCommandSupport(providerId);
     for (const rel of spec.installedPaths) {
       if (providerId === "claude") {
-        for (const cmd of HARNESS_COMMANDS) {
+        for (const cmd of WORKFLOW_COMMANDS) {
           paths.push(`.claude/commands/harness-${cmd.id}.md`);
         }
       } else if (rel.endsWith("/")) {
@@ -711,7 +706,8 @@ function fileReferencesActivation(filePath) {
 
 module.exports = {
   COMMAND_NAMESPACE,
-  HARNESS_COMMANDS,
+  WORKFLOW_COMMANDS,
+  CLI_DIAGNOSTIC_COMMANDS,
   CANONICAL_COMMANDS,
   SLASH_COMMANDS,
   PROVIDER_COMMAND_SUPPORT,

@@ -2131,12 +2131,19 @@ runTest("aih cli help mentions npx ai-engineering-harness install", () => {
 });
 
 runTest("cli provider model includes active and fallback providers", () => {
-  const { PROVIDERS, ACTIVE_PROVIDER_IDS } = require(path.join(repoRoot, "lib", "cli-providers.js"));
+  const {
+    PROVIDERS,
+    ACTIVE_PROVIDER_IDS,
+    FALLBACK_PROVIDER_IDS,
+    SUPPORTED_PROVIDER_IDS
+  } = require(path.join(repoRoot, "lib", "cli-providers.js"));
   for (const id of ["cursor", "claude", "codex", "gemini", "generic", "manual"]) {
     assert.ok(PROVIDERS.some((p) => p.id === id), `missing provider ${id}`);
   }
   assert.ok(!PROVIDERS.some((p) => p.id === "opencode"));
   assert.deepEqual(ACTIVE_PROVIDER_IDS, ["claude", "cursor", "codex", "gemini"]);
+  assert.deepEqual(FALLBACK_PROVIDER_IDS, ["generic", "manual"]);
+  assert.deepEqual(SUPPORTED_PROVIDER_IDS, ["claude", "cursor", "codex", "gemini", "generic", "manual"]);
   const claude = PROVIDERS.find((p) => p.id === "claude");
   assert.equal(claude.priority, "primary");
 });
@@ -2280,10 +2287,28 @@ runTest("cli-args parses --verbose flag", () => {
   assert.equal(opts.verbose, true);
 });
 
+runTest("cli-args normalizes --provider and deprecated --runtime into providers only", () => {
+  const { parseArgv } = require(path.join(repoRoot, "lib", "cli-args.js"));
+  const providerOpts = parseArgv(["node", "aih", "install", "--provider", "cursor,claude", "--yes"]);
+  const runtimeOpts = parseArgv(["node", "aih", "install", "--runtime", "cursor,claude", "--yes"]);
+  assert.deepEqual(providerOpts.providers, ["cursor", "claude"]);
+  assert.deepEqual(runtimeOpts.providers, ["cursor", "claude"]);
+  assert.equal(Object.prototype.hasOwnProperty.call(providerOpts, "runtime"), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(runtimeOpts, "runtime"), false);
+  assert.equal(runtimeOpts.runtimeAliasUsed, true);
+});
+
 runTest("cli-backend defaults to capture unless verbose", () => {
   const src = fs.readFileSync(path.join(repoRoot, "lib", "cli-backend.js"), "utf8");
   assert.match(src, /capture/);
   assert.match(src, /verbose/);
+});
+
+runTest("cli-backend shell fallback wording does not mention old v0.10.x", () => {
+  const { SH_MISSING_MSG } = require(path.join(repoRoot, "lib", "cli-backend.js"));
+  assert.doesNotMatch(SH_MISSING_MSG, /v0\.10\.x/i);
+  assert.match(SH_MISSING_MSG, /bundled shell backend/i);
+  assert.match(SH_MISSING_MSG, /Git Bash|WSL/i);
 });
 
 runTest("README links wizard UX docs", () => {
@@ -2319,10 +2344,16 @@ runTest("aih cli help mentions --verbose", () => {
 
 runTest("runtime command catalog generates harness-plan with activation refs", () => {
   const tmp = makeTempDir();
-  const { installRuntimeCommandCatalog } = require(path.join(repoRoot, "runtime-command-catalog.js"));
+  const {
+    installRuntimeCommandCatalog,
+    WORKFLOW_COMMANDS,
+    CLI_DIAGNOSTIC_COMMANDS
+  } = require(path.join(repoRoot, "runtime-command-catalog.js"));
   installRuntimeCommandCatalog(tmp, { dryRun: false, force: true });
   const planPath = path.join(tmp, ".ai-harness/runtime-commands/harness-plan.md");
   assert.ok(fs.existsSync(planPath));
+  assert.equal(fs.existsSync(path.join(tmp, ".ai-harness/runtime-commands/harness-status.md")), false);
+  assert.equal(fs.existsSync(path.join(tmp, ".ai-harness/runtime-commands/harness-doctor.md")), false);
   const text = fs.readFileSync(planPath, "utf8");
   assert.match(text, /harness-plan/);
   assert.doesNotMatch(text, /^# \/harness-plan/m);
@@ -2331,8 +2362,29 @@ runTest("runtime command catalog generates harness-plan with activation refs", (
   const manifest = JSON.parse(fs.readFileSync(path.join(tmp, ".ai-harness/manifest.json"), "utf8"));
   assert.equal(manifest.commandNamespace, "harness");
   assert.ok(manifest.canonicalCommands.includes("harness-plan"));
+  assert.deepEqual(
+    WORKFLOW_COMMANDS.map((command) => command.canonical),
+    [
+      "harness-start",
+      "harness-map",
+      "harness-discuss",
+      "harness-plan",
+      "harness-run",
+      "harness-verify",
+      "harness-ship",
+      "harness-remember"
+    ]
+  );
+  assert.deepEqual(CLI_DIAGNOSTIC_COMMANDS, ["status", "doctor"]);
+  assert.equal(manifest.canonicalCommands.includes("harness-status"), false);
+  assert.equal(manifest.canonicalCommands.includes("harness-doctor"), false);
   assert.ok(manifest.commandSurface);
   assert.equal(manifest.commandSurface.providers.cursor.mode, "plugin-ready");
+  assert.equal(
+    Object.prototype.hasOwnProperty.call(manifest.commandSurface.providers.claude, "actualInvocation"),
+    false
+  );
+  assert.match(manifest.commandSurface.providers.claude.workflowInvocation, /\/harness-plan/);
 });
 
 runTest("runtime-command-surface doc has provider capability matrix", () => {
@@ -2348,6 +2400,7 @@ runTest("README does not claim universal native slash commands", () => {
   assert.match(readme, /Plugin-ready|plugin packaging|marketplace pending|Slash commands vary/i);
   assert.match(readme, /harness-plan/);
   assert.doesNotMatch(readme, /Native `\/harness-\*`.*Yes/i);
+  assert.doesNotMatch(readme, /harness:plan|\/harness:plan/i);
 });
 
 runTest("pack contains provider plugin manifests", () => {
@@ -2569,6 +2622,18 @@ runTest("aih.sh doctor reports runtime-commands after claude install", () => {
   const result = runAihSh(["doctor", "--target", tmp], { env: { PATH: process.env.PATH } });
   assert.match(result.stdout, /runtime-commands exists/);
   assert.match(result.stdout, /activation\.md exists/);
+});
+
+runTest("detectInstalledProviders excludes legacy OpenCode from normal installed providers", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-detect-legacy-"));
+  fs.mkdirSync(path.join(tmp, ".opencode", "plugins"), { recursive: true });
+  fs.writeFileSync(path.join(tmp, ".opencode", "plugins", "ai-engineering-harness.js"), "// legacy\n", "utf8");
+  const {
+    detectInstalledProviders,
+    detectLegacyProviderResidue
+  } = require(path.join(repoRoot, "lib", "cli-detect.js"));
+  assert.deepEqual(detectInstalledProviders(tmp), []);
+  assert.deepEqual(detectLegacyProviderResidue(tmp), ["opencode"]);
 });
 
 runTest("aih.sh doctor reports workflow PASS for approved plan, verification evidence, and typed memory", () => {

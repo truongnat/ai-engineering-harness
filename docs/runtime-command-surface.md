@@ -22,6 +22,22 @@ See also: [provider-command-matrix.md](provider-command-matrix.md), [provider-na
 
 `harness-plan`, `harness-verify`, … — **not** a claim that `/harness-plan` exists in every UI.
 
+Workflow catalog only:
+
+- `harness-map`
+- `harness-start`
+- `harness-discuss`
+- `harness-plan`
+- `harness-run`
+- `harness-verify`
+- `harness-ship`
+- `harness-remember`
+
+Product CLI diagnostics stay separate:
+
+- `status`
+- `doctor`
+
 ## Command behavior (provider-independent)
 
 How a command runs after routing is defined in `.ai-harness/commands/` — same for every provider. Example: **`harness-discuss`** must synthesize `.harness/REVIEW.md` when present, not ask redundant mode questions. See [harness-command-behavior.md](harness-command-behavior.md).
@@ -30,10 +46,10 @@ How a command runs after routing is defined in `.ai-harness/commands/` — same 
 
 | Provider | Mode | Native slash | Project install adds |
 |----------|------|--------------|----------------------|
-| Claude Code | native-plugin | `/harness-plan` (file); plugin namespace TBD | `.claude/commands/harness-*.md` |
+| Claude Code | native-plugin | `/harness-plan` via project command files where installed | `.claude/commands/harness-*.md` |
 | Cursor | plugin-ready | via plugin when published | `.cursor/rules/` (fallback) |
-| Gemini | fallback-only | none | extension `GEMINI.md` + manifest |
 | Codex | plugin-packaging | plugin skills via `/plugins` | `AGENTS.md` fallback |
+| Gemini | fallback-only | none | extension `GEMINI.md` + manifest |
 | Generic | fallback-only | none | `AGENTS.md` aliases |
 
 ## Install methods
