@@ -86,15 +86,15 @@ Start with [`commands/`](commands/) and treat the loop as the default operating 
 Preview then install (local pack):
 
 ```bash
-sh install.sh --runtime cursor --scope project --init-harness --dry-run --yes
-sh install.sh --runtime cursor --scope project --init-harness --yes
+sh aih.sh install --runtime cursor --scope project --init-harness --dry-run --yes
+sh aih.sh install --runtime cursor --scope project --init-harness --yes
 ```
 
 Remote (pin tag):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install.sh | sh -s -- \
-  --ref v0.9.1 --runtime opencode --scope project --init-harness --yes
+curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- \
+  install --ref v0.9.1 --runtime opencode --scope project --init-harness --yes
 ```
 
 Validate from source pack: `node validate.js --target <repo> --runtime opencode --profile-only` ([runtime-aware-validation](docs/runtime-aware-validation.md)).
@@ -106,25 +106,27 @@ Design: [interactive-installer-design](docs/interactive-installer-design.md), [r
 **Manual fallback** (bulk copy): [install-sh-usage](docs/install-sh-usage.md)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- install --runtime manual
 ```
 
 Preview what the fallback would copy:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install.sh | sh -s -- --target . --dry-run
+curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- install --runtime manual --target . --dry-run
 ```
 
 Project `.harness/` scaffold with runtime-native install:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install.sh | sh -s -- \
-  --runtime claude --scope project --init-harness --dry-run --yes
+curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- \
+  install --runtime claude --scope project --init-harness --dry-run --yes
 ```
 
 See [harness-init-usage](docs/harness-init-usage.md).
 
 Pin a release tag: `--ref v0.9.1` ([install security](docs/plugin-install-security.md)).
+
+Legacy note: [install.sh](install.sh) remains as a compatibility wrapper around [aih.sh](aih.sh).
 
 ## 🛠️ Maintainer quick start (source pack)
 

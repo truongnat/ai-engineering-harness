@@ -434,14 +434,19 @@ runTest("validate.js CLI returns conflict usage error for --profile-only with --
   assert.match(result.stderr, /--profile-only cannot be combined with --goal/);
 });
 
+const aihShPath = path.join(repoRoot, "aih.sh");
 const installShPath = path.join(repoRoot, "install.sh");
+
+runTest("aih.sh exists at repository root", () => {
+  assert.ok(fs.existsSync(aihShPath));
+});
 
 runTest("install.sh exists at repository root", () => {
   assert.ok(fs.existsSync(installShPath));
 });
 
-runTest("install.sh includes supported flags", () => {
-  const script = fs.readFileSync(installShPath, "utf8");
+runTest("aih.sh includes supported flags", () => {
+  const script = fs.readFileSync(aihShPath, "utf8");
 
   assert.match(script, /--target/);
   assert.match(script, /--dry-run/);
@@ -450,34 +455,34 @@ runTest("install.sh includes supported flags", () => {
   assert.match(script, /--help/);
 });
 
-runTest("install.sh delegates to install.js", () => {
-  const script = fs.readFileSync(installShPath, "utf8");
+runTest("aih.sh delegates to install.js", () => {
+  const script = fs.readFileSync(aihShPath, "utf8");
 
   assert.match(script, /node install\.js/);
 });
 
-runTest("install.sh references GitHub archive tarball URL", () => {
-  const script = fs.readFileSync(installShPath, "utf8");
+runTest("aih.sh references GitHub archive tarball URL", () => {
+  const script = fs.readFileSync(aihShPath, "utf8");
 
   assert.match(script, /github\.com\/\$\{REPO\}\/archive\/\$\{REF\}\.tar\.gz/);
   assert.match(script, /truongnat\/ai-engineering-harness/);
 });
 
-runTest("install.sh does not use sudo", () => {
-  const script = fs.readFileSync(installShPath, "utf8");
+runTest("aih.sh does not use sudo", () => {
+  const script = fs.readFileSync(aihShPath, "utf8");
 
   assert.equal(/\bsudo\b/.test(script), false);
 });
 
-runTest("install.sh does not contain telemetry strings", () => {
-  const script = fs.readFileSync(installShPath, "utf8").toLowerCase();
+runTest("aih.sh does not contain telemetry strings", () => {
+  const script = fs.readFileSync(aihShPath, "utf8").toLowerCase();
 
   assert.equal(script.includes("telemetry"), false);
   assert.equal(script.includes("analytics"), false);
 });
 
-runTest("install.sh includes runtime selector flags", () => {
-  const script = fs.readFileSync(installShPath, "utf8");
+runTest("aih.sh includes runtime selector flags", () => {
+  const script = fs.readFileSync(aihShPath, "utf8");
 
   assert.match(script, /--runtime/);
   assert.match(script, /--scope/);
@@ -490,23 +495,23 @@ runTest("install.sh includes runtime selector flags", () => {
   assert.match(script, /--no-install-cache/);
 });
 
-runTest("install.sh includes runtime option names", () => {
-  const script = fs.readFileSync(installShPath, "utf8");
+runTest("aih.sh includes runtime option names", () => {
+  const script = fs.readFileSync(aihShPath, "utf8");
 
   for (const name of ["claude", "codex", "cursor", "gemini", "opencode", "generic", "all", "manual"]) {
     assert.match(script, new RegExp(name));
   }
 });
 
-runTest("install.sh warns manual root copy is fallback", () => {
-  const script = fs.readFileSync(installShPath, "utf8");
+runTest("aih.sh warns manual root copy is fallback", () => {
+  const script = fs.readFileSync(aihShPath, "utf8");
 
   assert.match(script, /fallback/i);
   assert.match(script, /warning/i);
 });
 
-runTest("install.sh delegates to install-runtime.js", () => {
-  const script = fs.readFileSync(installShPath, "utf8");
+runTest("aih.sh delegates to install-runtime.js", () => {
+  const script = fs.readFileSync(aihShPath, "utf8");
 
   assert.match(script, /install-runtime\.js/);
   assert.match(script, /run_runtime_native_install/);
@@ -535,14 +540,14 @@ runTest("install-runtime.js supports expected runtimes", () => {
   assert.deepEqual(ALL_RUNTIMES, ["opencode", "cursor", "claude", "codex", "gemini", "generic"]);
 });
 
-runTest("install.sh does not document windsurf alias", () => {
-  const script = fs.readFileSync(installShPath, "utf8");
+runTest("aih.sh does not document windsurf alias", () => {
+  const script = fs.readFileSync(aihShPath, "utf8");
   assert.doesNotMatch(script, /windsurf/);
   assert.doesNotMatch(script, /Windsurf/);
 });
 
-runTest("install.sh legacy-root aliases manual fallback", () => {
-  const script = fs.readFileSync(installShPath, "utf8");
+runTest("aih.sh legacy-root aliases manual fallback", () => {
+  const script = fs.readFileSync(aihShPath, "utf8");
 
   assert.match(script, /--legacy-root/);
   assert.match(script, /RUNTIME=manual/);
@@ -557,9 +562,37 @@ function runInstallSh(args, options = {}) {
   });
 }
 
-runTest("install.sh claude dry-run exits 0 without network", () => {
+function runAihSh(args, options = {}) {
+  return childProcess.spawnSync("sh", [aihShPath, ...args], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    env: { ...process.env, ...options.env },
+    timeout: 15000
+  });
+}
+
+runTest("install.sh wrapper points to aih.sh", () => {
+  const script = fs.readFileSync(installShPath, "utf8");
+
+  assert.match(script, /aih\.sh/);
+  assert.match(script, /raw\.githubusercontent\.com/);
+});
+
+runTest("aih.sh help shows simple commands first", () => {
+  const result = runAihSh(["help"]);
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stdout, /Recommended:/);
+  assert.match(result.stdout, /sh aih\.sh install/);
+  assert.match(result.stdout, /sh aih\.sh update/);
+  assert.match(result.stdout, /sh aih\.sh uninstall/);
+  assert.match(result.stdout, /sh aih\.sh status/);
+  assert.match(result.stdout, /sh aih\.sh doctor/);
+});
+
+runTest("aih.sh claude dry-run exits 0 without network", () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-claude-dry-"));
-  const result = runInstallSh(
+  const result = runAihSh(
     ["--runtime", "claude", "--scope", "project", "--dry-run", "--yes", "--target", tmp],
     { env: { PATH: process.env.PATH } }
   );
@@ -569,15 +602,43 @@ runTest("install.sh claude dry-run exits 0 without network", () => {
   assert.match(result.stdout, /\.claude/);
 });
 
-runTest("install.sh claude write installs runtime files", () => {
+runTest("aih.sh claude write installs runtime files", () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-claude-write-"));
-  const result = runInstallSh(
+  const result = runAihSh(
     ["--runtime", "claude", "--scope", "project", "--yes", "--target", tmp],
     { env: { PATH: process.env.PATH } }
   );
 
   assert.equal(result.status, 0, result.stderr || result.stdout);
   assert.ok(fs.existsSync(path.join(tmp, ".claude", "CLAUDE.md")));
+});
+
+runTest("aih.sh install works for simple auto-detected cursor project", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "aih-install-cursor-"));
+  initFakeGitWorkTree(tmp);
+  fs.mkdirSync(path.join(tmp, ".cursor"), { recursive: true });
+
+  const result = runAihSh(["install", "--yes", "--target", tmp], {
+    env: { PATH: process.env.PATH }
+  });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.ok(fs.existsSync(path.join(tmp, ".ai-harness", "AGENTS.md")));
+  assert.ok(fs.existsSync(path.join(tmp, ".cursor", "rules", "ai-engineering-harness.mdc")));
+});
+
+runTest("aih.sh uninstall works for installed cursor project", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "aih-uninstall-cursor-"));
+  initFakeGitWorkTree(tmp);
+  fs.mkdirSync(path.join(tmp, ".cursor"), { recursive: true });
+  assert.equal(runAihSh(["install", "--yes", "--target", tmp], { env: { PATH: process.env.PATH } }).status, 0);
+
+  const result = runAihSh(["uninstall", "--yes", "--target", tmp], {
+    env: { PATH: process.env.PATH }
+  });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.equal(fs.existsSync(path.join(tmp, ".cursor", "rules", "ai-engineering-harness.mdc")), false);
 });
 
 runTest("install.sh project init-harness dry-run prints WOULD CREATE HARNESS.md", () => {
@@ -783,6 +844,86 @@ function readInfoExclude(targetDir) {
   const excludePath = path.join(targetDir, ".git", "info", "exclude");
   return fs.existsSync(excludePath) ? fs.readFileSync(excludePath, "utf8") : "";
 }
+
+runTest("install.sh simple install auto-detects cursor project defaults", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-simple-install-cursor-"));
+  initFakeGitWorkTree(tmp);
+  fs.mkdirSync(path.join(tmp, ".cursor"), { recursive: true });
+
+  const result = runInstallSh(["install", "--yes", "--target", tmp], {
+    env: { PATH: process.env.PATH }
+  });
+  const exclude = readInfoExclude(tmp);
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.ok(fs.existsSync(path.join(tmp, ".ai-harness", "AGENTS.md")));
+  assert.ok(fs.existsSync(path.join(tmp, ".harness", "HARNESS.md")));
+  assert.ok(fs.existsSync(path.join(tmp, ".cursor", "rules", "ai-engineering-harness.mdc")));
+  assert.match(exclude, /\.ai-harness\//);
+  assert.match(exclude, /\.harness\//);
+  assert.match(exclude, /\.cursor\/rules\/ai-engineering-harness\.mdc/);
+});
+
+runTest("install.sh simple install without detectable provider fails non-interactive", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-simple-install-no-provider-"));
+  initFakeGitWorkTree(tmp);
+
+  const result = runInstallSh(["install", "--yes", "--target", tmp], {
+    env: { PATH: process.env.PATH }
+  });
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stdout + result.stderr, /could not detect provider for install/i);
+  assert.equal(fs.existsSync(path.join(tmp, "commands")), false);
+  assert.equal(fs.existsSync(path.join(tmp, "skills")), false);
+  assert.equal(fs.existsSync(path.join(tmp, "workflows")), false);
+});
+
+runTest("install.sh simple install does not default to manual root copy", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-simple-install-no-manual-"));
+  initFakeGitWorkTree(tmp);
+  fs.mkdirSync(path.join(tmp, ".cursor"), { recursive: true });
+
+  const result = runInstallSh(["install", "--yes", "--target", tmp], {
+    env: { PATH: process.env.PATH }
+  });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.equal(fs.existsSync(path.join(tmp, "commands")), false);
+  assert.equal(fs.existsSync(path.join(tmp, "skills")), false);
+  assert.equal(fs.existsSync(path.join(tmp, "workflows")), false);
+  assert.equal(fs.existsSync(path.join(tmp, "AGENTS.md")), false);
+  assert.ok(fs.existsSync(path.join(tmp, ".cursor", "rules", "ai-engineering-harness.mdc")));
+});
+
+runTest("install.sh explicit long command still works", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-explicit-long-command-"));
+  initFakeGitWorkTree(tmp);
+
+  const result = runInstallSh(
+    [
+      "install",
+      "--runtime",
+      "cursor",
+      "--scope",
+      "project",
+      "--visibility",
+      "private",
+      "--ignore-strategy",
+      "info-exclude",
+      "--init-harness",
+      "--yes",
+      "--target",
+      tmp
+    ],
+    { env: { PATH: process.env.PATH } }
+  );
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.ok(fs.existsSync(path.join(tmp, ".ai-harness", "AGENTS.md")));
+  assert.ok(fs.existsSync(path.join(tmp, ".harness", "HARNESS.md")));
+  assert.ok(fs.existsSync(path.join(tmp, ".cursor", "rules", "ai-engineering-harness.mdc")));
+});
 
 runTest("install.sh private cursor dry-run prints WOULD UPDATE .git/info/exclude", () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-private-dry-"));
@@ -1370,6 +1511,42 @@ runTest("install.sh uninstall all removes union runtime files and keeps opencode
   assert.equal(fs.existsSync(path.join(tmp, "opencode.json")), true);
 });
 
+runTest("install.sh uninstall without runtime auto-detects installed cursor runtime", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-uninstall-auto-runtime-"));
+  initFakeGitWorkTree(tmp);
+  assert.equal(
+    runInstallSh(["install", "--runtime", "cursor", "--scope", "project", "--init-harness", "--yes", "--target", tmp], {
+      env: { PATH: process.env.PATH }
+    }).status,
+    0
+  );
+
+  const result = runInstallSh(["uninstall", "--yes", "--target", tmp], {
+    env: { PATH: process.env.PATH }
+  });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.equal(fs.existsSync(path.join(tmp, ".cursor", "rules", "ai-engineering-harness.mdc")), false);
+  assert.equal(fs.existsSync(path.join(tmp, ".ai-harness")), true);
+  assert.equal(fs.existsSync(path.join(tmp, ".harness")), true);
+});
+
+runTest("install.sh uninstall --all removes runtime cache and state with auto-detected runtimes", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-uninstall-auto-all-"));
+  initFakeGitWorkTree(tmp);
+  fs.mkdirSync(path.join(tmp, ".cursor"), { recursive: true });
+  assert.equal(runInstallSh(["install", "--yes", "--target", tmp], { env: { PATH: process.env.PATH } }).status, 0);
+
+  const result = runInstallSh(["uninstall", "--all", "--yes", "--target", tmp], {
+    env: { PATH: process.env.PATH }
+  });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.equal(fs.existsSync(path.join(tmp, ".cursor", "rules", "ai-engineering-harness.mdc")), false);
+  assert.equal(fs.existsSync(path.join(tmp, ".ai-harness")), false);
+  assert.equal(fs.existsSync(path.join(tmp, ".harness")), false);
+});
+
 runTest("install.sh uninstall generic skips AGENTS.md without harness marker", () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-uninstall-agents-skip-"));
   fs.writeFileSync(path.join(tmp, "AGENTS.md"), "# team custom\n", "utf8");
@@ -1470,6 +1647,29 @@ runTest("install.sh update does not overwrite .harness/HARNESS.md", () => {
   assert.equal(fs.readFileSync(path.join(tmp, ".harness", "HARNESS.md"), "utf8"), "# user state\n");
 });
 
+runTest("install.sh update without runtime auto-detects installed cursor runtime", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-update-auto-runtime-"));
+  initFakeGitWorkTree(tmp);
+  assert.equal(
+    runInstallSh(["install", "--runtime", "cursor", "--scope", "project", "--yes", "--target", tmp], {
+      env: { PATH: process.env.PATH }
+    }).status,
+    0
+  );
+
+  fs.writeFileSync(path.join(tmp, ".cursor", "rules", "ai-engineering-harness.mdc"), "stale runtime\n", "utf8");
+
+  const result = runInstallSh(["update", "--yes", "--target", tmp], {
+    env: { PATH: process.env.PATH }
+  });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.notEqual(
+    fs.readFileSync(path.join(tmp, ".cursor", "rules", "ai-engineering-harness.mdc"), "utf8"),
+    "stale runtime\n"
+  );
+});
+
 runTest("install.sh update with --visibility private updates .git/info/exclude", () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-update-private-"));
   initFakeGitWorkTree(tmp);
@@ -1541,6 +1741,62 @@ runTest("install.sh update rejects --remove-cache and --remove-state", () => {
 
   assert.notEqual(result.status, 0);
   assert.match(result.stdout + result.stderr, /--remove-cache and --remove-state are only valid for uninstall/i);
+});
+
+runTest("install.sh status prints detected runtime cache state and exclude block", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-status-"));
+  initFakeGitWorkTree(tmp);
+  fs.mkdirSync(path.join(tmp, ".cursor"), { recursive: true });
+  assert.equal(runInstallSh(["install", "--yes", "--target", tmp], { env: { PATH: process.env.PATH } }).status, 0);
+
+  const result = runInstallSh(["status", "--target", tmp], {
+    env: { PATH: process.env.PATH }
+  });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stdout, /detected runtimes:\s+cursor/);
+  assert.match(result.stdout, /\.ai-harness exists:\s+yes/);
+  assert.match(result.stdout, /\.harness exists:\s+yes/);
+  assert.match(result.stdout, /exclude block exists:\s+yes/);
+});
+
+runTest("install.sh doctor passes after install", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-doctor-pass-"));
+  initFakeGitWorkTree(tmp);
+  fs.mkdirSync(path.join(tmp, ".cursor"), { recursive: true });
+  assert.equal(runInstallSh(["install", "--yes", "--target", tmp], { env: { PATH: process.env.PATH } }).status, 0);
+
+  const result = runInstallSh(["doctor", "--target", tmp], {
+    env: { PATH: process.env.PATH }
+  });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stdout, /PASS \.ai-harness exists/);
+  assert.match(result.stdout, /PASS runtime entrypoint detected/);
+  assert.match(result.stdout, /PASS cursor entrypoint references \.ai-harness\//);
+});
+
+runTest("install.sh doctor fails before install with useful output", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "harness-doctor-fail-"));
+  initFakeGitWorkTree(tmp);
+
+  const result = runInstallSh(["doctor", "--target", tmp], {
+    env: { PATH: process.env.PATH }
+  });
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stdout + result.stderr, /FAIL \.ai-harness missing/);
+  assert.match(result.stdout + result.stderr, /FAIL \.harness missing/);
+  assert.match(result.stdout + result.stderr, /FAIL no runtime entrypoint detected/);
+});
+
+runTest("primary docs prefer aih.sh lifecycle commands", () => {
+  const simpleCli = fs.readFileSync(path.join(repoRoot, "docs", "simple-cli-ux.md"), "utf8");
+  const pluginUx = fs.readFileSync(path.join(repoRoot, "docs", "plugin-install-ux.md"), "utf8");
+
+  assert.match(simpleCli, /sh aih\.sh uninstall/);
+  assert.doesNotMatch(simpleCli, /sh install\.sh uninstall/);
+  assert.match(pluginUx, /sh aih\.sh update/);
 });
 
 runTest("install-runtime opencode project creates plugin file", () => {

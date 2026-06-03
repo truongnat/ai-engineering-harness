@@ -22,8 +22,9 @@ Refresh project runtime-native harness files from a selected pack ref without to
 ## Commands
 
 ```bash
-sh install.sh update --runtime cursor --scope project --ref v0.9.2 --yes
-sh install.sh update --runtime all --scope project --ref main --yes
+sh aih.sh update
+sh aih.sh update --runtime cursor --scope project --ref v0.9.2 --yes
+sh aih.sh update --runtime all --scope project --ref main --yes
 ```
 
 ## Ref Pinning
@@ -33,8 +34,9 @@ Use `--ref` to choose the GitHub branch or tag to fetch.
 Examples:
 
 ```bash
-sh install.sh update --runtime cursor --scope project --ref v0.9.2 --yes
-sh install.sh update --runtime cursor --scope project --ref main --yes
+sh aih.sh update
+sh aih.sh update --runtime cursor --scope project --ref v0.9.2 --yes
+sh aih.sh update --runtime cursor --scope project --ref main --yes
 ```
 
 ## Cache Update
@@ -69,7 +71,7 @@ Update preserves `.harness/` completely.
 Update only changes ignore settings when `--visibility private` is passed.
 
 ```bash
-sh install.sh update --runtime cursor --scope project --ref main --visibility private --yes
+sh aih.sh update --runtime cursor --scope project --ref main --visibility private --yes
 ```
 
 Without `--visibility`, update leaves `.git/info/exclude` unchanged.
@@ -77,7 +79,7 @@ Without `--visibility`, update leaves `.git/info/exclude` unchanged.
 ## Dry Run
 
 ```bash
-sh install.sh update --runtime cursor --scope project --ref v0.9.2 --dry-run
+sh aih.sh update --runtime cursor --scope project --ref v0.9.2 --dry-run
 ```
 
 Dry-run prints the update plan plus the cache/runtime writes it would perform.
@@ -87,11 +89,17 @@ Dry-run prints the update plan plus the cache/runtime writes it would perform.
 Refresh Cursor from the latest tag:
 
 ```bash
-sh install.sh update --runtime cursor --scope project --ref v0.9.2 --yes
+sh aih.sh update
+```
+
+Refresh Cursor from the latest tag with explicit ref pinning:
+
+```bash
+sh aih.sh update --runtime cursor --scope project --ref v0.9.2 --yes
 ```
 
 Refresh all supported project runtimes from `main`:
 
 ```bash
-sh install.sh update --runtime all --scope project --ref main --yes
+sh aih.sh update --runtime all --scope project --ref main --yes
 ```

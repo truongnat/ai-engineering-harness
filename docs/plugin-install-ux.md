@@ -74,7 +74,7 @@ See:
 Recommended consumer path (private project — capability cache + no git noise):
 
 ```bash
-sh install.sh install --runtime cursor --scope project --visibility private --init-harness --yes
+sh aih.sh install
 node validate.js --target <repo> --runtime <name> --profile-only   # from source pack
 ```
 
@@ -83,26 +83,29 @@ All **project** runtime-native installs **default** to `.ai-harness/` capability
 Team-shared (files visible in `git status`):
 
 ```bash
-sh install.sh install --runtime <name> --scope project --visibility shared --init-harness --yes
+sh aih.sh install --runtime <name> --scope project --visibility shared --init-harness --yes
 ```
 
 - `<name>`: `generic`, `codex`, `cursor`, `opencode`, `gemini`, `claude`
-- **Manual fallback** (`manual` / default `curl | sh` without flags): root copy only — [scenario-c-one-line-installer.md](pack-dogfood-reports/scenario-c-one-line-installer.md)
+- **Manual fallback** (`manual` / `--legacy-root`): root copy only — [scenario-c-one-line-installer.md](pack-dogfood-reports/scenario-c-one-line-installer.md)
 
 [install.sh](../install.sh) + [install-runtime.js](../install-runtime.js) install **per runtime** without copying `commands/`, `skills/`, etc. to the product root. Capabilities live under **`.ai-harness/`** when cache is installed (private project default). See [runtime-native-install.md](runtime-native-install.md) and [private-capability-cache.md](private-capability-cache.md).
 
 Uninstall examples:
 
 ```bash
-sh install.sh uninstall --runtime cursor --scope project --yes
-sh install.sh uninstall --runtime cursor --scope project --remove-cache --remove-state --yes
+sh aih.sh uninstall
+sh aih.sh uninstall --runtime cursor --scope project --yes
+sh aih.sh uninstall --runtime cursor --scope project --remove-cache --remove-state --yes
+sh aih.sh uninstall --all
 ```
 
 Update examples:
 
 ```bash
-sh install.sh update --runtime cursor --scope project --ref v0.9.2 --yes
-sh install.sh update --runtime all --scope project --ref main --yes
+sh aih.sh update
+sh aih.sh update --runtime cursor --scope project --ref v0.9.2 --yes
+sh aih.sh update --runtime all --scope project --ref main --yes
 ```
 
 | Capability | Status |
@@ -123,41 +126,43 @@ Do **not** treat runtime-native modes as **stable** until manual session evidenc
 
 **Recommended:** runtime-native install + `--init-harness` for project state — see [install-sh-usage.md](install-sh-usage.md), [harness-init-usage.md](harness-init-usage.md), [runtime-aware-validation.md](runtime-aware-validation.md).
 
-Piping `curl | sh` without flags still defaults to **manual** fallback (with a warning). That is **not** the recommended default.
+Piping `curl | sh` without flags on `aih.sh` now maps to `install`, using runtime detection or interactive provider selection. Manual fallback remains explicit only.
 
-### Project install (default target = cwd) — interim bulk copy
+### Project install (default target = cwd)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- install
 ```
 
-Copies the harness installed surface into the current directory (legacy behavior). Prefer runtime-native `install` verb with `--visibility` (v0.9.2).
+Installs with runtime detection, project scope, private visibility, `.ai-harness/` capability cache, `.harness/` init when missing, and `.git/info/exclude` hygiene when applicable.
 
 ### Explicit target install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install.sh | sh -s -- --target ../my-project
+curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- install --target ../my-project
 ```
 
 ### Dry run
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install.sh | sh -s -- --dry-run
+curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- install --dry-run
 ```
 
 ### Force overwrite
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install.sh | sh -s -- --target . --force
+curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- install --target . --force
 ```
 
 ### Global CLI install (planned)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install.sh | sh -s -- --global
+curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- install --scope global
 ai-harness install --target .
 ai-harness validate --target . --profile-only
 ```
+
+`install.sh` remains available as a compatibility wrapper for existing commands.
 
 See [one-line-installer-design.md](one-line-installer-design.md).
 

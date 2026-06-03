@@ -32,6 +32,12 @@
 - project `install.sh update` for runtime-native installs
 - update refreshes `.ai-harness/` and runtime entrypoints with overwrite semantics
 - update preserves `.harness/` project state
+- simplified `install.sh` command defaults so `install`, `update`, and `uninstall` work as short primary commands
+- runtime auto-detection for simple project `install`, `update`, and `uninstall`
+- lightweight `install.sh status` and `install.sh doctor`
+- non-interactive simple install no longer defaults to manual root-copy fallback when runtime detection fails
+- `aih.sh` lifecycle dispatcher for `install`, `update`, `uninstall`, `status`, and `doctor`
+- `install.sh` kept as a compatibility wrapper around `aih.sh`
 
 ### Planned (implementation)
 

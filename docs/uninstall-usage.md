@@ -16,9 +16,11 @@ Default `uninstall` removes only the selected runtime entrypoint.
 ## Commands
 
 ```bash
-sh install.sh uninstall --runtime cursor --scope project --yes
-sh install.sh uninstall --runtime cursor --scope project --remove-cache --remove-state --yes
-sh install.sh uninstall --runtime all --scope project --remove-cache --remove-state --yes
+sh aih.sh uninstall
+sh aih.sh uninstall --runtime cursor --scope project --yes
+sh aih.sh uninstall --all
+sh aih.sh uninstall --runtime cursor --scope project --remove-cache --remove-state --yes
+sh aih.sh uninstall --runtime all --scope project --remove-cache --remove-state --yes
 ```
 
 ## Runtime Entrypoints
@@ -65,7 +67,7 @@ Unrelated exclude lines are preserved.
 Use `--dry-run` to preview removals:
 
 ```bash
-sh install.sh uninstall --runtime cursor --scope project --dry-run
+sh aih.sh uninstall --runtime cursor --scope project --dry-run
 ```
 
 Expected output includes `WOULD REMOVE`, `WOULD KEEP`, `WOULD UPDATE`, or `SKIP`.
@@ -75,18 +77,29 @@ Expected output includes `WOULD REMOVE`, `WOULD KEEP`, `WOULD UPDATE`, or `SKIP`
 - `AGENTS.md` is only removed when it clearly references `ai-engineering-harness`.
 - `.claude/settings.json` is currently skipped unless future safe ownership logic is added.
 - Global uninstall is planned but not implemented in this step.
-- `update` is still not implemented in this step.
 
 ## Examples
 
 Remove only the Cursor runtime bootstrap:
 
 ```bash
-sh install.sh uninstall --runtime cursor --scope project --yes
+sh aih.sh uninstall
+```
+
+Remove all runtime entrypoints plus cache and project state:
+
+```bash
+sh aih.sh uninstall --all
+```
+
+Remove only the Cursor runtime bootstrap with explicit advanced flags:
+
+```bash
+sh aih.sh uninstall --runtime cursor --scope project --yes
 ```
 
 Remove Cursor bootstrap plus cache and project state:
 
 ```bash
-sh install.sh uninstall --runtime cursor --scope project --remove-cache --remove-state --yes
+sh aih.sh uninstall --runtime cursor --scope project --remove-cache --remove-state --yes
 ```

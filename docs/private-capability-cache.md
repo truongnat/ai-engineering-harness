@@ -109,11 +109,11 @@ Updated payloads: [runtime/cursor/rules/ai-engineering-harness.mdc](../runtime/c
 
 ## Update Behavior
 
-`install.sh update` refreshes `.ai-harness/` with overwrite semantics and preserves `.harness/`. Runtime entrypoints are refreshed in the same update step.
+`aih.sh update` refreshes `.ai-harness/` with overwrite semantics and preserves `.harness/`. Runtime entrypoints are refreshed in the same update step. With simple CLI defaults, `sh aih.sh update` auto-detects the installed runtime when possible.
 
 ## Uninstall Implications
 
-`install.sh uninstall` removes runtime entrypoints by default and cleans the harness block from `.git/info/exclude`.
+`aih.sh uninstall` removes runtime entrypoints by default and cleans the harness block from `.git/info/exclude`. With simple CLI defaults, `sh aih.sh uninstall` auto-detects the installed runtime when possible.
 
 - `.ai-harness/` is kept by default; remove it with `--remove-cache`
 - `.harness/` is kept by default; remove it with `--remove-state`
