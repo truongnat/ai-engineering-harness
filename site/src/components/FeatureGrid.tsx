@@ -48,7 +48,7 @@ export function FeatureGrid() {
               <motion.div key={f.title} variants={item} className="glass-card p-6">
                 <div
                   className="text-xl mb-4 w-10 h-10 flex items-center justify-center rounded-lg font-mono"
-                  style={{ background: `${f.color}18`, color: f.color }}
+                  style={{ background: f.color + '18', color: f.color }}
                 >
                   {f.icon}
                 </div>
