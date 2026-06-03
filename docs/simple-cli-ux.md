@@ -1,6 +1,22 @@
 # Simple CLI UX
 
-## Problem
+## Primary UX (v0.10.x)
+
+```bash
+npx ai-engineering-harness install
+npx ai-engineering-harness status
+npx ai-engineering-harness doctor
+npx ai-engineering-harness update
+npx ai-engineering-harness uninstall
+```
+
+See [npx-cli-ux.md](npx-cli-ux.md). Detection **recommends** providers; the wizard requires explicit selection.
+
+## Shell fallback
+
+The installer also supports `aih.sh` / `install.sh` for CI and environments without Node. Historical problem: too many flags on one line:
+
+## Problem (shell advanced)
 
 The installer worked, but the user-facing command was exposing too many internal switches:
 
@@ -112,10 +128,11 @@ Manual fallback is still supported explicitly with `--runtime manual` or `--lega
 
 ## Entrypoints
 
-- `aih.sh` is the lifecycle dispatcher for `install`, `update`, `uninstall`, `status`, and `doctor`.
-- `aih.ps1` is an experimental PowerShell bootstrap wrapper that downloads `aih.sh` and runs it through `sh`.
-- `install.sh` remains a compatibility wrapper and future CLI installer wrapper surface.
-- The long-term binary name is `aih`.
+- `npx ai-engineering-harness` / `bin/aih.js` — **primary** interactive CLI (v0.10.x)
+- `aih.sh` — lifecycle backend and shell fallback
+- `install.sh` — compatibility wrapper around `aih.sh`
+- `aih.ps1` — experimental Windows bootstrap (downloads `aih.sh`, requires `sh`)
+- npm bin aliases: `ai-engineering-harness`, `aih`
 
 ## Install
 

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Consolidate evidence from Scenario **C** (manual one-line fallback), Scenarios **D1–D6** (runtime-native project/global dogfood), and Scenario **F1** (simple lifecycle CLI dogfood) for `v0.9.x` readiness. This is an audit artifact, not a stable-support claim.
+Consolidate evidence from Scenario **C** (manual one-line fallback), Scenarios **D1–D6** (runtime-native project/global dogfood), and Scenario **F1** (simple lifecycle CLI dogfood) for `v0.9.x` readiness. **v0.10.x** adds NPX CLI dogfood via [npx-cli-ux.md](npx-cli-ux.md) (primary UX: `npx ai-engineering-harness install`). This is an audit artifact, not a stable-support claim.
 
 ## Scope
 

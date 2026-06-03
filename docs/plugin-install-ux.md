@@ -71,11 +71,22 @@ See:
 
 **Runtime-native installer exists (`v0.9.1` tag).** All primary runtimes are **experimental** (file/install dogfooded; **stable support: No**). See [runtime-dogfood-summary.md](runtime-dogfood-summary.md).
 
-Recommended consumer path (private project — capability cache + no git noise):
+Recommended consumer path (v0.10.x — private project, capability cache, no git noise):
 
 ```bash
-sh aih.sh install
-node validate.js --target <repo> --runtime <name> --profile-only   # from source pack
+npx ai-engineering-harness install
+```
+
+Shell fallback:
+
+```bash
+sh aih.sh install --runtime cursor --scope project --visibility private --yes
+```
+
+Maintainers validate from source pack:
+
+```bash
+node validate.js --target <repo> --runtime <name> --profile-only
 ```
 
 If the target repo does not expose a provider hint such as `.cursor/`, `.claude/`, `.gemini/`, or `.opencode/`, use an explicit runtime in non-interactive mode.

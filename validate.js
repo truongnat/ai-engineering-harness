@@ -80,6 +80,8 @@ const requiredFiles = [
   "aih.ps1",
   "bin/aih.js",
   "docs/npx-cli-ux.md",
+  "docs/v0.10.0-release-notes.md",
+  "docs/npm-publish.md",
   "install.sh",
   "docs/stable-contract-index.md",
   "docs/breaking-change-policy.md",

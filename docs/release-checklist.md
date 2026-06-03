@@ -4,6 +4,15 @@
 
 Use this checklist to prepare a manual release without adding release automation or runtime complexity.
 
+## npm package (v0.10.x+)
+
+- run `npm pack --dry-run` and confirm `test/` and `examples/` are **not** in the tarball
+- run `node bin/aih.js --help`
+- run `npm test` and `node validate.js`
+- bump `package.json` version; align `PACK.md` pack version
+- publish manually: see [npm-publish.md](npm-publish.md)
+- smoke: `npx --yes ai-engineering-harness@latest install --provider cursor --yes --dry-run`
+
 ## Pre-Release Checks
 
 - confirm the intended release scope is documentation-first

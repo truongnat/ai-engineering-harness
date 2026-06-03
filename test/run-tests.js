@@ -1815,17 +1815,16 @@ runTest("primary docs prefer aih.sh lifecycle commands", () => {
   assert.match(pluginUx, /sh aih\.sh update/);
 });
 
-runTest("README documents Windows PowerShell bootstrap paths", () => {
+runTest("README shell fallback section documents aih.sh", () => {
   const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
-
-  assert.match(readme, /curl\.exe|aih\.ps1/);
-  assert.match(readme, /PowerShell/i);
+  assert.match(readme, /Shell fallback/i);
+  assert.match(readme, /sh aih\.sh install/);
 });
 
-runTest("README does not present bare curl -fsSL as a Windows PowerShell command", () => {
-  const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
-
-  assert.doesNotMatch(readme, /```powershell\s+curl -fsSL/i);
+runTest("npx-cli-ux documents Windows sh requirement", () => {
+  const doc = fs.readFileSync(path.join(repoRoot, "docs", "npx-cli-ux.md"), "utf8");
+  assert.match(doc, /Git Bash|WSL/);
+  assert.match(doc, /v0\.10\.x/);
 });
 
 runTest("aih.ps1 includes clear missing sh guidance", () => {
@@ -1834,12 +1833,6 @@ runTest("aih.ps1 includes clear missing sh guidance", () => {
   assert.match(script, /sh was not found\./);
   assert.match(script, /Install Git for Windows and run from Git Bash, or install WSL\./);
   assert.match(script, /Native PowerShell mode is planned\./);
-});
-
-runTest("README Windows example includes -Yes", () => {
-  const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
-
-  assert.match(readme, /install -Runtime cursor -Yes/);
 });
 
 runTest("aih.ps1 help includes -Yes", () => {
@@ -1882,10 +1875,24 @@ runTest("bin/aih.js exists with Node shebang", () => {
   assert.match(head, /^#!\/usr\/bin\/env node/);
 });
 
-runTest("aih cli help mentions GitHub npx and registry install", () => {
+runTest("package.json name is ai-engineering-harness", () => {
+  const pkg = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+  assert.equal(pkg.name, "ai-engineering-harness");
+  assert.equal(pkg.private, false);
+});
+
+runTest("package.json files excludes test directory", () => {
+  const pkg = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+  assert.ok(Array.isArray(pkg.files));
+  assert.equal(pkg.files.includes("test/"), false);
+  assert.equal(pkg.files.includes("examples/"), false);
+  assert.ok(pkg.files.includes("bin/"));
+  assert.ok(pkg.files.includes("aih.sh"));
+});
+
+runTest("aih cli help mentions npx ai-engineering-harness install", () => {
   const result = runAihCli(["--help"]);
   assert.equal(result.status, 0, result.stderr || result.stdout);
-  assert.match(result.stdout, /github:truongnat\/ai-engineering-harness/);
   assert.match(result.stdout, /npx ai-engineering-harness install/);
 });
 
@@ -1903,16 +1910,24 @@ runTest("cli antigravity provider is disabled planned", () => {
   assert.match(ag.description, /planned/i);
 });
 
-runTest("README documents GitHub npx until npm publish", () => {
+runTest("README primary quickstart is npx ai-engineering-harness install", () => {
   const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
   const quickstart = readme.slice(readme.indexOf("## 🚀 Quickstart"));
-  assert.match(quickstart, /github:truongnat\/ai-engineering-harness/);
-  assert.match(quickstart, /not on the npm registry|npm publish/i);
+  const npxPos = quickstart.indexOf("npx ai-engineering-harness install");
+  const curlPos = quickstart.indexOf("curl -fsSL");
+  assert.ok(npxPos >= 0);
+  if (curlPos >= 0) {
+    assert.ok(npxPos < curlPos, "npx quickstart should appear before curl fallback");
+  }
 });
 
-runTest("README still documents post-publish npx command", () => {
+runTest("README does not present curl aih.sh as primary quickstart", () => {
   const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
-  assert.match(readme, /npx ai-engineering-harness install/);
+  const quickstart = readme.slice(readme.indexOf("## 🚀 Quickstart"), readme.indexOf("## What gets installed"));
+  const firstFence = quickstart.match(/```bash\n([\s\S]*?)```/);
+  assert.ok(firstFence);
+  assert.match(firstFence[1], /npx ai-engineering-harness install/);
+  assert.doesNotMatch(firstFence[1], /curl -fsSL/);
 });
 
 runTest("README keeps aih.sh as shell fallback", () => {
@@ -1938,6 +1953,28 @@ runTest("non-interactive aih cli install dry-run with cursor provider", () => {
   );
   assert.equal(result.status, 0, result.stderr || result.stdout);
   assert.match(result.stdout, /WOULD|Will install|\.cursor\/rules/i);
+  assert.match(result.stdout, /\.gitignore/);
+});
+
+runTest("npx-cli-ux documents detection as recommendation only", () => {
+  const doc = fs.readFileSync(path.join(repoRoot, "docs", "npx-cli-ux.md"), "utf8");
+  assert.match(doc, /recommendation only|recommends only|not auto-install/i);
+});
+
+runTest("npm pack dry-run excludes test fixtures", () => {
+  const result = childProcess.spawnSync("npm", ["pack", "--dry-run", "--json"], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    shell: true
+  });
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  const entries = JSON.parse(result.stdout.trim());
+  const packEntry = Array.isArray(entries) ? entries[0] : entries;
+  const files = packEntry.files.map((f) => f.path);
+  assert.equal(files.some((p) => p.startsWith("test/")), false);
+  assert.equal(files.some((p) => p.startsWith("examples/")), false);
+  assert.ok(files.some((p) => p === "bin/aih.js"));
+  assert.ok(files.some((p) => p === "aih.sh"));
 });
 
 runTest("aih cli status delegates to shell backend", () => {

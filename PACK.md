@@ -6,101 +6,101 @@ ai-engineering-harness
 
 ## Pack Version
 
-v0.9.2
+v0.10.1
 
 ## Pack Type
 
-plugin-like markdown capability pack
+plugin-like markdown capability pack (npm package + shell fallbacks)
 
 ## Purpose
 
 Help AI coding agents consume engineering discipline inside target repositories through commands, skills, workflows, patterns, templates, harness profiles, and structural validation—without treating the source pack repository as the product work tree.
 
-## Included Surface
+## Primary Consumption (v0.10.x)
 
-- `AGENTS.md`
-- `commands/`
-- `skills/`
-- `workflows/`
-- `patterns/`
-- `templates/`
-- selected adoption and validation docs under `docs/` (see installed-surface contract)
-- `install.js`
-- `validate.js`
-- `LICENSE`
-- `README.md`
-- `PACK.md`
-
-Project runtime-native installs use:
-
-```txt
-aih.sh            lifecycle dispatcher
-provider file     runtime entrypoint
-.ai-harness/      capability cache
-.harness/         project state
+```bash
+npx ai-engineering-harness install
 ```
 
-Legacy `install.js` / manual root copy remains available only as fallback, not as the primary consumption model.
+Interactive wizard: user selects provider(s), install mode, confirms plan. Detection **recommends** only; no silent auto-install.
+
+## Installed Model (project)
+
+```txt
+npx CLI (bin/aih.js)     user-facing wizard
+        ↓
+aih.sh                   lifecycle backend (bundled in npm package)
+        ↓
+provider entrypoint      e.g. .cursor/rules/ai-engineering-harness.mdc
+.ai-harness/             capability cache
+.harness/                project state
+.git/info/exclude        private project installs (not .gitignore)
+```
+
+## Fallback / Compatibility
+
+- `aih.sh` — shell lifecycle dispatcher (fallback, CI, local dev)
+- `install.sh` — wrapper around `aih.sh`
+- `aih.ps1` — experimental Windows bootstrap (still requires `sh`)
+- `install.js` + `--runtime manual` — legacy root copy only
+
+## Included Surface
+
+- `AGENTS.md`, `commands/`, `skills/`, `workflows/`, `patterns/`, `templates/`
+- `bin/aih.js`, `lib/cli-*.js`, `aih.sh`, `install.sh`, `aih.ps1`
+- `install-cache.js`, `install-runtime.js`, `install.js`, `validate.js`
+- selected `docs/` (see npm `files` in `package.json`)
+
+npm tarball **excludes** `test/`, `examples/`, and local dogfood dirs.
 
 ## Consumption Modes
 
-- `aih.sh` project runtime-native install (recommended)
-- `aih.sh` global runtime-native install where supported
-- legacy `install.js` or manual root copy (fallback only)
-- vendored harness directory inside target repository
-- global agent capability folder (runtime-dependent)
-- release archive (manual versioned snapshot)
-- future plugin or package registry (not implemented)
+- **Primary:** `npx ai-engineering-harness install` (interactive wizard)
+- **Shell fallback:** `aih.sh` project/global runtime-native install
+- **Compatibility:** `install.sh` wrapper; `aih.ps1` Windows bootstrap (experimental)
+- **Legacy:** `install.js` / `--runtime manual` root copy only
+- **Maintainers:** clone source repo; `node validate.js`; `npm test`
+- **Future:** native JS backend (planned); Antigravity (researched, not implemented)
 
 ## Runtime Compatibility
 
-Documented consumption guidance for:
+Documented guidance for Claude Code, Cursor, Codex, Gemini CLI, OpenCode, generic AGENTS.md.
 
-- Claude Code
-- Cursor
-- Codex
-- Gemini CLI
-- OpenCode
+**Stable runtime support: No** (experimental per provider).
 
-Current project install model is:
-
-- provider-specific entrypoint
-- `.ai-harness/` as shared capability source
-- `.harness/` as project-specific state
-
-No compiled runtime adapters are included in this pack.
+Antigravity: planned, not implemented.
 
 ## Validation Commands
 
-Source pack verification:
+Source pack:
 
 ```bash
 node validate.js
 npm test
-node validate.js --target test/fixtures/valid-target-profile --profile-only
-node validate.js --target test/fixtures/valid-target-goal --goal google-login
+node bin/aih.js --help
 ```
 
-After install into a target repository:
+Target profile:
 
 ```bash
-node validate.js --target <path> --profile-only
-node validate.js --target <path> --goal <goal-id>
+node validate.js --target test/fixtures/valid-target-profile --profile-only
 ```
 
 ## Safety Boundaries
 
-- markdown is the source of truth
-- do not store secrets, tokens, or private business data in harness artifacts
-- validation is structural only and does not prove application correctness
-- do not add runtime adapters or server behavior under the name of packaging
-- keep product work and `.harness/` state in the target repository
+- Do not treat the source pack repository as the product work tree
+- Do not commit secrets, tokens, or customer data into harness artifacts
+- Do not edit target `.gitignore` by default (private installs use `.git/info/exclude`)
+- Do not claim stable runtime support until explicitly released
 
 ## Non-Goals
 
-- npm package publishing
-- marketplace automation
-- runtime adapters or compiled plugins
-- server, database, or background systems
-- semantic validation or deep repository scanning
-- archive generation automation in v0.7.0 planning scope
+- Stable per-runtime support (still **No** for v0.10.x)
+- Antigravity install paths (planned only)
+- npm publish automation from CI (manual publish per [npm-publish.md](docs/npm-publish.md))
+- Semantic validation, secret scanning, or heavy runtime adapters in the pack core
+- Shipping `test/` or `examples/` in the npm registry tarball
+
+## Stable Runtime Support
+
+**No** — experimental installs only; see [docs/v0.10.0-release-notes.md](docs/v0.10.0-release-notes.md).

@@ -48,25 +48,36 @@
 - `install.sh` verbs: install, uninstall, update
 - Antigravity runtime paths after verification
 
-## [0.10.0] - Unreleased
+## [0.10.1] - 2026-06-03
+
+### Changed
+
+- v0.10.x NPX CLI productization: README rewrite (npx-first, short), PACK.md aligned
+- `package.json` `files` whitelist — npm tarball excludes `test/` and `examples/`
+- CLI plan warns on non-Git private targets; expanded “will not modify” list
+- Docs sweep: [npx-cli-ux.md](docs/npx-cli-ux.md), [simple-cli-ux.md](docs/simple-cli-ux.md), [plugin-install-ux.md](docs/plugin-install-ux.md), [npm-publish.md](docs/npm-publish.md), [v0.10.0-release-notes.md](docs/v0.10.0-release-notes.md)
+- Tests: package contract, npm pack dry-run, npx-first README guards
+- `--all` flag on CLI uninstall; bundled `aih.sh` path check
+
+## [0.10.0] - 2026-06-03
 
 ### Added
 
+- npm package `ai-engineering-harness` published to registry
 - NPX interactive CLI (`bin/aih.js`) with `ai-engineering-harness` and `aih` bin aliases
-- Provider selection wizard (checkbox UI when TTY supports raw mode; numbered fallback otherwise)
+- Provider selection wizard (checkbox UI when TTY supports raw mode; numbered fallback)
 - Detection as **recommendation only** — no silent auto-install in interactive mode
 - [npx-cli-ux.md](docs/npx-cli-ux.md)
 
 ### Changed
 
-- README primary quickstart is `npx ai-engineering-harness install`; `aih.sh` / `aih.ps1` documented as fallbacks
-- v0.10.0 Node CLI fronts install/update/uninstall; `aih.sh` remains backend (requires `sh`)
+- Primary consumer UX: `npx ai-engineering-harness install`
+- Node CLI fronts install/update/uninstall; `aih.sh` remains shell backend (requires `sh`)
+- `aih.sh`, `install.sh`, `aih.ps1` documented as fallbacks
 
 ## [Unreleased]
 
 ### Changed
-
-- Docs: `npx ai-engineering-harness` requires npm publish; until then use `npx github:truongnat/ai-engineering-harness` or local `bin/aih.js` / `npm link`
 - Windows bootstrap docs and `aih.ps1` help: recommended PowerShell install includes `-Yes` for copy-paste flows
 - `aih.ps1` warns when private project install/update targets a non-Git directory (`.git/info/exclude` unavailable)
 - `doctor` and docs: clearer non-Git target messaging (`git init` or cloned repo)

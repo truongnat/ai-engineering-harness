@@ -39,6 +39,10 @@ Heavy runtime systems are not part of `v0.1.0`. The first release is the markdow
 
 `v0.3.0` remains runtime-light and structural-only. It adds lightweight host repository validation for adopted `.harness/` artifacts without adding semantic validation, runtime adapters, servers, databases, deep scanning, or automation-heavy release infrastructure.
 
+## Scope Boundary For `v0.10.x`
+
+`v0.10.x` adds an **npm-published** interactive CLI (`npx ai-engineering-harness install`) as the primary consumer UX. Shell scripts remain fallbacks. Stable per-runtime support is still **not** claimed. The Node CLI delegates install/update/uninstall to bundled `aih.sh` until a native JS backend exists.
+
 ## Scope Boundary For `v0.4.0`
 
 `v0.4.0` remains runtime-light and ergonomics-focused. It improves adoption clarity, examples, walkthroughs, small-repo memory guidance, and validation troubleshooting without adding runtime adapters, automatic generation, interactive setup, semantic validation, secret scanning, deep scanning, or automation-heavy release infrastructure.
@@ -70,6 +74,10 @@ Heavy runtime systems are not part of `v0.1.0`. The first release is the markdow
 ## Scope Boundary For `v0.9.2`
 
 `v0.9.2` is an **Experimental Simple Lifecycle CLI + Capability Cache + Git Hygiene** release. It adds `aih.sh` as the preferred lifecycle dispatcher, keeps `install.sh` as a compatibility wrapper, installs `.ai-harness/` as the provider-agnostic capability source for project runtime-native installs, adds private `.git/info/exclude` hygiene, ships project `update` and safe `uninstall`, and includes F1 simple lifecycle dogfood evidence. It does **not** claim stable runtime support, does **not** add Antigravity, and does **not** add marketplace automation, npm publishing, or semantic validation.
+
+## Scope Boundary For `v0.10.x`
+
+`v0.10.x` is an **Experimental NPX CLI** release. Primary UX: `npx ai-engineering-harness install` with interactive provider selection (detection recommends only). npm package ships `bin/aih.js`, bundled `aih.sh` backend, and a trimmed `files` list (no `test/` or `examples/`). Shell (`aih.sh`, `install.sh`, `aih.ps1`) remains fallback. Does **not** claim stable runtime support or ship Antigravity install.
 
 ## Scope Boundary For `v1.0.0`
 

@@ -22,6 +22,14 @@ Triage dogfood findings from [pack-dogfood-friction-log.md](pack-dogfood-frictio
 - `install.sh` compatibility wrapper
 - F1 simple lifecycle dogfood — [scenario-f1-simple-cli-lifecycle.md](pack-dogfood-reports/scenario-f1-simple-cli-lifecycle.md)
 
+## Addressed In v0.10.x (NPX CLI productization)
+
+- npm package `ai-engineering-harness` with `bin/aih.js`
+- Interactive provider wizard; detection recommends only
+- README / docs npx-first; shell fallbacks documented
+- npm `files` whitelist excludes `test/` and `examples/`
+- [npx-cli-ux.md](npx-cli-ux.md), [v0.10.0-release-notes.md](v0.10.0-release-notes.md), [npm-publish.md](npm-publish.md)
+
 ## v0.9.2 Patch Candidates
 
 - `.git` as file (worktree/submodule): resolve `gitdir:` before writing `.git/info/exclude` ([scenario-e1-cursor-private-git-hygiene.md](pack-dogfood-reports/scenario-e1-cursor-private-git-hygiene.md) friction)

@@ -8,6 +8,8 @@ Do not paste secrets, tokens, customer data, or private business details. Summar
 
 | Date | Scenario | Friction | Severity | Evidence | Proposed Fix | Classification |
 |---|---|---|---|---|---|---|
+| 2026-06-03 | NPX | `npx ai-engineering-harness` 404 before first npm publish | medium | npm registry | Publish package; document `npx github:…` interim — **addressed** in README v0.10.1 | v0.10.x fix |
+| 2026-06-03 | NPX | Shell backend requires `sh` on Windows | low | CLI backend | Document Git Bash/WSL; native JS backend planned | v0.10.x doc |
 | 2026-06-02 | A | Install summary prints absolute target path | low | Scenario A install output | Prefer relative path in summary or document redaction for reports | v0.8.x fix |
 | 2026-06-02 | A | validate.js runs from source pack only, not installed into target | low | Scenario A validation flow | Add prominent callout in install next-steps and target-repo-validation | v0.8.x fix |
 | 2026-06-02 | A | No blocking friction beyond minor doc/output clarity | none | Profile and goal validation passed | No action required | no action |
