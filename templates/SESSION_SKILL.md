@@ -2,7 +2,7 @@
 id:
 name:
 status: draft
-scope: core
+scope: session
 version: 1
 can_block: false
 can_write: false
@@ -11,9 +11,13 @@ outputs: []
 tools: []
 ---
 
-# Skill Title
+# Session Skill
 
 ## Purpose
+
+## Trigger
+
+Describe when this session skill should activate.
 
 ## When To Use
 
@@ -27,6 +31,8 @@ tools: []
 
 ## Blocking Conditions
 
-## Common Failure Modes
+## Disposal
+
+Archive with `hooks/core/archive-session-skill.js` when the session skill should leave the active load path.
 
 ## References

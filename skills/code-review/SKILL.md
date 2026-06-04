@@ -45,6 +45,14 @@ This skill must produce:
 - open questions when needed
 - a residual risk statement
 
+## Blocking Conditions
+
+Block or escalate when:
+
+- critical or important findings remain unresolved
+- verification gaps would allow unsafe shipping
+- scope drift is material and unapproved
+
 ## Common Failure Modes
 
 - turning review into a style-only pass
