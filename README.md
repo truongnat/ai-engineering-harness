@@ -176,16 +176,22 @@ See [docs/daily-dev-report.md](docs/daily-dev-report.md).
 
 ## Provider support
 
-| Provider | 1.0.0 support |
-| --- | --- |
-| Claude Code | **Recommended** — project commands, agents, hook examples |
-| Cursor | Rules fallback through `.cursor/rules/` |
-| Codex | `AGENTS.md` fallback |
-| Gemini | Extension / context fallback |
+**Support tiers vary significantly.** Understand what your provider can do before you build on it.
 
-Only Claude currently gets project-native `/harness-*` command files. Other providers use honest fallback routing.
+| Capability | Claude | Cursor | Codex | Gemini |
+|---|---|---|---|---|
+| Slash commands | 8 native | Rules fallback | Rules fallback | Rules fallback |
+| Workers/subagents | 4 native | Manual setup | Manual setup | Manual setup |
+| Lifecycle hooks | 4 events | Manual setup | Manual setup | Manual setup |
+| **Grade** | ⭐⭐⭐ **A** | ⭐⭐ **C+** | ⭐⭐ **C+** | ⭐⭐ **C+** |
 
-Matrix: [docs/provider-command-matrix.md](docs/provider-command-matrix.md), [docs/provider-rule-configuration.md](docs/provider-rule-configuration.md).
+**What this means:**
+- **Claude (Primary):** Full native support. All commands, workers, and hooks work out of the box.
+- **Cursor, Codex, Gemini (Secondary):** Core phase discipline works. But you must manually configure hooks and cannot use native commands/workers.
+
+**Recommendation:** Start with Claude. If using another provider, see [docs/provider-rule-configuration.md](docs/provider-rule-configuration.md) and [docs/adoption-guide.md](docs/adoption-guide.md) for provider-specific setup.
+
+The **phase discipline itself** (plan → verify → ship → remember) is platform-agnostic and works everywhere.
 
 ---
 
