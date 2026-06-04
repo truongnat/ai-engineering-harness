@@ -1,56 +1,295 @@
 # Architecture
 
-This repository uses markdown-first architecture rather than runtime orchestration.
+The ai-engineering-harness uses **markdown-first architecture** instead of runtime orchestration. It standardizes engineering behavior through documents, skills, validation rules, and provider adapters — not through services, databases, or control planes.
 
-It may borrow engineering discipline from larger systems, but it does so by tightening documents, skills, and validation rules instead of adding a long-running control plane.
+## Core Design Principles
 
-## Why Markdown First
+### 1. Markdown-First (Not Prompt-First)
 
-Markdown is portable across editors, repos, and agent tools. It keeps plans, reviews, verification, and memory visible in version control instead of hiding state inside prompts or runtime services.
+**Why?** Markdown is portable across editors, repos, and agent tools. Plans, verification, and memory stay visible in version control instead of being hidden inside prompts or runtime services.
 
-## Why No Heavy Runtime In V1
+**What this means:**
+- Artifacts are readable by humans and agents equally
+- Changes are reviewable in PRs (you can see what decisions changed)
+- Memory persists across sessions without API calls
+- No lock-in to any specific platform or LLM provider
 
-Version 1 is intentionally light:
+**Example:**
+```
+❌ Bad: Agent holds plan in memory, context resets, plan is lost
+✅ Good: Agent writes PLAN.md, later sessions read it, context restores
+```
 
-- no `src/core`
-- no agent server
-- no LangGraph
-- no database
-- no Redis
-- no Neo4j
-- no Meilisearch
-- no Docker
-- no web UI
+### 2. No Heavy Runtime (Intentional)
 
-The goal of v1 is to standardize engineering behavior, not to introduce a platform dependency. The only code layer is lightweight install and validation helpers plus CI.
+Version 1 deliberately excludes:
 
-That means this repo intentionally does not absorb:
+| What | Why Not |
+|---|---|
+| Server/service | Agents work locally, no deployment needed |
+| Database | Markdown files are the database |
+| LangGraph/DSL | Would lock users into framework |
+| Graph intelligence | Markdown is linearly readable, good enough |
+| Autonomous meshes | Humans stay in control of orchestration |
+| Web UI | Artifacts are git-friendly, no UI needed |
 
-- parallel state trees such as `.planning/`
-- workspace inventories or graph intelligence
-- autonomous subagent meshes
-- framework-style SDKs for active planning state
+**The payoff:** This repo weighs ~3MB, installs in seconds, runs anywhere, requires no ops.
 
-## System Layers
+### 3. Distribution Over Centralization
 
-1. `AGENTS.md` sets the operating contract.
-2. `commands/` provides command-level runbooks.
-3. `skills/` provides reusable capabilities.
-4. `workflows/` provides task-class sequences.
-5. `patterns/` provides coordination decisions.
-6. `templates/` provides durable artifact formats.
-7. `docs/` explains the system and host-repo adoption.
-8. `examples/demo-project/` shows how a host repo can use `.harness/`.
+Instead of a central platform, distribute:
+- **Commands** → Provider-specific rule files (.claude/, .cursor/, AGENTS.md)
+- **Memory** → Project-local `.harness/` directory
+- **Validation** → npm package with validation scripts
+- **Skills** → Markdown files colocated with commands
+
+Each target repo is self-contained. No external service needed.
+
+---
+
+## System Architecture
+
+### Layer Stack
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│ LAYER 1: Agent System Prompt (agent-system/)                │
+│ ├─ SYSTEM_PROMPT.md — Role, MUST/MUST NOT rules             │
+│ ├─ RESPONSE_CONTRACT.md — Output format expectations         │
+│ ├─ TONE_AND_FORMAT.md — How to communicate                   │
+│ └─ provider-adapters/ — Provider-specific hints              │
+├──────────────────────────────────────────────────────────────┤
+│ LAYER 2: Commands (commands/, .claude/commands/, etc.)       │
+│ ├─ harness-start — Restore session                          │
+│ ├─ harness-map — Understand state                           │
+│ ├─ harness-discuss — Analyze approach                       │
+│ ├─ harness-plan — Write implementation plan                 │
+│ ├─ harness-run — Execute plan                               │
+│ ├─ harness-verify — Verify with evidence                    │
+│ ├─ harness-ship — Commit and handoff                        │
+│ └─ harness-remember — Store lessons                         │
+├──────────────────────────────────────────────────────────────┤
+│ LAYER 3: Workflows (workflows/)                              │
+│ ├─ feature.md — Build new feature                           │
+│ ├─ bugfix.md — Fix a bug                                    │
+│ ├─ refactor.md — Improve code                               │
+│ ├─ incident.md — Respond to outage                          │
+│ └─ code-review.md — Review changes                          │
+├──────────────────────────────────────────────────────────────┤
+│ LAYER 4: Skills (skills/)                                    │
+│ ├─ Core skills: planning, verification, TDD, memory         │
+│ ├─ Packs: frontend, backend, mobile, devops, debugging      │
+│ └─ Tool-specific: git-worktrees, code-graph, ripgrep        │
+├──────────────────────────────────────────────────────────────┤
+│ LAYER 5: Patterns (patterns/)                                │
+│ ├─ hierarchical-delegation.md                               │
+│ ├─ producer-reviewer.md                                     │
+│ ├─ supervisor.md                                            │
+│ ├─ pipeline.md                                              │
+│ └─ expert-pool.md                                           │
+├──────────────────────────────────────────────────────────────┤
+│ LAYER 6: Templates (templates/)                              │
+│ ├─ .harness/GOAL.md, PLAN.md, VERIFY.md, etc.               │
+│ └─ Blank markdown with section headers & guidance            │
+├──────────────────────────────────────────────────────────────┤
+│ LAYER 7: Rules & Validation (rules/, lib/validate/)          │
+│ ├─ Phase guards (enforce command order)                     │
+│ ├─ Blocking rules (gates prevent skipping)                  │
+│ ├─ Tool routing (find right tool for task)                  │
+│ └─ Session memory (preserve state safely)                   │
+├──────────────────────────────────────────────────────────────┤
+│ LAYER 8: Installation & Integration                          │
+│ ├─ install.js / install-runtime.js — Set up in target repo  │
+│ ├─ validate.js — Check harness health                       │
+│ ├─ hooks/ — Provider-specific automation                    │
+│ └─ workers/ — Delegated subagents (Claude only)             │
+└──────────────────────────────────────────────────────────────┘
+```
+
+### Data Flow Diagram
+
+```
+Agent reads artifact → Executes command → Writes new artifact → Validates → Moves to next phase
+
+Example: harness-plan flow
+
+  1. Agent reads       → GOAL.md, STATE.md, DISCUSSION.md
+  2. Executes         → harness-plan command
+  3. Writes new       → PLAN-001.md (with steps, assumptions, risks)
+  4. Validates        → Check plan is detailed, breaks work into small tasks
+  5. Gate check       → [Quality Gate: plan detailed enough?]
+  6. Next phase       → Ready for harness-run
+```
+
+---
 
 ## Host Repository Model
 
-Host repositories are expected to keep active engineering artifacts under `.harness/`.
+Target repositories (where you use the harness) follow this structure:
 
-Typical flow:
+```
+your-project/
+├── src/                        # Your application code
+├── test/                        # Your tests
+├── .harness/                   # Harness artifacts (version controlled)
+│   ├── PROJECT.md              # Project metadata
+│   ├── STATE.md                # Current state
+│   ├── MEMORY.md               # Durable lessons
+│   ├── REQUIREMENTS.md         # Acceptance criteria
+│   └── sessions/               # One per active goal
+│       └── 2024-01-15-feature/
+│           ├── GOAL.md
+│           ├── DISCUSSION.md
+│           ├── PLAN-001.md
+│           ├── TASKS.md
+│           ├── VERIFY.md
+│           └── SHIP.md
+├── .claude/                    # Claude provider adapter (if using Claude)
+│   ├── CLAUDE.md
+│   ├── settings.json
+│   └── commands/
+├── .cursor/rules/              # Cursor rules (if using Cursor)
+│   └── ai-engineering-harness.mdc
+└── AGENTS.md                   # Generic fallback (all providers)
+```
 
-1. The host repo carries application code and tests.
-2. `.harness/` stores the goal, plan, tasks, verification notes, and memory.
-3. Agents read `.harness/` first, then inspect code.
-4. Agents update `.harness/` as work progresses.
+### Typical Flow
 
-This keeps the harness close to the work without creating a separate service or storage system.
+1. **Session starts** → Agent runs `harness-start` to restore context
+2. **Agent reads** `.harness/` artifacts (GOAL, STATE, MEMORY)
+3. **Agent works** through the command loop (map → discuss → plan → run → verify → ship → remember)
+4. **Agent updates** `.harness/` artifacts as work progresses
+5. **Session ends** → Artifacts are committed to version control
+6. **Next session** → Starts with full context (no amnesia)
+
+---
+
+## Provider Integration Architecture
+
+```
+Generic Target Repo
+│
+├─→ Claude Code Provider
+│   ├─ .claude/CLAUDE.md (system prompt)
+│   ├─ .claude/commands/harness-*.md (native commands)
+│   ├─ .claude/agents/ (delegated workers)
+│   └─ .claude/settings.json (hooks & automation)
+│
+├─→ Cursor Provider
+│   ├─ .cursor/rules/ai-engineering-harness.mdc (rules)
+│   └─ hooks/hooks-cursor.json (pending)
+│
+├─→ Codex Provider
+│   ├─ .codex-plugin/plugin.json (manifest)
+│   └─ AGENTS.md (fallback)
+│
+├─→ Gemini CLI Provider
+│   ├─ gemini-extension.json (extension manifest)
+│   ├─ .gemini/extensions/.../GEMINI.md (context file)
+│   └─ AGENTS.md (fallback)
+│
+└─→ Generic / Any Agent
+    └─ AGENTS.md (read and follow instructions)
+```
+
+**Key insight:** One markdown source tree, multiple provider adapters. Each provider gets the interface it understands (native commands, rules, markdown, or both).
+
+---
+
+## Design Decisions
+
+### Why Session Directories Instead of Flat Root?
+
+```
+❌ Old (flat root):
+.harness/GOAL.md
+.harness/PLAN.md
+.harness/VERIFY.md
+→ Only one goal at a time, hard to track parallel work
+
+✅ New (session-based):
+.harness/sessions/2024-01-15-feature/GOAL.md
+.harness/sessions/2024-01-15-refactor/GOAL.md
+→ Multiple goals active simultaneously, clear session context
+```
+
+### Why Validation in the npm Package?
+
+Validation (`validate.js`) runs locally before any work happens:
+- Catches configuration problems early
+- Doesn't require CI/server
+- Works offline
+- Fast (runs in <1 second)
+
+### Why Rules Over Code?
+
+```
+❌ Code approach: Write a JavaScript validator
+✅ Rules approach: Write markdown requirements + a generic validator
+
+Benefits of rules:
+- Non-developers can read/update rules
+- Rules live next to commands (easy to find)
+- Rules sync across providers automatically
+- No compilation step
+```
+
+---
+
+## What This Architecture Enables
+
+### ✅ Multi-Provider Support (Claude, Cursor, Codex, Gemini)
+Single markdown source tree generates provider-specific adapters on install.
+
+### ✅ Local-Only Operation
+No servers, APIs, or external dependencies. Works offline.
+
+### ✅ Version Control Integration
+All state is in git. PRs can review plans and decisions before work happens.
+
+### ✅ Human-in-the-Loop
+Artifacts are readable by humans. Humans can guide agents at artifact boundaries.
+
+### ✅ Zero Learning Curve
+If you know markdown and git, you already know how to use the harness.
+
+### ✅ Extensibility
+Add new skills, patterns, or workflows by adding markdown files.
+
+---
+
+## Limitations & Future
+
+### Current Scope (v1.0.0)
+- Single agent focus (one agent per session)
+- No real-time collaboration UI
+- No metrics/dashboards
+- Manual command invocation (no auto-orchestration)
+
+### Could Be Added (v1.1+)
+- Team collaboration (shared `.harness/`, merge-friendly artifacts)
+- IDE integration (VS Code extension showing harness status)
+- Metrics dashboard (session rate, verification coverage)
+- Auto-orchestration (agent calls next command automatically)
+- Graph analysis (understand decision relationships)
+
+### Won't Be Added (Intentional)
+- Heavy runtime dependencies
+- Proprietary formats
+- Framework lock-in
+- Autonomous agent meshes
+- Centralized control planes
+
+---
+
+## Next: Understanding the System
+
+To dive deeper into each layer:
+
+1. **Agent system** → [SYSTEM_PROMPT.md](../agent-system/SYSTEM_PROMPT.md)
+2. **Commands** → [Harness Commands](harness-command-behavior.md)
+3. **Workflows** → [Workflows README](../workflows/README.md)
+4. **Skills** → [Skills README](../skills/README.md)
+5. **Patterns** → [Patterns README](../patterns/README.md)
+
+Or jump straight to practice: [Your First 5 Minutes](first-5-minutes.md)
