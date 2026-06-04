@@ -1,6 +1,6 @@
 {
   "name": "ai-engineering-harness",
-  "version": "0.11.0",
+  "version": "1.0.0",
   "private": false,
   "description": "A lightweight, markdown-first workflow kit for AI coding agents.",
   "license": "MIT",
