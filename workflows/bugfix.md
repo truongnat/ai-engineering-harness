@@ -10,12 +10,11 @@ Use this when restoring expected behavior, fixing regressions, or addressing bro
 
 ## Required Artifacts
 
-- `.harness/GOAL.md`
 - `.harness/STATE.md`
-- `.harness/CONTEXT.md`
-- `.harness/PLAN.md`
-- `.harness/VERIFY.md`
-- `.harness/REMEMBER.md`
+- `.harness/sessions/<active-session>/GOAL.md`
+- `.harness/sessions/<active-session>/DISCUSSION.md`
+- `.harness/sessions/<active-session>/PLAN-001.md` or the current numbered plan
+- `.harness/sessions/<active-session>/VERIFY.md`
 
 ## Recommended Skills
 

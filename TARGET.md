@@ -76,28 +76,30 @@ Manual clone and `node install.js --target <repo>` remain supported for **mainta
 | `obra/superpowers` | mandatory methodology chain, planning before coding, TDD/review discipline, composable skills |
 | `open-gsd/gsd-core` | context engineering, durable artifacts, command loop, phase-based planning, fresh-context execution mindset |
 
-## Current State
+## Current State (v1.0.0)
 
-`v0.1.0` provides:
+The project is now feature-complete for the core operating model:
 
-- `AGENTS.md`
-- command loop
-- core skills
-- workflows
-- patterns
-- templates
-- adoption docs
-- runtime usage docs
-- skill packs
-- workflow scenarios
-- quality gates matrix
-- install and validate helpers
+✅ Command loop (Map → Start → Discuss → Plan → Run → Verify → Ship → Remember)
+✅ Phase discipline with blocking gates
+✅ Session-based memory model with durable artifacts
+✅ Multi-provider support (Claude Code, Cursor, Codex, Gemini CLI)
+✅ Delegated worker framework for Claude
+✅ Tool discovery and routing
+✅ Hooks system for provider-specific automation
+✅ Skill packs, workflows, patterns, templates
+✅ Quality gates and validation system
+✅ Runtime-native installation without cloning
+✅ npm package distribution
 
-This is a clean markdown-first foundation, but it is still mainly a foundation. It does not yet deliver the full project-specific harness design target.
+## Areas for Future Enhancement
 
-## Missing Capabilities
-
-1. Harness Builder
+1. **Provider parity**: Claude has native commands + workers; other providers use markdown fallback
+2. **IDE integration**: VS Code extension for session state visibility
+3. **Team features**: Shared `.harness/` state across team members
+4. **Metrics**: Track session completion, verification rates, phase skipping
+5. **Template library**: Pre-built `.harness/` profiles for common project types (Next.js, Express, FastAPI, etc.)
+6. **Marketplace publication**: Codex and Gemini extensions not yet published to official stores
 2. Harness Profile Templates
 3. Memory Model
 4. SDLC Execution Model

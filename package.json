@@ -2,7 +2,30 @@
   "name": "ai-engineering-harness",
   "version": "1.0.0",
   "private": false,
-  "description": "A lightweight, markdown-first workflow kit for AI coding agents.",
+  "description": "Engineering discipline and workflow guardrails for AI coding agents (Claude, Cursor, Codex, Gemini).",
+  "keywords": [
+    "ai",
+    "agent",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini",
+    "workflow",
+    "engineering",
+    "guardrails",
+    "markdown",
+    "coding-agent",
+    "discipline",
+    "agentic-sdlc"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/truongnat/ai-engineering-harness"
+  },
+  "homepage": "https://ai-engineering-harness.dev",
+  "bugs": {
+    "url": "https://github.com/truongnat/ai-engineering-harness/issues"
+  },
   "license": "MIT",
   "type": "commonjs",
   "bin": {
@@ -28,7 +51,6 @@
     ".claude-plugin/",
     ".codex-plugin/",
     "gemini-extension.json",
-    "hooks/",
     "aih.sh",
     "install.sh",
     "aih.ps1",

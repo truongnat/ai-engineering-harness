@@ -113,27 +113,29 @@ Use this structure in the target repository:
 
 ```text
 .harness/
-  PROJECT.md
-  REQUIREMENTS.md
-  ROADMAP.md
-  STATE.md
-  CONTEXT.md
-  GOAL.md
-  DISCUSSION.md
-  PLAN.md
-  TASKS.md
-  REVIEW.md
-  VERIFY.md
-  SHIP.md
-  REMEMBER.md
+  PROJECT.md              # Project metadata and team structure
+  ROADMAP.md              # Milestone and phase planning
+  REQUIREMENTS.md         # Acceptance criteria
+  STATE.md                # Current repository state
+  CONTEXT.md              # Team decisions and context
+  MEMORY.md               # Durable lessons and decisions (optional)
+  
+  sessions/
+    <active-session>/     # Named session (e.g., 2024-01-15-auth-feature)
+      GOAL.md             # What we're building/fixing
+      DISCUSSION.md       # Analysis and approach
+      PLAN-001.md         # Detailed plan (numbered for iterations)
+      TASKS.md            # Step-by-step execution log
+      VERIFY.md           # Evidence of completion
+      SHIP.md             # Release notes and summary (optional)
 ```
 
 Typical usage:
 
-- `PROJECT.md` and `ROADMAP.md` store stable context
-- `GOAL.md`, `DISCUSSION.md`, and `PLAN.md` drive active work
-- `TASKS.md`, `VERIFY.md`, and `SHIP.md` track execution and completion
-- `REMEMBER.md` stores durable, sanitized lessons
+- **Project-level files** store stable context (PROJECT.md, ROADMAP.md, STATE.md)
+- **Session directories** track individual goals/tasks/features
+- **Each session** follows the harness loop: GOAL → DISCUSSION → PLAN → TASKS → VERIFY → SHIP
+- **REMEMBER.md** (project-level) stores durable, sanitized lessons between sessions
 
 ## Using The Command Loop
 
