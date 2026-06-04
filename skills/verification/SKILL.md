@@ -45,6 +45,14 @@ This skill must produce:
 - an evidence list
 - explicit residual gaps or risk
 
+## Blocking Conditions
+
+Block or escalate when:
+
+- required checks failed or were not run fresh
+- evidence is partial, stale, or missing for the stated claim
+- VERIFY.md would need to claim pass without proof
+
 ## Common Failure Modes
 
 - claiming success from stale command output

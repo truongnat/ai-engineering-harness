@@ -109,6 +109,14 @@ No implementation plan was produced.
 
 ## Critical Rules
 
+### Hooks & Skills
+
+- Read `docs/hooks-and-skills-layer.md` and `docs/skill-lifecycle.md` for this module.
+- Create a session skill only when the procedure will repeat; use `workflows/create-skill.md`.
+- Compose skills with `workflows/compose-skills.md` when multiple capabilities must run in order.
+- Stop if `node hooks/core/guard-phase.js` returns blocked for the target command.
+- Dispose session skills with `hooks/core/archive-session-skill.js`; dispose means archive, not delete.
+
 **DO:**
 - read goal and planning context first
 - name verification strategy explicitly

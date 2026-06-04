@@ -107,6 +107,12 @@ No ship summary was created.
 
 ## Critical Rules
 
+### Hooks & Skills
+
+- Run `node hooks/core/guard-phase.js --command harness-ship --session <active-session> --json` before any ship claim.
+- Use `gatekeeper` skill or worker output as gate evidence.
+- Stop if gate decision is block or VERIFY evidence is insufficient.
+
 **DO:**
 - ship only from evidence
 - mention known gaps honestly

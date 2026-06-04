@@ -400,6 +400,60 @@ runTest("provider command support merges rule adapter metadata", () => {
   assert.match(cursor.ruleEntrypoints.join(" "), /guardrails/);
 });
 
+runTest("hooks and skills layer surface exists", () => {
+  for (const relativePath of [
+    "hooks/README.md",
+    "hooks/core/guard-phase.js",
+    "hooks/core/record-tool-output.js",
+    "hooks/core/record-subagent-result.js",
+    "hooks/core/compact-session-memory.js",
+    "hooks/core/record-skill-run.js",
+    "hooks/core/archive-session-skill.js",
+    "docs/hooks-and-skills-layer.md",
+    "docs/skill-lifecycle.md",
+    "workflows/create-skill.md",
+    "workflows/compose-skills.md",
+    "workflows/review-and-verify.md",
+    "templates/SKILL_DISPOSAL.md"
+  ]) {
+    assert.ok(fs.existsSync(path.join(repoRoot, relativePath)), `${relativePath} must exist`);
+  }
+});
+
+runTest("hook scripts support --help", () => {
+  for (const script of [
+    "hooks/core/guard-phase.js",
+    "hooks/core/record-tool-output.js",
+    "hooks/core/record-subagent-result.js",
+    "hooks/core/record-skill-run.js",
+    "hooks/core/archive-session-skill.js",
+    "hooks/core/compact-session-memory.js"
+  ]) {
+    const result = runNode([path.join(repoRoot, script), "--help"]);
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+  }
+});
+
+runTest("guard-phase passes for approved fixture session on harness-verify", () => {
+  const fixture = path.join(repoRoot, "test", "fixtures", "valid-target-goal");
+  const session = ".harness/sessions/2026-06-04-google-login";
+  const result = runNode([
+    path.join(repoRoot, "hooks", "core", "guard-phase.js"),
+    "--command",
+    "harness-verify",
+    "--session",
+    path.join(fixture, session),
+    "--json"
+  ], { cwd: fixture });
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  const parsed = JSON.parse(result.stdout);
+  assert.equal(parsed.ok, true);
+});
+
+runTest("install cache includes hooks directory", () => {
+  assert.ok(installCacheApi.cacheExportPaths.includes("hooks/"));
+});
+
 if (process.exitCode) {
   process.exit(process.exitCode);
 }

@@ -119,6 +119,13 @@ No verification status was marked as passed.
 
 ## Critical Rules
 
+### Hooks & Skills
+
+- Prefer skills: `tool-discovery`, `verification`, optional delegated `reviewer`/`verifier` workers.
+- After each verification command, run `hooks/core/record-tool-output.js`.
+- Record delegated worker output with `hooks/core/record-subagent-result.js` when used.
+- Stop if verification skill or hook returns blocked.
+
 **DO:**
 - use actual command results
 - include exit codes

@@ -20,6 +20,7 @@
     "templates/",
     "workers/",
     "rules/",
+    "hooks/",
     "tool-capabilities/",
     "docs/",
     ".cursor-plugin/",

@@ -69,6 +69,14 @@ The command is complete when a future operator can recover the important lesson 
 
 Ask for approval if the only useful lesson depends on sensitive business context that cannot be safely generalized.
 
+## Hooks & Skills
+
+- Run `node hooks/core/compact-session-memory.js --session <active-session>` to propose durable updates for `.harness/MEMORY.md`.
+- Archive session-only skills with `node hooks/core/archive-session-skill.js`; dispose means archive/deactivate, not delete.
+- Promote reusable session skills to `.harness/memory/skills/` only with explicit reason.
+- Record skill usage with `node hooks/core/record-skill-run.js` when a composed workflow finishes.
+- Use existing core skills (`code-review`, `verification`) only when their output informs durable memory; do not create a session skill unless the lesson includes a repeatable procedure.
+
 ## Notes
 
 `harness-remember` is not a transcript archive. It is a durable knowledge filter.

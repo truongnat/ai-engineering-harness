@@ -108,6 +108,13 @@ Run `harness-verify`.
 
 ## Critical Rules
 
+### Hooks & Skills
+
+- Run `node hooks/core/guard-phase.js --command harness-run --session <active-session> --json` before implementation when hooks are available.
+- Use an active session skill only when it matches the approved plan scope.
+- Record skill runs with `hooks/core/record-skill-run.js`.
+- Stop if a skill returns blocked.
+
 **DO:**
 - check approval before editing
 - keep changes inside the approved plan
