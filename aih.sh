@@ -1,5 +1,11 @@
 #!/bin/sh
 # ai-engineering-harness lifecycle dispatcher — runtime/scope selection + .harness init + manual fallback
+#
+# For secure remote install with checksum verification, use:
+#   curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install-secure.sh | sh
+#
+# For direct execution (without verification), use:
+#   curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- install
 set -eu
 
 REPO="truongnat/ai-engineering-harness"
@@ -82,7 +88,10 @@ Advanced examples:
   aih.sh --runtime claude --scope project --init-harness --dry-run --yes
   aih.sh --runtime manual --target . --init-harness --dry-run
 
-Remote one-line install:
+Remote one-line install (secure, with checksum verification):
+  curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install-secure.sh | sh
+
+Remote one-line install (direct, without verification):
   curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- install
 
 Legacy compatibility:

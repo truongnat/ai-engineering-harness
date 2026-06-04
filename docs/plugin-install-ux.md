@@ -137,6 +137,18 @@ sh aih.sh update --runtime all --scope project --ref main --yes
 
 Do **not** treat runtime-native modes as **stable** until manual session evidence exists per [runtime-dogfood-summary.md](runtime-dogfood-summary.md).
 
+## Secure Remote Installation
+
+**Recommended for security:** Use `install-secure.sh` with checksum verification:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install-secure.sh | sh
+```
+
+This verifies the SHA256 checksum before execution, protecting against repository compromise or man-in-the-middle attacks.
+
+---
+
 ## Supported User Flows
 
 **Recommended:** runtime-native install + `--init-harness` for project state — see [install-sh-usage.md](install-sh-usage.md), [harness-init-usage.md](harness-init-usage.md), [runtime-aware-validation.md](runtime-aware-validation.md).
