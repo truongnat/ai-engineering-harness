@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.0.0] - 2026-06-04
+
+### Added
+
+- Session Start protocol (`docs/session-start.md`, `templates/SESSION_START.md`)
+- Daily dev report layer (`REPORT.md`, `PR_MESSAGE.md`, `CHANGE_SUMMARY.md`, `scripts/generate-report-context.js`)
+- Hooks and dynamic skills layer (`hooks/core/*`, skill lifecycle, compose/create workflows)
+- Provider rule adapter layer (`rules/core/`, `rules/providers/`, `lib/provider-rule-renderer.js`)
+- Delegated workers with Claude native agent adapter
+- Layered validation (`lib/validate/session-start.js`, `daily-dev-report.js`, etc.)
+- GitHub Pages 1.0.0 landing page refresh
+
+### Changed
+
+- Product positioning: markdown-first workflow **guardrail kit** (not agent framework)
+- README and landing page focused on 10-second clarity: Session Start → loop → evidence → PR-ready ship
+- `harness-ship` documents report artifacts as required outputs when verification supports shipping
+- Claude provider template tracked in git despite common global `CLAUDE.md` ignore patterns
+
+### Notes
+
+- v1.0.0 means stable **contract** for dogfooding; provider behavior still varies.
+- Historical: [0.11.0] and earlier entries below.
+
 ## [0.9.2] - Unreleased
 
 ### Added

@@ -6,7 +6,7 @@ ai-engineering-harness
 
 ## Pack Version
 
-v0.11.0
+v1.0.0
 
 ## Pack Type
 
@@ -16,7 +16,7 @@ plugin-like markdown capability pack (npm package + shell fallbacks)
 
 Help AI coding agents consume engineering discipline inside target repositories through commands, skills, workflows, patterns, templates, harness profiles, and structural validation—without treating the source pack repository as the product work tree.
 
-## Primary Consumption (v0.11.x)
+## Primary Consumption (v1.0.x)
 
 ```bash
 npx ai-engineering-harness install
@@ -81,7 +81,7 @@ cd examples/dogfood-tiny-node-api && npm test
 node bin/aih.js --help
 ```
 
-Release notes: [docs/v0.11.0-release-notes.md](docs/v0.11.0-release-notes.md)
+Release notes: [docs/v1.0.0-release-notes.md](docs/v1.0.0-release-notes.md)
 
 Target profile:
 
