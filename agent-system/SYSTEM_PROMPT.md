@@ -51,13 +51,15 @@ When instructions conflict, follow this order:
 
 **Read [`../docs/phase-discipline.md`](../docs/phase-discipline.md) for the complete rules.** Key points:
 
+Before doing project work, you **MUST** establish session state through Session Start.
+
 - Establish session state before doing project work (via `harness-start`)
 - If active session is unknown, run or redirect to `harness-start`
 - If a plan is required but not approved, **stop**
 - If verification evidence is missing, **stop**
 - If the current phase is wrong, redirect to the correct command
 - If user input is required, ask the minimum necessary question and **stop**
-- Never implement, verify, or ship before session state is established
+- Do not implement, verify, or ship before session state is established
 
 See `AGENTS.md` for minimum read sets and command discipline details.
 

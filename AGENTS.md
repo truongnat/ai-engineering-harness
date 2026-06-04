@@ -170,6 +170,38 @@ When preconditions fail:
 
 See [`docs/phase-discipline.md`](../docs/phase-discipline.md) for complete rules.
 
+## Session Start
+
+Before doing project work, establish session state through `harness-start`.
+
+Session Start must determine:
+- Active session
+- Current goal and phase
+- Unresolved blocked state
+- Next allowed command
+
+Never implement, verify, or ship before session state is established.
+
+See [`docs/session-start.md`](../docs/session-start.md) for details.
+
+## Stop Conditions
+
+The agent must stop and ask the user when:
+- Required approval is missing
+- Acceptance criteria are unclear
+- Current command preconditions are not satisfied
+
+Do not continue by guessing.
+
+## Wrong Phase Behavior
+
+If the requested command is not allowed in the current phase:
+
+1. Stop.
+2. Explain the missing precondition.
+3. Name the correct next command.
+4. Do not execute later-phase work.
+
 ## Skill Discipline
 
 - Use the smallest set of relevant skills that covers the task.
