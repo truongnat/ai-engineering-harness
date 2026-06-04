@@ -18,7 +18,7 @@ timestamp:
 | grep | yes/no | basic search fallback |
 | git worktree | yes/no | parallel isolation |
 | markitdown | yes/no | rich document conversion |
-| code graph tool | yes/no | repo structure enhancement |
+| codegraph | yes/no | https://github.com/colbymchenry/codegraph |
 | git-nexus | yes/no | optional history context |
 
 ## Recommended Routing

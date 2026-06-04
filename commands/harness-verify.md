@@ -67,7 +67,7 @@ Use this command doc as the reference contract for phase behavior and artifact d
 
 - use `git diff` for scoped review context
 - use `rg` before `grep` when locating evidence or changed behavior
-- use code graph tools only when installed or configured
+- use [CodeGraph](https://github.com/colbymchenry/codegraph) (`codegraph`) when installed and indexed; otherwise fall back to file tree plus search
 - if verification requires a missing capability with no safe fallback, stop and return `Blocked`
 
 ## Step-By-Step Workflow

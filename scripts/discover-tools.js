@@ -55,18 +55,6 @@ function detectGitGrep(gitInfo) {
   };
 }
 
-function detectSourcegraph() {
-  const srcInfo = detectCommand("src");
-  const sgInfo = detectCommand("sourcegraph");
-  if (srcInfo.available) {
-    return { ...srcInfo, version: detectVersion("src", ["version"]) };
-  }
-  if (sgInfo.available) {
-    return { ...sgInfo, version: detectVersion("sourcegraph", ["version"]) };
-  }
-  return { available: false };
-}
-
 function detectOptional(command, versionArgs) {
   const info = detectCommand(command);
   if (!info.available) {
@@ -78,15 +66,25 @@ function detectOptional(command, versionArgs) {
   };
 }
 
+function detectCodegraph() {
+  const info = detectOptional("codegraph", ["--version"]);
+  if (!info.available) {
+    return info;
+  }
+  return {
+    ...info,
+    command: "codegraph",
+    reference: "https://github.com/colbymchenry/codegraph"
+  };
+}
+
 function discover() {
   const git = { ...detectCommand("git"), version: detectVersion("git") };
   const rg = { ...detectCommand("rg"), version: detectVersion("rg") };
   const grep = { ...detectCommand("grep"), version: detectVersion("grep") };
   const find = { ...detectCommand(isWindows ? "where" : "find"), version: isWindows ? null : detectVersion("find") };
   const markitdown = detectOptional("markitdown", ["--help"]);
-  const joern = detectOptional("joern", ["--help"]);
-  const sourcegraph = detectSourcegraph();
-  const repograph = detectOptional("repograph", ["--help"]);
+  const codegraph = detectCodegraph();
 
   const gitNexus = (() => {
     const direct = detectOptional("git-nexus", ["--help"]);
@@ -104,9 +102,7 @@ function discover() {
     grep,
     find,
     markitdown,
-    joern,
-    sourcegraph,
-    repograph,
+    codegraph,
     gitNexus
   };
 }
@@ -118,7 +114,7 @@ function capabilityRouting(tools) {
     historyReview: tools.git.available ? "git log / git blame" : "user-provided commit context",
     parallelWork: tools.gitWorktree.available ? "git worktree" : "normal branch or stash workflow",
     documentToMarkdown: tools.markitdown.available ? "markitdown" : "ask user for extracted text",
-    repoStructure: tools.joern.available || tools.sourcegraph.available || tools.repograph.available ? "configured code graph tool" : "file tree plus import scan",
+    repoStructure: tools.codegraph.available ? "codegraph" : "file tree plus import scan",
     dependencyScan: "package manager or grep imports"
   };
 }
@@ -142,9 +138,7 @@ function toMarkdown(tools) {
     ["grep", tools.grep, "basic search fallback"],
     ["find", tools.find, "filesystem inspection"],
     ["markitdown", tools.markitdown, "rich document conversion"],
-    ["joern", tools.joern, "code graph candidate"],
-    ["sourcegraph/src", tools.sourcegraph, "code graph candidate"],
-    ["repograph", tools.repograph, "code graph candidate"],
+    ["codegraph", tools.codegraph, "https://github.com/colbymchenry/codegraph"],
     ["git-nexus", tools.gitNexus, "optional history tool"]
   ]) {
     lines.push(`| ${label} | ${info.available ? "yes" : "no"} | ${notes} |`);

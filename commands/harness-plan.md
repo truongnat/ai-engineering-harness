@@ -49,7 +49,7 @@ Use this command doc as the reference contract for phase behavior and artifact d
 - use `rg` before `grep` for code search
 - use `git diff` or `git log` when planning depends on repository context
 - use `markitdown` for rich documents only when available
-- use code graph tools only if installed or configured
+- use [CodeGraph](https://github.com/colbymchenry/codegraph) (`codegraph`) when installed and indexed; otherwise fall back to file tree plus search
 - if a required capability is unavailable, stop and ask a concrete fallback question
 
 ## Step-By-Step Workflow
