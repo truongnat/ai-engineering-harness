@@ -1,175 +1,211 @@
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate, Easing } from 'remotion';
-import { Terminal } from '../components/Terminal';
+import { IDELayout } from '../components/IDELayout';
+import { AgentMessage } from '../components/AgentMessage';
+import { CodeLine } from '../components/CodeLine';
+import { Callout } from '../components/Callout';
+import { FlashOverlay } from '../components/FlashOverlay';
 import { SceneLabel } from '../components/SceneLabel';
 import { PhaseTag } from '../components/PhaseTag';
 
-// This Sequence runs for 1500 frames (50s)
+// 1500 frames = 50s
 
-const fade = (frame: number, start: number, end = start + 20) =>
+const fade = (frame: number, start: number, end = start + 15) =>
   interpolate(frame, [start, end], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: Easing.out(Easing.quad),
   });
 
-interface LineSpec {
+const FILE_TREE_BY_PHASE = (frame: number) => [
+  { name: 'my-project', type: 'folder' as const, indent: 0 },
+  { name: '.harness', type: 'folder' as const, indent: 1, highlight: frame >= 50 },
+  { name: 'sessions', type: 'folder' as const, indent: 2 },
+  { name: 'GOAL.md', type: 'new' as const, indent: 3, highlight: frame >= 50 && frame < 350 },
+  { name: 'DISCUSSION.md', type: 'new' as const, indent: 3, highlight: frame >= 350 && frame < 560 },
+  { name: 'PLAN.md', type: 'new' as const, indent: 3, highlight: frame >= 560 && frame < 800 },
+  { name: 'TASKS.md', type: 'new' as const, indent: 3, highlight: frame >= 800 && frame < 1100 },
+  { name: 'VERIFY.md', type: 'new' as const, indent: 3, highlight: frame >= 1100 && frame < 1300 },
+  { name: 'PR_MESSAGE.md', type: 'new' as const, indent: 3, highlight: frame >= 1300 },
+  { name: 'src', type: 'folder' as const, indent: 1 },
+  { name: 'auth', type: 'folder' as const, indent: 2 },
+  { name: 'email.ts', type: 'file' as const, indent: 3, highlight: frame >= 800 },
+  { name: 'email.test.ts', type: 'new' as const, indent: 3, highlight: frame >= 800 && frame < 1100 },
+];
+
+const CODE_LINES = [
+  { code: '// email.ts — test-first, fully verified', color: '#6a9955' },
+  { code: '' },
+  { code: 'const MAX_ATTEMPTS = 5', color: '#d4d4d4' },
+  { code: 'const WINDOW_MS   = 15 * 60 * 1000  // 15 min', color: '#d4d4d4' },
+  { code: '' },
+  { code: 'export async function sendVerification(', color: '#d4d4d4' },
+  { code: '  email: string, opts?: VerifyOptions', color: '#9cdcfe' },
+  { code: '): Promise<VerifyToken> {', color: '#d4d4d4' },
+  { code: '  await rateLimiter.check(email, MAX_ATTEMPTS, WINDOW_MS)', color: '#d4d4d4' },
+  { code: "  const token = await createJWT(email, '24h')", color: '#d4d4d4' },
+  { code: '  await retry(() => mailer.send(email, token), 3)', color: '#d4d4d4' },
+  { code: '  return { token, expiresAt: Date.now() + 86400000 }', color: '#d4d4d4' },
+  { code: '}', color: '#d4d4d4' },
+  { code: '' },
+  { code: '// ✅ 12/12 tests passing — coverage: 97%', color: '#56d364' },
+];
+
+interface AgentMsg {
+  role: 'user' | 'agent' | 'system' | 'success';
   text: string;
-  color: string;
-  indent?: number;
-  frameStart: number;
+  startFrame: number;
+  highlight?: boolean;
 }
 
-// Each phase block
-const PHASE_BLOCKS: {
-  phase: string;
-  color: string;
-  labelFrame: number;
-  lines: LineSpec[];
-}[] = [
-  {
-    phase: 'harness-start',
-    color: '#58a6ff',
-    labelFrame: 15,
-    lines: [
-      { text: '$ aih start', color: '#79c0ff', frameStart: 20 },
-      { text: '→ Reading .harness/PROJECT.md', color: '#8b949e', indent: 2, frameStart: 40 },
-      { text: '→ Restoring session state...', color: '#8b949e', indent: 2, frameStart: 55 },
-      { text: '✓ Goal: Add email verification feature', color: '#56d364', indent: 2, frameStart: 70 },
-      { text: '✓ Context loaded (3 prior decisions)', color: '#56d364', indent: 2, frameStart: 85 },
-    ],
-  },
-  {
-    phase: 'harness-discuss',
-    color: '#d2a8ff',
-    labelFrame: 150,
-    lines: [
-      { text: '$ aih discuss', color: '#d2a8ff', frameStart: 160 },
-      { text: '→ Writing .harness/sessions/DISCUSSION.md', color: '#8b949e', indent: 2, frameStart: 175 },
-      { text: '  Approach: JWT token, 24h expiry', color: '#e6edf3', indent: 2, frameStart: 195 },
-      { text: '  Risk: Email service downtime → retry queue', color: '#ffa657', indent: 2, frameStart: 215 },
-      { text: '  Rate limit: 5 attempts / 15 min', color: '#e6edf3', indent: 2, frameStart: 235 },
-      { text: '✓ Approach agreed, risks logged', color: '#56d364', indent: 2, frameStart: 255 },
-    ],
-  },
-  {
-    phase: 'harness-plan',
-    color: '#ffa657',
-    labelFrame: 320,
-    lines: [
-      { text: '$ aih plan', color: '#ffa657', frameStart: 330 },
-      { text: '→ Writing .harness/sessions/PLAN.md', color: '#8b949e', indent: 2, frameStart: 345 },
-      { text: '  Task 1: JWT token generator (tests first)', color: '#e6edf3', indent: 2, frameStart: 365 },
-      { text: '  Task 2: Email send with retry (3×)', color: '#e6edf3', indent: 2, frameStart: 380 },
-      { text: '  Task 3: /verify-email callback route', color: '#e6edf3', indent: 2, frameStart: 395 },
-      { text: '  Task 4: Rate limiter middleware', color: '#e6edf3', indent: 2, frameStart: 410 },
-      { text: '✓ Plan approved — 4 tasks, 2h estimate', color: '#56d364', indent: 2, frameStart: 430 },
-    ],
-  },
-  {
-    phase: 'harness-run',
-    color: '#56d364',
-    labelFrame: 510,
-    lines: [
-      { text: '$ aih run', color: '#56d364', frameStart: 520 },
-      { text: '→ Tracking in .harness/sessions/TASKS.md', color: '#8b949e', indent: 2, frameStart: 535 },
-      { text: '  [✓] Task 1 — token.test.js → token.js', color: '#56d364', indent: 2, frameStart: 570 },
-      { text: '  [✓] Task 2 — email.test.js → email.js', color: '#56d364', indent: 2, frameStart: 640 },
-      { text: '  [✓] Task 3 — verify route + integration test', color: '#56d364', indent: 2, frameStart: 720 },
-      { text: '  [✓] Task 4 — rate-limit.test.js → middleware', color: '#56d364', indent: 2, frameStart: 800 },
-      { text: '$ npm test', color: '#79c0ff', frameStart: 870 },
-      { text: '  Tests: 12/12 passing  Coverage: 97%', color: '#56d364', indent: 2, frameStart: 890 },
-    ],
-  },
-  {
-    phase: 'harness-verify',
-    color: '#39d353',
-    labelFrame: 960,
-    lines: [
-      { text: '$ aih verify', color: '#39d353', frameStart: 970 },
-      { text: '→ Writing .harness/sessions/VERIFY.md', color: '#8b949e', indent: 2, frameStart: 985 },
-      { text: '  ✓ All 12 tests passing', color: '#56d364', indent: 2, frameStart: 1005 },
-      { text: '  ✓ Coverage: 97% (gate: 80%)', color: '#56d364', indent: 2, frameStart: 1025 },
-      { text: '  ✓ Rate limiting: 5 req/15min verified', color: '#56d364', indent: 2, frameStart: 1045 },
-      { text: '  ✓ Retry queue: tested with mock failure', color: '#56d364', indent: 2, frameStart: 1065 },
-      { text: '  ✓ Token expiry: 24h tested', color: '#56d364', indent: 2, frameStart: 1085 },
-      { text: '  STATUS: PASS ✓', color: '#56d364', indent: 2, frameStart: 1110 },
-    ],
-  },
-  {
-    phase: 'harness-ship',
-    color: '#58a6ff',
-    labelFrame: 1200,
-    lines: [
-      { text: '$ aih ship', color: '#58a6ff', frameStart: 1210 },
-      { text: '→ Generating PR_MESSAGE.md', color: '#8b949e', indent: 2, frameStart: 1230 },
-      { text: '  What: Email verification — token + retry + rate limit', color: '#e6edf3', indent: 2, frameStart: 1250 },
-      { text: '  Tests: 12/12 ✓  Coverage: 97% ✓', color: '#56d364', indent: 2, frameStart: 1275 },
-      { text: '  Plan: .harness/sessions/PLAN.md', color: '#8b949e', indent: 2, frameStart: 1295 },
-      { text: '  Decisions: token JWT, retry ×3, rate-limit 5/15m', color: '#8b949e', indent: 2, frameStart: 1315 },
-      { text: '$ gh pr create --body-file PR_MESSAGE.md', color: '#79c0ff', frameStart: 1360 },
-      { text: '  PR #87 opened', color: '#56d364', indent: 2, frameStart: 1395 },
-      { text: '✓ Reviewer can see plan, evidence, decisions', color: '#56d364', indent: 2, frameStart: 1425 },
-      { text: '✓ APPROVED same day — zero rework', color: '#56d364', indent: 2, frameStart: 1460 },
-    ],
-  },
+const AGENT_MESSAGES: AgentMsg[] = [
+  { role: 'user', text: 'Add email verification to the auth system', startFrame: 10 },
+  // harness-start
+  { role: 'agent', text: '📋 Running: harness-start\n\nReading .harness/PROJECT.md...\n✓ Goal set — session created', startFrame: 40 },
+  // harness-discuss
+  { role: 'agent', text: '💬 Running: harness-discuss\n\nApproach: JWT token, 24h expiry\nRisk: email outage → retry ×3\nRate limit: 5/15min\n\n✓ DISCUSSION.md written', startFrame: 350 },
+  // harness-plan
+  { role: 'agent', text: '🗺️  Running: harness-plan\n\nTask 1: Rate limiter\nTask 2: JWT token helper\nTask 3: Email with retry\nTask 4: Integration tests\n\n✓ PLAN.md approved', startFrame: 560 },
+  // harness-run
+  { role: 'agent', text: '⚙️  Running: harness-run\n\n[✓] rate-limit.test.ts → middleware.ts\n[✓] token.test.ts → token.ts\n[✓] email.test.ts → email.ts\n[✓] Integration tests\n\n$ npm test → 12/12 ✓  97% coverage', startFrame: 800 },
+  // harness-verify
+  { role: 'agent', text: '🔍 Running: harness-verify\n\n✓ All 12 tests passing\n✓ Coverage 97% (gate: 80%)\n✓ Rate limit tested\n✓ Retry logic tested\n✓ Token expiry tested\n\nSTATUS: PASS', startFrame: 1100, highlight: true },
+  // harness-ship
+  { role: 'success', text: '🚀 Running: harness-ship\n\nPR_MESSAGE.md generated ✓\nPlan + evidence attached ✓\n\n$ gh pr create --body-file PR_MESSAGE.md\n✓ PR #88 — APPROVED same day!', startFrame: 1350, highlight: true },
 ];
 
 export const WithHarness: React.FC = () => {
   const frame = useCurrentFrame();
 
-  const sceneOpacity = interpolate(frame, [0, 20], [0, 1]);
-  const sceneOut = interpolate(frame, [1460, 1500], [1, 0], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  });
+  const sceneIn = interpolate(frame, [0, 20], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+  const sceneOut = interpolate(frame, [1460, 1500], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
 
-  // Scrolling: after frame 600 start scrolling up
-  const scrollY = interpolate(frame, [600, 1450], [0, -900], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: Easing.inOut(Easing.quad),
-  });
+  // which phase label to show
+  const phases = [
+    { label: 'harness-start',   color: '#58a6ff', frame: 40 },
+    { label: 'harness-discuss', color: '#d2a8ff', frame: 350 },
+    { label: 'harness-plan',    color: '#ffa657', frame: 560 },
+    { label: 'harness-run',     color: '#56d364', frame: 800 },
+    { label: 'harness-verify',  color: '#39d353', frame: 1100 },
+    { label: 'harness-ship',    color: '#58a6ff', frame: 1350 },
+  ];
+
+  // Active phase tag
+  let activePhase = phases[0];
+  for (const p of phases) {
+    if (frame >= p.frame) activePhase = p;
+  }
+
+  const editorContent = (
+    <div>
+      {/* Phase indicator in editor */}
+      <div style={{ paddingLeft: 56, marginBottom: 8 }}>
+        <PhaseTag
+          label={activePhase.label}
+          color={activePhase.color}
+          opacity={1}
+        />
+      </div>
+      {CODE_LINES.map((line, i) => (
+        <CodeLine
+          key={i}
+          lineNum={i + 1}
+          code={line.code}
+          color={line.color}
+          frame={frame}
+          startFrame={820 + i * 18}
+          isNew={i >= 2 && i <= 12}
+          isHighlighted={i === 14 && frame >= 1100}
+        />
+      ))}
+    </div>
+  );
+
+  const agentPanel = (
+    <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', height: '100%' }}>
+      {AGENT_MESSAGES.map((msg, i) => (
+        <AgentMessage
+          key={i}
+          role={msg.role}
+          text={msg.text}
+          frame={frame}
+          startFrame={msg.startFrame}
+          highlight={msg.highlight}
+        />
+      ))}
+    </div>
+  );
+
+  const bottomPanel = (
+    <div style={{ fontFamily: "'Fira Code', monospace", fontSize: 13, lineHeight: 1.8 }}>
+      <div style={{ color: '#8b949e', opacity: fade(frame, 800) }}>$ npm test</div>
+      <div style={{ color: '#56d364', opacity: fade(frame, 880) }}>  ✓ rate-limiter (3 tests)</div>
+      <div style={{ color: '#56d364', opacity: fade(frame, 910) }}>  ✓ token helper  (4 tests)</div>
+      <div style={{ color: '#56d364', opacity: fade(frame, 940) }}>  ✓ email sender  (3 tests)</div>
+      <div style={{ color: '#56d364', opacity: fade(frame, 970) }}>  ✓ integration   (2 tests)</div>
+      <div style={{ color: '#56d364', fontWeight: 700, opacity: fade(frame, 1000) }}>
+        Tests: 12/12 passing   Coverage: 97%
+      </div>
+    </div>
+  );
 
   return (
-    <AbsoluteFill style={{ opacity: sceneOpacity * sceneOut }}>
-      <AbsoluteFill style={{ background: 'linear-gradient(180deg, #040d06 0%, #0d1117 100%)' }} />
-
+    <AbsoluteFill style={{ opacity: sceneIn * sceneOut }}>
       <SceneLabel label="WITH HARNESS" color="#56d364" />
 
-      <div style={{ position: 'absolute', top: 80, left: 0, right: 0, bottom: 0, padding: '0 60px', overflow: 'hidden' }}>
-        <div style={{ transform: `translateY(${scrollY}px)`, transition: 'none' }}>
-          <Terminal title="Harnessed Agent — email feature task">
-            {PHASE_BLOCKS.map((block) => (
-              <div key={block.phase} style={{ marginBottom: 20 }}>
-                {/* Phase tag */}
-                <PhaseTag
-                  label={block.phase}
-                  color={block.color}
-                  opacity={fade(frame, block.labelFrame)}
-                />
-                {/* Lines */}
-                {block.lines.map((line, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      opacity: fade(frame, line.frameStart),
-                      color: line.color,
-                      paddingLeft: line.indent ? line.indent * 8 : 0,
-                      fontFamily: "'Fira Code', 'Menlo', monospace",
-                      fontSize: 19,
-                      lineHeight: 1.65,
-                      whiteSpace: 'pre',
-                    }}
-                  >
-                    {line.text}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </Terminal>
-        </div>
+      <div style={{ position: 'absolute', inset: 0, top: 60 }}>
+        <IDELayout
+          fileTree={FILE_TREE_BY_PHASE(frame)}
+          editorContent={editorContent}
+          agentPanel={agentPanel}
+          bottomPanel={bottomPanel}
+          activeFile="src/auth/email.ts"
+          editorTitle="Explorer — harness active"
+        />
       </div>
+
+      {/* Phase callouts */}
+      <Callout
+        text="Session + goal created first"
+        type="info"
+        frame={frame}
+        startFrame={50}
+        endFrame={340}
+        top="35%"
+        left="38%"
+      />
+
+      <Callout
+        text="Plan written before any code!"
+        type="info"
+        frame={frame}
+        startFrame={570}
+        endFrame={790}
+        top="35%"
+        left="38%"
+      />
+
+      <Callout
+        text="All 12 tests passing ✓"
+        type="success"
+        frame={frame}
+        startFrame={1010}
+        endFrame={1340}
+        top="35%"
+        left="38%"
+      />
+
+      <Callout
+        text="PR Approved same day! 🎉"
+        type="success"
+        frame={frame}
+        startFrame={1420}
+        top="35%"
+        left="38%"
+      />
+
+      {/* Green flash on approval */}
+      <FlashOverlay frame={frame} startFrame={1420} color="#56d364" duration={20} />
     </AbsoluteFill>
   );
 };
