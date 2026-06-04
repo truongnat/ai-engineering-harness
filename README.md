@@ -85,6 +85,24 @@ Wizard details: [docs/npx-cli-ux.md](docs/npx-cli-ux.md), [docs/terminal-wizard-
 | Skills | Package reusable or session-specific capability |
 | Reports | Generate `REPORT.md` and `PR_MESSAGE.md` from real changes |
 
+## TypeScript & JSDoc Support
+
+Full type definitions and JSDoc comments for IDE autocomplete:
+
+```typescript
+import type { InstallOptions } from 'ai-engineering-harness';
+
+const options: InstallOptions = {
+  target: './my-project',
+  dryRun: true,
+  force: false
+};
+```
+
+See [docs/typescript-usage.md](docs/typescript-usage.md) for full API reference.
+
+---
+
 ## Comparison: With vs Without
 
 | Scenario | Without Harness | With Harness |

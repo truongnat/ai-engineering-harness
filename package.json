@@ -28,6 +28,7 @@
   },
   "license": "MIT",
   "type": "commonjs",
+  "types": "./index.d.ts",
   "bin": {
     "ai-engineering-harness": "./bin/aih.js",
     "aih": "./bin/aih.js"
@@ -63,6 +64,7 @@
     "runtime-command-catalog.js",
     "install.js",
     "validate.js",
+    "index.d.ts",
     "AGENTS.md",
     "PACK.md",
     "README.md",
