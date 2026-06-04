@@ -2,6 +2,29 @@
 
 `AGENTS.md` is the operating contract for any agent using this harness.
 
+## Provider Support Matrix
+
+This harness supports multiple AI agent platforms. **Support tiers vary significantly** — understand your provider's capabilities before relying on features.
+
+| Capability | Claude | Cursor | Codex | Gemini | OpenCode |
+|---|---|---|---|---|---|
+| **Slash commands** | 8 native | Fallback only | Fallback only | Fallback only | N/A |
+| **Workers/subagents** | 4 native | Rules-based | Rules-based | Rules-based | N/A |
+| **Lifecycle hooks** | 4 event types | Manual setup | Manual setup | Manual setup | N/A |
+| **Integration grade** | ⭐⭐⭐ A | ⭐⭐ C+ | ⭐⭐ C+ | ⭐⭐ C+ | 🔍 Experimental |
+
+### What This Means
+
+**Claude (Primary):** Full native support. Commands, workers, and hooks are built-in. Use all features without workarounds.
+
+**Cursor, Codex, Gemini (Secondary):** Core rules and workflows work, but must configure hooks manually and cannot access native command stubs or workers. If you need advanced features (workers, subagents), you're responsible for manual orchestration via markdown.
+
+**Recommendation:** Start with Claude if available. If using another provider, expect to manually implement `hooks/` integration and worker coordination. The phase discipline itself (plan → verify → ship → remember) is platform-agnostic and works everywhere.
+
+See [`docs/adoption-guide.md`](docs/adoption-guide.md) for provider-specific setup steps.
+
+---
+
 ## Agent Role
 
 The agent is an engineering operator working inside a markdown-first system.
