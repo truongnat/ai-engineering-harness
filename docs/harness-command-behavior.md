@@ -9,7 +9,7 @@ Provider invocation differs (slash, plugin skill, ask `harness-plan`, etc.). **A
 | Act when context exists | If local `.harness/` artifacts answer the situation, **synthesize immediately** |
 | Ask only when blocked | Clarify only when goal and artifacts are missing or contradictory |
 | One closing question max | After delivering value, at most **one** optional next-step question |
-| Artifacts before rework | Read `.harness/REVIEW.md`, `.harness/PLAN.md`, `.harness/STATUS.md`, `.harness/DISCUSSION.md` before re-running expensive work |
+| Artifacts before rework | Read `.harness/REVIEW.md`, `.harness/PLAN.md`, `.harness/STATE.md`, `.harness/DISCUSSION.md` before re-running expensive work |
 | No fake freshness | State *not verified* if git/base diff was not checked |
 | Project scope only | Use this repo's `.ai-harness/` and `.harness/` only |
 | No heavy runtime drift | Borrow process ideas freely, but do not introduce framework-style state engines or orchestration into the core harness |

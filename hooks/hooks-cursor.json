@@ -1,4 +1,13 @@
 {
   "version": 1,
-  "hooks": []
+  "hooks": [
+    {
+      "name": "guard-phase",
+      "description": "Enforce phase discipline — prevent skipping planning, verification, or shipping gates",
+      "trigger": "command-start",
+      "priority": "high",
+      "todo": "Implement via Cursor's Rule execution hooks (requires Cursor SDK v1.5+)"
+    }
+  ],
+  "_note": "Cursor hook implementation is pending. The guard-phase hook should enforce the same discipline as Claude's PreToolUse hook — checking phase preconditions before allowing the agent to proceed. See hooks/core/guard-phase.js for the logic."
 }
