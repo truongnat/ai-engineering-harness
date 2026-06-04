@@ -76,7 +76,7 @@
   ],
   "scripts": {
     "install:harness": "node install.js",
-    "test": "node --test test/*.js",
+    "test": "node --test test/run-tests.js test/cli-tests.js",
     "validate": "node validate.js",
     "lint": "eslint lib/ bin/ test/ --max-warnings 0",
     "lint:fix": "eslint lib/ bin/ test/ --fix",
