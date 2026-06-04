@@ -1,141 +1,202 @@
 import React from 'react';
-import { AbsoluteFill, useCurrentFrame, interpolate, Easing } from 'remotion';
+import { AbsoluteFill, useCurrentFrame, interpolate, spring, useVideoConfig, Easing } from 'remotion';
 
-const STYLES = {
-  container: {
-    display: 'flex',
-    flexDirection: 'row' as const,
-    backgroundColor: '#0f0f0f',
-    height: '100%',
-  },
-  half: {
-    flex: 1,
-    padding: 60,
-    display: 'flex',
-    flexDirection: 'column' as const,
-    justifyContent: 'center',
-    fontFamily: 'Menlo, Monaco, monospace',
-    fontSize: 18,
-    lineHeight: 1.8,
-  },
-  leftHalf: {
-    backgroundColor: '#2a1a1a',
-    borderRight: '4px solid #333',
-  },
-  rightHalf: {
-    backgroundColor: '#1a2a1a',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold' as const,
-    marginBottom: 30,
-  },
-  leftTitle: {
-    color: '#ff6b6b',
-  },
-  rightTitle: {
-    color: '#51cf66',
-  },
-  row: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    marginBottom: 15,
-    alignItems: 'center',
-  },
-  label: {
-    color: '#95a5a6',
-    minWidth: 200,
-  },
-  bad: {
-    color: '#ff6b6b',
-    fontWeight: 'bold' as const,
-  },
-  good: {
-    color: '#51cf66',
-    fontWeight: 'bold' as const,
-  },
-  cta: {
-    marginTop: 60,
-    fontSize: 20,
-    textAlign: 'center' as const,
-    color: '#fff',
-    fontWeight: 'bold' as const,
-  },
+const fade = (frame: number, start: number, end = start + 25) =>
+  interpolate(frame, [start, end], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: Easing.out(Easing.quad),
+  });
+
+interface MetricRowProps {
+  label: string;
+  bad: string;
+  good: string;
+  frame: number;
+  startFrame: number;
+}
+
+const MetricRow: React.FC<MetricRowProps> = ({ label, bad, good, frame, startFrame }) => {
+  const opacity = fade(frame, startFrame);
+  const slideX = interpolate(frame, [startFrame, startFrame + 25], [30, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: Easing.out(Easing.quad),
+  });
+
+  return (
+    <div
+      style={{
+        opacity,
+        transform: `translateX(${slideX}px)`,
+        display: 'grid',
+        gridTemplateColumns: '220px 1fr 1fr',
+        gap: 20,
+        alignItems: 'center',
+        padding: '10px 0',
+        borderBottom: '1px solid #21262d',
+      }}
+    >
+      <div style={{ color: '#8b949e', fontSize: 18 }}>{label}</div>
+      <div
+        style={{
+          color: '#f85149',
+          fontSize: 18,
+          fontWeight: 600,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+        }}
+      >
+        {bad}
+      </div>
+      <div
+        style={{
+          color: '#56d364',
+          fontSize: 18,
+          fontWeight: 600,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+        }}
+      >
+        {good}
+      </div>
+    </div>
+  );
 };
 
 export const Result: React.FC = () => {
   const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
 
-  const leftOpacity = interpolate(frame, [0, 30], [0, 1], { easing: Easing.ease });
-  const rightOpacity = interpolate(frame, [60, 90], [0, 1], { easing: Easing.ease });
-  const ctaOpacity = interpolate(frame, [120, 150], [0, 1], { easing: Easing.ease });
+  const containerOpacity = fade(frame, 0);
+
+  const titleOpacity = fade(frame, 20);
+  const headerOpacity = fade(frame, 40);
+
+  const dividerWidth = interpolate(frame, [40, 90], [0, 1700], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+
+  // CTA at the end
+  const ctaScale = spring({ frame: frame - 230, fps, config: { damping: 14, stiffness: 100 }, from: 0.8, to: 1 });
+  const ctaOpacity = interpolate(frame, [230, 255], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+
+  const metrics: Omit<MetricRowProps, 'frame'>[] = [
+    { label: 'PR Status', bad: '❌ Rejected', good: '✅ Approved', startFrame: 80 },
+    { label: 'Review Cycles', bad: '🔁 3+ cycles', good: '✅ Zero rework', startFrame: 110 },
+    { label: 'Review Time', bad: '⏱ 2 days', good: '⚡ Same day', startFrame: 140 },
+    { label: 'Test Coverage', bad: '🔴 0% (none)', good: '🟢 97%', startFrame: 170 },
+    { label: 'Context in PR', bad: '📭 Missing', good: '📋 Complete', startFrame: 200 },
+  ];
 
   return (
-    <AbsoluteFill style={STYLES.container}>
-      {/* Left: Without Harness */}
-      <div style={{ ...STYLES.half, ...STYLES.leftHalf, opacity: leftOpacity }}>
-        <div style={{ ...STYLES.title, ...STYLES.leftTitle }}>WITHOUT HARNESS</div>
-
-        <div style={STYLES.row}>
-          <div style={STYLES.label}>PR Status:</div>
-          <div style={STYLES.bad}>❌ Rework Required</div>
-        </div>
-
-        <div style={STYLES.row}>
-          <div style={STYLES.label}>Review Time:</div>
-          <div style={STYLES.bad}>Long</div>
-        </div>
-
-        <div style={STYLES.row}>
-          <div style={STYLES.label}>Rework Cycles:</div>
-          <div style={STYLES.bad}>Multiple</div>
-        </div>
-
-        <div style={STYLES.row}>
-          <div style={STYLES.label}>Reviewer Trust:</div>
-          <div style={STYLES.bad}>Low</div>
-        </div>
-
-        <div style={STYLES.row}>
-          <div style={STYLES.label}>Context:</div>
-          <div style={STYLES.bad}>Missing</div>
-        </div>
+    <AbsoluteFill
+      style={{
+        opacity: containerOpacity,
+        background: '#0d1117',
+        padding: '60px 80px',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+      }}
+    >
+      {/* Title */}
+      <div
+        style={{
+          opacity: titleOpacity,
+          fontSize: 42,
+          fontWeight: 800,
+          color: '#e6edf3',
+          textAlign: 'center',
+          marginBottom: 8,
+          fontFamily: "'Fira Code', 'Menlo', monospace",
+        }}
+      >
+        Before vs After
       </div>
 
-      {/* Right: With Harness */}
-      <div style={{ ...STYLES.half, ...STYLES.rightHalf, opacity: rightOpacity }}>
-        <div style={{ ...STYLES.title, ...STYLES.rightTitle }}>WITH HARNESS</div>
+      {/* Subtitle */}
+      <div
+        style={{
+          opacity: titleOpacity,
+          fontSize: 20,
+          color: '#8b949e',
+          textAlign: 'center',
+          marginBottom: 40,
+        }}
+      >
+        Same task · Same agent · With engineering discipline
+      </div>
 
-        <div style={STYLES.row}>
-          <div style={STYLES.label}>PR Status:</div>
-          <div style={STYLES.good}>✓ Approved</div>
-        </div>
+      {/* Divider line */}
+      <div
+        style={{
+          width: dividerWidth,
+          height: 2,
+          background: 'linear-gradient(90deg, transparent, #58a6ff, transparent)',
+          marginBottom: 30,
+          alignSelf: 'center',
+        }}
+      />
 
-        <div style={STYLES.row}>
-          <div style={STYLES.label}>Review Time:</div>
-          <div style={STYLES.good}>Quick</div>
-        </div>
+      {/* Column headers */}
+      <div
+        style={{
+          opacity: headerOpacity,
+          display: 'grid',
+          gridTemplateColumns: '220px 1fr 1fr',
+          gap: 20,
+          marginBottom: 8,
+          paddingBottom: 12,
+          borderBottom: '2px solid #30363d',
+          fontFamily: "'Fira Code', 'Menlo', monospace",
+        }}
+      >
+        <div style={{ color: '#8b949e', fontSize: 16, textTransform: 'uppercase', letterSpacing: 2 }}>Metric</div>
+        <div style={{ color: '#f85149', fontSize: 16, textTransform: 'uppercase', letterSpacing: 2 }}>Without Harness</div>
+        <div style={{ color: '#56d364', fontSize: 16, textTransform: 'uppercase', letterSpacing: 2 }}>With Harness</div>
+      </div>
 
-        <div style={STYLES.row}>
-          <div style={STYLES.label}>Rework Cycles:</div>
-          <div style={STYLES.good}>Zero</div>
-        </div>
-
-        <div style={STYLES.row}>
-          <div style={STYLES.label}>Reviewer Trust:</div>
-          <div style={STYLES.good}>High</div>
-        </div>
-
-        <div style={STYLES.row}>
-          <div style={STYLES.label}>Context:</div>
-          <div style={STYLES.good}>Complete</div>
-        </div>
+      {/* Metric rows */}
+      <div style={{ fontFamily: "'Fira Code', 'Menlo', monospace" }}>
+        {metrics.map((m) => (
+          <MetricRow key={m.label} {...m} frame={frame} />
+        ))}
       </div>
 
       {/* CTA */}
-      <div style={{ ...STYLES.cta, opacity: ctaOpacity, position: 'absolute' as const, bottom: 60, left: 0, right: 0 }}>
-        <div style={{ color: '#51cf66', marginBottom: 10 }}>ai-engineering-harness</div>
-        <div style={{ fontSize: 24, color: '#fff' }}>npx ai-engineering-harness install</div>
+      <div
+        style={{
+          opacity: ctaOpacity,
+          transform: `scale(${ctaScale})`,
+          marginTop: 60,
+          textAlign: 'center',
+          fontFamily: "'Fira Code', 'Menlo', monospace",
+        }}
+      >
+        <div
+          style={{
+            display: 'inline-block',
+            background: 'linear-gradient(135deg, #238636, #2ea043)',
+            borderRadius: 12,
+            padding: '18px 48px',
+            fontSize: 26,
+            fontWeight: 700,
+            color: '#fff',
+            letterSpacing: 1,
+            boxShadow: '0 0 40px rgba(46,160,67,0.4)',
+          }}
+        >
+          npx ai-engineering-harness install
+        </div>
+        <div style={{ color: '#8b949e', marginTop: 16, fontSize: 18 }}>
+          github.com/truongnat/ai-engineering-harness
+        </div>
       </div>
     </AbsoluteFill>
   );
