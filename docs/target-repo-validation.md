@@ -3,7 +3,7 @@
 This document defines the current lightweight validation mode for a host repository that has adopted `ai-engineering-harness` and produced `.harness/` profile artifacts.
 
 Profile validation is the first implemented target-repository step.
-Goal-level validation is the second implemented target-repository step.
+Session-level validation through `--goal <session-id>` is the second implemented target-repository step.
 
 For the session-memory architecture, root `.harness/` should behave as the index/router while active working artifacts live under `.harness/sessions/<active-session>/`.
 
@@ -14,7 +14,7 @@ For the session-memory architecture, root `.harness/` should behave as the index
 ```bash
 # From ai-engineering-harness (source pack), not from the target repo
 node validate.js --target ../my-project --profile-only
-node validate.js --target ../my-project --goal <goal-id>
+node validate.js --target ../my-project --goal <session-id>
 ```
 
 Target repositories do not receive `validate.js` in the default installed surface from `install.js`. That is intentional: one canonical validator stays with the pack source unless a future contract adds an optional in-target copy.
@@ -24,7 +24,7 @@ Install copies the markdown operating surface into the target repo; structural c
 ## Frozen Contracts
 
 - `--profile-only` validates the [frozen target profile contract](frozen-target-profile-contract.md)
-- `--goal <goal-id>` validates the [frozen goal artifact contract](frozen-goal-artifact-contract.md) (after profile checks)
+- `--goal <session-id>` validates the active session artifact contract (after profile checks)
 
 ## Frozen Validation Contract
 
@@ -49,11 +49,11 @@ The current target validation modes check:
 - required root files exist in the host repository
 - `.harness/` exists
 - required harness profile artifacts exist
-- required goal artifacts exist when `--goal <goal-id>` is requested
+- required active session artifacts exist when `--goal <session-id>` is requested
 - obvious structural gaps are reported with clear, actionable messages
 - safety boundaries are preserved during validation output
 
-Goal artifact validation is now implemented for `--target <path> --goal <goal-id>`. Optional context checks still come later.
+Session artifact validation is now implemented for `--target <path> --goal <session-id>`. Optional context checks still come later.
 
 ## What It Should Not Check
 
@@ -105,19 +105,21 @@ Missing optional context artifacts should not fail validation by default unless 
 
 When a repository adopts session memory, `.harness/STATE.md` becomes the routing entrypoint for active work and session-local files remain the source of truth.
 
-## Optional Goal-Level Artifacts
+## Active Session Artifacts
 
-When a goal is present or a goal-specific mode is requested, the validator looks for:
+When active work is present or `--goal <session-id>` is requested, the validator looks for:
 
-- `.harness/goals/<goal-id>/GOAL.md`
-- `.harness/goals/<goal-id>/PLAN.md`
-- `.harness/goals/<goal-id>/TASKS.md`
-- `.harness/goals/<goal-id>/VERIFY.md`
-- `.harness/goals/<goal-id>/REMEMBER.md`
+- `.harness/STATE.md`
+- `.harness/sessions/<session-id>/SESSION.md`
+- `.harness/sessions/<session-id>/GOAL.md`
+- `.harness/sessions/<session-id>/<current_plan from STATE.md>`
+- `.harness/sessions/<session-id>/TASKS.md`
+- `.harness/sessions/<session-id>/VERIFY.md`
+- `.harness/sessions/<session-id>/REMEMBER.md`
 
-Goal-level validation should remain scoped to the requested goal and should not assume that every repository always has active goals.
+Session validation remains scoped to the requested session id and should not assume that every repository always has active work.
 
-Goal-level validation is implemented after profile validation and remains structural-only.
+Session validation is implemented after profile validation and remains structural-only.
 
 ## Commands
 
@@ -127,7 +129,7 @@ These commands are currently implemented:
 node validate.js
 node validate.js --target ../my-project
 node validate.js --target ../my-project --profile-only
-node validate.js --target ../my-project --goal google-login
+node validate.js --target ../my-project --goal 2026-06-04-google-login
 ```
 
 ## Command Guide
@@ -141,7 +143,7 @@ node validate.js --target ../my-project --goal google-login
     `Harness validation failed:`
 - `node validate.js --target ../my-project`
   - checks the target repository root plus required `.harness/` profile artifacts
-  - does not check goal artifacts unless `--goal <goal-id>` is requested
+  - does not check active session artifacts unless `--goal <session-id>` is requested
   - does not check application code correctness
   - passing output:
     `Target repository validation passed. Checked profile contract.`
@@ -149,17 +151,17 @@ node validate.js --target ../my-project --goal google-login
     `Target repository validation failed:`
 - `node validate.js --target ../my-project --profile-only`
   - explicitly runs the same profile-level target validation as `--target <path>`
-  - does not validate goal artifacts
+  - does not validate active session artifacts
   - does not check application code correctness
   - passing output:
     `Target repository validation passed. Checked profile contract.`
   - failing output starts with:
     `Target repository validation failed:`
-- `node validate.js --target ../my-project --goal google-login`
-  - checks the target repository profile first, then validates `.harness/goals/google-login/`
+- `node validate.js --target ../my-project --goal 2026-06-04-google-login`
+  - checks the target repository profile first, then validates `.harness/STATE.md` plus `.harness/sessions/2026-06-04-google-login/`
   - does not judge whether the underlying Google login implementation is correct
   - passing output:
-    `Target repository validation passed. Checked goal contract: google-login.`
+    `Target repository validation passed. Checked session contract: 2026-06-04-google-login.`
   - failing output starts with:
     `Target repository validation failed:`
 
@@ -171,7 +173,7 @@ Usage safety notes:
 - target validation does not inspect application source files outside the expected harness paths
 - target validation does not prove application correctness, release readiness, or workflow quality
 - `--profile-only` and `--goal` are mutually exclusive
-- missing goal ids after `--goal` return a usage error
+- missing session ids after `--goal` return a usage error
 
 ## What Target Validation Does Not Prove
 
@@ -223,9 +225,9 @@ Recommended failure style:
 - `Missing required path: AGENTS.md`
 - `Missing required path: .harness/`
 - `Missing required path: .harness/HARNESS.md`
-- `Missing required path: .harness/goals/google-login/PLAN.md`
-- `Goal artifact set is incomplete for: google-login`
-- `Profile artifacts exist, but goal validation was requested and no goal artifacts were found for: google-login`
+- `Missing required path: .harness/sessions/2026-06-04-google-login/PLAN-001.md`
+- `.harness/STATE.md must route target goal validation through session: sessions/2026-06-04-google-login`
+- `Target session artifact set is incomplete for: 2026-06-04-google-login`
 
 Recommended warning style:
 

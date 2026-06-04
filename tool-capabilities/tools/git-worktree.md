@@ -7,8 +7,10 @@ Create isolated parallel working directories without disturbing the current bran
 ## Detect
 
 ```bash
-git worktree --help
+git worktree list
 ```
+
+Do not use `git worktree --help` for detection on Windows Git — it may open HTML help in a browser.
 
 ## Use When
 

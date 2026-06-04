@@ -18,6 +18,7 @@
     "workflows/",
     "patterns/",
     "templates/",
+    "workers/",
     "tool-capabilities/",
     "docs/",
     ".cursor-plugin/",

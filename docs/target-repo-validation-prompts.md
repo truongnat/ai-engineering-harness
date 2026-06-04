@@ -20,13 +20,13 @@ Before changing validation behavior, read [frozen-validation-contract.md](frozen
 
 > Read AGENTS.md, .harness/HARNESS.md, and .harness/TEAM.md. Review whether the selected team pattern still fits this repository's current scope, delivery model, and verification burden. Recommend the smallest safe adjustment if it no longer fits.
 
-## Check Goal Artifacts Before Implementation
+## Check Active Session Artifacts Before Implementation
 
-> Read AGENTS.md, the current .harness profile artifacts, and .harness/goals/<goal-id>/GOAL.md, PLAN.md, TASKS.md, VERIFY.md, and REMEMBER.md. Check whether the goal artifact set is structurally complete and aligned with the selected workflow and gates. Do not implement application code.
+> Read AGENTS.md, the current .harness profile artifacts, .harness/STATE.md, and the active session artifacts under .harness/sessions/<session-id>/ including SESSION.md, GOAL.md, the current PLAN-###.md, TASKS.md, VERIFY.md, and REMEMBER.md. Check whether the session artifact set is structurally complete and aligned with the selected workflow and gates. Do not implement application code.
 
 ## Check Verification Artifacts Before Ship
 
-> Read AGENTS.md, .harness/GATES.md, .harness/WORKFLOW.md, and the current goal's VERIFY.md and REMEMBER.md. Review whether the recorded verification artifacts are structurally complete enough for the selected gates before ship. Report gaps without claiming implementation correctness.
+> Read AGENTS.md, .harness/GATES.md, .harness/WORKFLOW.md, .harness/STATE.md, and the active session's VERIFY.md and REMEMBER.md. Review whether the recorded verification artifacts are structurally complete enough for the selected gates before ship. Report gaps without claiming implementation correctness.
 
 ## Run Profile Validation And Explain Failures
 
@@ -34,11 +34,11 @@ Before changing validation behavior, read [frozen-validation-contract.md](frozen
 
 ## Run Goal Validation Before Implementation
 
-> Run `node validate.js --target ../my-project --goal google-login` before implementation starts. Report whether the target profile and goal artifact set are structurally complete, and list every missing file or required heading.
+> Run `node validate.js --target ../my-project --goal 2026-06-04-google-login` before implementation starts. Report whether the target profile and active session artifact set are structurally complete, and list every missing file or required heading.
 
 ## Run Goal Validation Before Ship
 
-> Run `node validate.js --target ../my-project --goal google-login` before ship. Treat the result as a structural check for harness artifacts only, and separately call out that it does not prove feature correctness or release readiness.
+> Run `node validate.js --target ../my-project --goal 2026-06-04-google-login` before ship. Treat the result as a structural check for harness artifacts only, and separately call out that it does not prove feature correctness or release readiness.
 
 ## Interpret Validation As Structural Only
 

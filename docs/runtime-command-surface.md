@@ -46,7 +46,7 @@ How a command runs after routing is defined in `.ai-harness/commands/` — same 
 
 | Provider | Mode | Native slash | Project install adds |
 |----------|------|--------------|----------------------|
-| Claude Code | native-plugin | `/harness-plan` via project command files where installed | `.claude/commands/harness-*.md` |
+| Claude Code | native-plugin | `/harness-plan` via project command files where installed | `.claude/commands/harness-*.md`, `.claude/agents/harness-*.md` (delegated workers) |
 | Cursor | plugin-ready | via plugin when published | `.cursor/rules/` (fallback) |
 | Codex | plugin-packaging | plugin skills via `/plugins` | `AGENTS.md` fallback |
 | Gemini | fallback-only | none | extension `GEMINI.md` + manifest |

@@ -21,7 +21,7 @@ Give agents an explicit way to detect which local developer tools are available 
 
 ```bash
 git --version
-git worktree --help
+git worktree list
 rg --version
 git grep -n "TODO" AGENTS.md
 grep --version

@@ -7,10 +7,10 @@ Synthesize existing harness artifacts and produce a decision-oriented discussion
 ## Minimum Read Set
 
 - `.harness/STATE.md` if present
-- `.harness/GOAL.md` if present
+- active session `GOAL.md` if present
 - `.harness/REVIEW.md` if present
-- `.harness/PLAN.md` if present
-- `.harness/DISCUSSION.md` if present
+- active session current `PLAN-*.md` if present
+- active session `DISCUSSION.md` if present
 - `.harness/CONTEXT.md` if present
 - `.harness/DECISIONS.md` if present
 - `.harness/HAZARDS.md` if present
@@ -24,7 +24,7 @@ Synthesize existing harness artifacts and produce a decision-oriented discussion
 
 - before planning non-trivial work when goal or scope is still forming
 - when `.harness/REVIEW.md` exists and the team needs a merge or ship decision discussion
-- when `.harness/PLAN.md` exists and direction needs reconciliation
+- when the active session current `PLAN-*.md` exists and direction needs reconciliation
 - when scope is ambiguous and no actionable artifact exists yet
 
 ## Skills To Use
@@ -40,12 +40,12 @@ Synthesize existing harness artifacts and produce a decision-oriented discussion
 2. If `.harness/REVIEW.md` exists, synthesize it into a decision-oriented discussion instead of repeating the whole review.
 3. Otherwise restate the request, separate confirmed requirements from assumptions, and make the following explicit before handing off to planning: goal, success criteria, scope boundaries, constraints, and unresolved risks.
 4. Compare realistic approaches, recommend one, and note tradeoffs the planner must preserve.
-4. Write or update `.harness/DISCUSSION.md`.
+4. Write or update the active session `DISCUSSION.md`.
 5. End with the next recommended command, not a vague prompt.
 
 ## Required Outputs
 
-- `.harness/DISCUSSION.md` updated on every successful run
+- active session `DISCUSSION.md` updated on every successful run
 - explicit goal, success criteria, scope boundaries, constraints, unresolved risks, and preferred direction
 - one recommended next command
 
@@ -75,8 +75,8 @@ The command is complete when the discussion artifact makes the goal, success cri
 
 ## Artifact Paths
 
-- Read: `.harness/STATE.md`, `.harness/GOAL.md`, `.harness/REVIEW.md`, `.harness/PLAN.md`, `.harness/DISCUSSION.md`, `.harness/CONTEXT.md`, `.harness/DECISIONS.md`, `.harness/HAZARDS.md`, `.harness/REMEMBER.md`
-- Write: `.harness/DISCUSSION.md`, optional `.harness/GOAL.md` or `.harness/REQUIREMENTS.md`
+- Read: `.harness/STATE.md`, `.harness/sessions/<active-session>/GOAL.md`, `.harness/REVIEW.md`, `.harness/sessions/<active-session>/PLAN-*.md`, `.harness/sessions/<active-session>/DISCUSSION.md`, `.harness/CONTEXT.md`, `.harness/DECISIONS.md`, `.harness/HAZARDS.md`, `.harness/sessions/<active-session>/REMEMBER.md`
+- Write: `.harness/sessions/<active-session>/DISCUSSION.md`, optional `.harness/sessions/<active-session>/GOAL.md` or `.harness/REQUIREMENTS.md`
 
 ## Human Approval
 

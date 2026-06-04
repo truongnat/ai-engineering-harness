@@ -69,6 +69,18 @@ Inside the target repository, Cursor should read:
 
 > Run or ask me to run: `node validate.js --target <path> --profile-only` and `node validate.js --target <path> --goal <goal-id>`. Treat validation as structural only, not proof of application correctness. Fix exact missing paths and headings.
 
+## Delegated Workers (Adapter)
+
+Cursor is an **adapter**-level delegated worker target in v1, not a native named-subagent surface like Claude `.claude/agents/`.
+
+Use controlled delegation (Task/subagent or prompt-driven execution) while preserving:
+
+- canonical worker ids from `workers/`
+- required inputs and shared `### Agent Result` envelope
+- `templates/WORKER_RUN.md` lifecycle artifacts
+
+Do not overclaim native worker support. See [delegated-workers.md](../delegated-workers.md).
+
 ## Safety Boundaries
 
 - keep markdown as the source of truth

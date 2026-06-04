@@ -31,6 +31,18 @@ Finalize verified work, summarize the result, and prepare a clean handoff withou
 - `remembering`
 - `code-review` when final inspection is needed
 
+## Delegated Workers
+
+Before shipping, the main agent may dispatch the read-only `gatekeeper` worker to decide whether the next command is allowed based on VERIFY, REVIEW, and ship blocker evidence.
+
+Rules:
+
+- consume the shared `### Agent Result` envelope and any `WORKER_RUN.md` lifecycle artifact
+- do not treat provider-specific conversation format as gate evidence
+- block ship when the gatekeeper decision is `block` or evidence is insufficient
+
+See `docs/delegated-workers.md` for support levels. Claude uses native `.claude/agents/harness-gatekeeper.md`; Cursor and Codex use adapter-level delegation in v1.
+
 ## Dispatch Template
 
 For execution-facing dispatch, read `.ai-harness/prompt-templates/harness-ship.md`.

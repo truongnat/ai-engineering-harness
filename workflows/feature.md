@@ -10,12 +10,12 @@ Use this for new capabilities, user-visible behavior changes, or meaningful inte
 
 ## Required Artifacts
 
-- `.harness/GOAL.md`
-- `.harness/REQUIREMENTS.md`
-- `.harness/DISCUSSION.md`
-- `.harness/PLAN.md`
-- `.harness/TASKS.md` when the work spans multiple steps
-- `.harness/VERIFY.md`
+- `.harness/STATE.md`
+- `.harness/sessions/<active-session>/GOAL.md`
+- `.harness/sessions/<active-session>/DISCUSSION.md`
+- `.harness/sessions/<active-session>/PLAN-001.md` or the current numbered plan
+- `.harness/sessions/<active-session>/TASKS.md` when the work spans multiple steps
+- `.harness/sessions/<active-session>/VERIFY.md`
 
 ## Recommended Skills
 

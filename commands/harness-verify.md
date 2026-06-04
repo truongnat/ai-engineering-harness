@@ -35,6 +35,22 @@ Gather fresh evidence that the implemented work meets the goal before any comple
 - `verification-before-completion` when the risk of optimistic claims is high
 - `code-review` when inspection is part of the gate
 
+## Delegated Workers
+
+When independent review or verification evidence should come from a focused delegated run, dispatch harness workers instead of improvising provider-specific subagent behavior.
+
+- `reviewer`: read-only inspection against goal, plan, diff, and verification status
+- `verifier`: fresh command execution and evidence capture for VERIFY artifacts
+
+Rules:
+
+- only the main agent may dispatch workers
+- workers must not dispatch other workers
+- every worker run must produce `templates/WORKER_RUN.md` lifecycle output in the active session when delegated execution occurs
+- consume the shared `### Agent Result` envelope rather than freeform conversation transcripts
+
+On Claude Code, native worker surfaces install to `.claude/agents/harness-*.md`. On Cursor and Codex, use adapter-level delegation while preserving the same worker contract. See `docs/delegated-workers.md`.
+
 ## Dispatch Template
 
 For execution-facing dispatch, read `.ai-harness/prompt-templates/harness-verify.md`.
