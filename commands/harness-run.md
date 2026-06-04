@@ -34,6 +34,19 @@ Execute the approved plan in small, surgical steps without silent scope drift.
 - `test-driven-development` when behavior changes
 - `writing-skills` when adding or revising skills
 
+## Delegated Workers
+
+Dispatch the write-enabled `fixer` worker only for bounded remediation explicitly authorized by the main agent.
+
+Rules:
+
+- fixer is one-shot and must not dispatch other workers
+- keep remediation within approved plan boundaries
+- record delegated runs with `templates/WORKER_RUN.md` and consume the shared `### Agent Result` envelope
+- route back to `harness-verify` after fixer changes before any ship claim
+
+Do not use fixer for general implementation work; that remains main-agent `harness-run` responsibility. See `docs/delegated-workers.md`.
+
 ## Dispatch Template
 
 For execution-facing dispatch, read `.ai-harness/prompt-templates/harness-run.md`.

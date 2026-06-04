@@ -19,14 +19,14 @@ Summarize harness install and project state for this repository only.
 
 - after install or update
 - when unsure whether `.ai-harness/` and `.harness/` are present
-- before starting a new goal
+- before starting or resuming a session
 
 ## Step-By-Step Workflow
 
 1. Confirm whether `.ai-harness/` exists and lists expected command metadata.
 2. Confirm whether `.harness/` exists or report that project state is not initialized.
 3. List detected provider entrypoints for this repo.
-4. Summarize active goal status from `.harness/goals/` if any.
+4. Summarize active session status from `.harness/STATE.md` and `.harness/sessions/<active-session>/` if present.
 5. Recommend the next command based on what is missing.
 
 ## Required Outputs

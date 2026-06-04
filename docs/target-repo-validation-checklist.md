@@ -19,9 +19,9 @@ Frozen validation behavior: [frozen-validation-contract.md](frozen-validation-co
 
 - [ ] run `node validate.js --target ../my-project` when the adopted repository should be checked at the profile level
 - [ ] run `node validate.js --target ../my-project --profile-only` when you want the explicit profile-only form
-- [ ] run `node validate.js --target ../my-project --goal google-login` when a specific goal artifact set should be checked
+- [ ] run `node validate.js --target ../my-project --goal 2026-06-04-google-login` when a specific active session artifact set should be checked
 - [ ] use the profile check after creating or revising `.harness/HARNESS.md`, `TEAM.md`, `SKILLS.md`, `WORKFLOW.md`, `GATES.md`, or `MEMORY.md`
-- [ ] use the goal check after creating or revising `.harness/goals/<goal-id>/GOAL.md`, `PLAN.md`, `TASKS.md`, `VERIFY.md`, or `REMEMBER.md`
+- [ ] use the goal check after creating or revising `.harness/STATE.md` or `.harness/sessions/<session-id>/GOAL.md`, `PLAN-###.md`, `TASKS.md`, `VERIFY.md`, or `REMEMBER.md`
 
 ## Harness Profile Consistency
 
@@ -65,12 +65,12 @@ Frozen validation behavior: [frozen-validation-contract.md](frozen-validation-co
 - [ ] recall-before-planning and remember-after-shipping behavior are explicit.
 - [ ] memory guidance is useful without becoming a secret store.
 
-## Goal Artifacts
+## Active Session Artifacts
 
-- [ ] active goals use `.harness/goals/<goal-id>/` artifact sets consistently.
-- [ ] each active goal has `GOAL.md`, `PLAN.md`, `TASKS.md`, `VERIFY.md`, and `REMEMBER.md`.
-- [ ] goal artifacts reflect the selected profile workflow and gates.
-- [ ] missing goal artifacts are treated as structural gaps, not hidden assumptions.
+- [ ] `.harness/STATE.md` points at the active session under `.harness/sessions/<session-id>/`.
+- [ ] each active session has `SESSION.md`, `GOAL.md`, a numbered `PLAN-###.md`, `TASKS.md`, `VERIFY.md`, and `REMEMBER.md`.
+- [ ] session artifacts reflect the selected profile workflow and gates.
+- [ ] missing or stale session artifacts are treated as structural gaps, not hidden assumptions.
 
 ## Approval Decision
 

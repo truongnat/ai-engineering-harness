@@ -62,6 +62,21 @@ Inside the target repository, Claude Code should read:
 
 > Run or ask me to run: `node validate.js --target <path> --profile-only` and `node validate.js --target <path> --goal <goal-id>`. Treat validation as structural only, not proof of application correctness.
 
+## Delegated Workers (Native)
+
+Claude Code is the first **native** delegated worker adapter in v1.
+
+Project runtime install renders canonical harness workers to:
+
+```txt
+.claude/agents/harness-reviewer.md
+.claude/agents/harness-verifier.md
+.claude/agents/harness-gatekeeper.md
+.claude/agents/harness-fixer.md
+```
+
+The harness still owns worker ids, required inputs, the shared `### Agent Result` envelope, and `templates/WORKER_RUN.md` lifecycle artifacts. See [delegated-workers.md](../delegated-workers.md).
+
 ## Safety Boundaries
 
 - keep markdown as the source of truth

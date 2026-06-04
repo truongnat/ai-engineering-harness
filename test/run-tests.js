@@ -53,7 +53,7 @@ runTest("validate target profile fixture passes", () => {
 
 runTest("validate target goal fixture passes", () => {
   const fixture = path.join(repoRoot, "test", "fixtures", "valid-target-goal");
-  assert.deepEqual(validateApi.validateTargetGoal(fixture, "google-login"), []);
+  assert.deepEqual(validateApi.validateTargetGoal(fixture, "2026-06-04-google-login"), []);
 });
 
 runTest("invalid target profile fixture fails", () => {
@@ -63,7 +63,9 @@ runTest("invalid target profile fixture fails", () => {
 
 runTest("invalid target goal fixture fails", () => {
   const fixture = path.join(repoRoot, "test", "fixtures", "invalid-target-goal");
-  assert.notEqual(validateApi.validateTargetGoal(fixture, "google-login").length, 0);
+  const failures = validateApi.validateTargetGoal(fixture, "2026-06-04-google-login");
+  assert.notEqual(failures.length, 0);
+  assert.match(failures.join("\n"), /PLAN-404\.md|STATE\.md/);
 });
 
 runTest("discover-tools JSON mode exits cleanly with expected keys", () => {
@@ -267,6 +269,100 @@ runTest("package publishes tool capability assets", () => {
   const pkg = JSON.parse(fs.readFileSync(path.join(repoRoot, "package.json"), "utf8"));
   assert.ok(pkg.files.includes("tool-capabilities/"));
   assert.ok(pkg.files.includes("scripts/discover-tools.js"));
+  assert.ok(pkg.files.includes("workers/"));
+});
+
+runTest("delegated worker repository surface exists", () => {
+  for (const relativePath of [
+    "workers/registry.js",
+    "workers/reviewer.md",
+    "workers/verifier.md",
+    "workers/gatekeeper.md",
+    "workers/fixer.md",
+    "templates/WORKER_RUN.md",
+    "docs/delegated-workers.md"
+  ]) {
+    assert.ok(fs.existsSync(path.join(repoRoot, relativePath)), `${relativePath} must exist`);
+  }
+});
+
+runTest("worker registry exports canonical v1 workers", () => {
+  const registry = require(path.join(repoRoot, "workers", "registry.js"));
+  assert.deepEqual([...registry.WORKER_IDS], ["reviewer", "verifier", "gatekeeper", "fixer"]);
+  assert.equal(registry.workers.length, 4);
+  for (const worker of registry.workers) {
+    assert.equal(worker.canDispatch, false);
+    assert.equal(worker.resultSchema, "agent-result-v1");
+  }
+  const fixer = registry.getWorkerById("fixer");
+  assert.equal(fixer.writeAccess, "write");
+  for (const id of ["reviewer", "verifier", "gatekeeper"]) {
+    assert.equal(registry.getWorkerById(id).writeAccess, "none");
+  }
+});
+
+runTest("worker definitions include frontmatter and agent result envelope", () => {
+  const { parseFrontmatter } = require(path.join(repoRoot, "lib", "validate", "utils.js"));
+  for (const workerId of ["reviewer", "verifier", "gatekeeper", "fixer"]) {
+    const text = fs.readFileSync(path.join(repoRoot, "workers", `${workerId}.md`), "utf8");
+    const frontmatter = parseFrontmatter(text);
+    assert.ok(frontmatter, `${workerId}.md must include frontmatter`);
+    for (const field of [
+      "id",
+      "role",
+      "mode",
+      "writeAccess",
+      "canDispatch",
+      "resultSchema"
+    ]) {
+      assert.ok(frontmatter[field], `${workerId}.md frontmatter must include ${field}`);
+    }
+    assert.ok(Array.isArray(frontmatter.requiredInputs) && frontmatter.requiredInputs.length > 0);
+    assert.equal(String(frontmatter.canDispatch), "false");
+    assert.match(text, /### Agent Result/);
+  }
+});
+
+runTest("worker provider support values are valid", () => {
+  const registry = require(path.join(repoRoot, "workers", "registry.js"));
+  for (const worker of registry.workers) {
+    for (const value of Object.values(worker.providerSupport)) {
+      assert.ok(registry.VALID_PROVIDER_SUPPORT.includes(value), `invalid support value: ${value}`);
+    }
+    assert.equal(worker.providerSupport.claude, "native");
+    assert.equal(worker.providerSupport.cursor, "adapter");
+    assert.equal(worker.providerSupport.codex, "adapter");
+  }
+});
+
+runTest("command docs reference delegated worker contract", () => {
+  const verify = fs.readFileSync(path.join(repoRoot, "commands", "harness-verify.md"), "utf8");
+  const ship = fs.readFileSync(path.join(repoRoot, "commands", "harness-ship.md"), "utf8");
+  const run = fs.readFileSync(path.join(repoRoot, "commands", "harness-run.md"), "utf8");
+  assert.match(verify, /reviewer/);
+  assert.match(verify, /verifier/);
+  assert.match(verify, /WORKER_RUN|worker contract|delegated worker/i);
+  assert.match(ship, /gatekeeper/);
+  assert.match(run, /fixer/);
+});
+
+runTest("claude worker adapter renders native agent files", () => {
+  const { renderClaudeAgentFile } = require(path.join(repoRoot, "lib", "worker-claude-adapter.js"));
+  const body = fs.readFileSync(path.join(repoRoot, "workers", "reviewer.md"), "utf8").replace(/^---[\s\S]*?---\s*/, "");
+  const rendered = renderClaudeAgentFile("reviewer", body);
+  assert.match(rendered, /^---\nname: harness-reviewer/);
+  assert.match(rendered, /tools: Read, Grep, Glob, Bash/);
+  assert.match(rendered, /### Agent Result/);
+});
+
+runTest("delegated workers doc describes support levels honestly", () => {
+  const text = fs.readFileSync(path.join(repoRoot, "docs", "delegated-workers.md"), "utf8");
+  for (const level of ["native", "adapter", "fallback", "unsupported"]) {
+    assert.match(text, new RegExp(level));
+  }
+  assert.match(text, /Claude.*native|native.*Claude/i);
+  assert.match(text, /Cursor.*adapter|adapter.*Cursor/i);
+  assert.match(text, /Codex.*adapter|adapter.*Codex/i);
 });
 
 if (process.exitCode) {

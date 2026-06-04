@@ -68,7 +68,7 @@ Plan → Build → Verify → Ship → Remember
 Native slash commands are provider-specific. Today the concrete local example is Claude project command files exposing `/harness-plan`; elsewhere use the hyphen form via rules, AGENTS.md, or `.ai-harness/runtime-commands/`. Deprecated: legacy colon-separated command IDs in older docs and changelogs.
 
 Command policy (artifacts first): [docs/harness-command-behavior.md](docs/harness-command-behavior.md). Provider matrix: [docs/provider-command-matrix.md](docs/provider-command-matrix.md). Guardrails: [docs/command-guardrails.md](docs/command-guardrails.md). Workflow map: [docs/workflow-visualization.md](docs/workflow-visualization.md).
-Dispatch templates: [docs/dispatch-prompt-templates.md](docs/dispatch-prompt-templates.md).
+Dispatch templates: [docs/dispatch-prompt-templates.md](docs/dispatch-prompt-templates.md). Delegated workers: [docs/delegated-workers.md](docs/delegated-workers.md).
 
 ---
 

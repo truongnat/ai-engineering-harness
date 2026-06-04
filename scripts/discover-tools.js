@@ -39,7 +39,8 @@ function detectGitWorktree(gitInfo) {
   if (!gitInfo.available) {
     return { available: false };
   }
-  const result = run("git", ["worktree", "--help"]);
+  // Avoid `git worktree --help` on Windows Git — it opens git-worktree.html in a browser.
+  const result = run("git", ["worktree", "list"]);
   return {
     available: result.status === 0,
     command: "git worktree",

@@ -70,6 +70,18 @@ Inside the target repository, Codex should read:
 
 > Run or ask me to run: `node validate.js --target <path> --profile-only` and `node validate.js --target <path> --goal <goal-id>`. Treat validation as structural only, not proof of application correctness. Fix exact missing paths and headings.
 
+## Delegated Workers (Adapter)
+
+Codex is an **adapter**-level delegated worker target in v1.
+
+Use repo-local instruction surfaces and prompt-driven delegation while preserving the same worker contract:
+
+- canonical worker ids from `workers/`
+- shared `### Agent Result` envelope
+- `templates/WORKER_RUN.md` lifecycle artifacts
+
+Do not overclaim native worker support. See [delegated-workers.md](../delegated-workers.md).
+
 ## Safety Boundaries
 
 - keep markdown as the source of truth
