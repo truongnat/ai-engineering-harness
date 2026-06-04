@@ -34,6 +34,8 @@ You get provider-specific rules, prompt templates, session memory, blocking gate
 
 ## Quickstart
 
+**First time?** Read [Your First 5 Minutes](docs/first-5-minutes.md) — a complete walk-through from install to shipping your first loop.
+
 Inside your target project:
 
 ```bash
@@ -47,6 +49,8 @@ Non-interactive (recommended for Claude):
 ```bash
 npx ai-engineering-harness install --provider claude --yes
 ```
+
+**Note:** `--provider` is preferred; `--runtime` is a deprecated alias.
 
 Wizard details: [docs/npx-cli-ux.md](docs/npx-cli-ux.md), [docs/terminal-wizard-ux.md](docs/terminal-wizard-ux.md).
 
