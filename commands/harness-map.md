@@ -42,7 +42,7 @@ Map the host repository, active `.harness/` artifacts, affected code areas, and 
 
 - use `rg` before `grep` when available
 - use `git diff` and `git log` for repository context before asking the user for pasted context
-- use code graph tools only when they are installed or configured
+- use [CodeGraph](https://github.com/colbymchenry/codegraph) (`codegraph`) when installed and indexed; otherwise fall back to file tree plus search
 - if a required capability is unavailable, stop and return `Blocked` with a concrete fallback question
 
 ## Step-By-Step Workflow

@@ -80,9 +80,7 @@ runTest("discover-tools JSON mode exits cleanly with expected keys", () => {
     "grep",
     "find",
     "markitdown",
-    "joern",
-    "sourcegraph",
-    "repograph",
+    "codegraph",
     "gitNexus"
   ]) {
     assert.ok(Object.prototype.hasOwnProperty.call(parsed, key), `missing key ${key}`);

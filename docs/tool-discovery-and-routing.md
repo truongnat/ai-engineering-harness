@@ -30,7 +30,7 @@ That keeps the harness flexible when local tool names change over time.
 Optional tools are best-effort only.
 
 - Missing `markitdown` should not fail the harness unless a rich document is required.
-- Missing code graph tools should fall back to file tree and import scans.
+- Missing CodeGraph should fall back to file tree and import scans. See https://github.com/colbymchenry/codegraph
 - Missing `git-nexus` should fall back to standard git commands.
 
 ## Blocked Output
@@ -83,13 +83,28 @@ Fallback:
 
 - ask the user for extracted text
 
-### Code Graph Fallback
+### Code Graph
 
-Preferred:
+Preferred tool: [CodeGraph](https://github.com/colbymchenry/codegraph)
 
-- use a configured graph tool if present
+Install:
 
-Fallback:
+```bash
+npm i -g @colbymchenry/codegraph
+codegraph install
+cd your-project
+codegraph init -i
+```
+
+Example queries:
+
+```bash
+codegraph search UserService
+codegraph callers handleRequest
+codegraph status
+```
+
+Fallback when CodeGraph is unavailable:
 
 ```bash
 rg "import |from |require\\("
