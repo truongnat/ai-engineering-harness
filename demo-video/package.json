@@ -4,15 +4,18 @@
   "description": "90-second demo video for ai-engineering-harness using Remotion",
   "scripts": {
     "dev": "remotion preview src/index.tsx",
-    "render": "remotion render src/index.tsx DemoVideo --codec=h264 --audio-codec=aac",
-    "render:fast": "remotion render src/index.tsx DemoVideo --codec=h264 --audio-codec=aac --concurrency=4 --height=1080 --width=1920"
+    "render": "remotion render src/index.tsx DemoVideo --codec=h264 --output=../dist/demo.mp4",
+    "render:fast": "remotion render src/index.tsx DemoVideo --codec=h264 --concurrency=4 --output=../dist/demo.mp4",
+    "render:gif": "remotion render src/index.tsx DemoVideo --codec=gif --output=../dist/demo.gif"
   },
   "dependencies": {
+    "@remotion/cli": "^4.0.0",
     "remotion": "^4.0.0",
-    "react": "^18.0.0"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@types/react": "^18.0.0",
+    "@types/react": "^19.0.0",
     "typescript": "^5.0.0"
   }
 }
