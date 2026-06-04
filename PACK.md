@@ -64,11 +64,17 @@ npm tarball **excludes** `test/`, `examples/`, and local dogfood dirs.
 
 ## Runtime Compatibility
 
-Documented guidance for Claude Code (primary), Cursor (secondary), Codex, Gemini CLI (experimental), generic AGENTS.md. OpenCode removed from active scope in v0.11.0.
+| Provider | Status | Notes |
+|---|---|---|
+| Claude Code | Primary | Full integration: native commands, workers, hooks |
+| Cursor | Secondary | Rules-based, no native commands |
+| Codex | Experimental | AGENTS.md fallback, marketplace pending |
+| Gemini CLI | Experimental | Extension model, manual install |
+| Generic | Fallback | AGENTS.md only, works with any agent |
+| OpenCode | Removed | Deprecated in v0.11.0 |
+| Antigravity | Planned | Not yet implemented |
 
-**Stable runtime support: No** (experimental per provider).
-
-Antigravity: planned, not implemented.
+All providers support the core markdown operating model. Non-Claude providers use fallback adapters rather than native integrations.
 
 ## Validation Commands
 
@@ -98,12 +104,8 @@ node validate.js --target test/fixtures/valid-target-profile --profile-only
 
 ## Non-Goals
 
-- Stable per-runtime support (still **No** for v0.10.x)
+- Per-runtime feature parity (Claude will always have deeper integration due to native capabilities)
 - Antigravity install paths (planned only)
 - npm publish automation from CI (manual publish per [npm-publish.md](docs/npm-publish.md))
 - Semantic validation, secret scanning, or heavy runtime adapters in the pack core
 - Shipping `test/` or `examples/` in the npm registry tarball
-
-## Stable Runtime Support
-
-**No** — experimental installs only; see [docs/v0.10.0-release-notes.md](docs/v0.10.0-release-notes.md).

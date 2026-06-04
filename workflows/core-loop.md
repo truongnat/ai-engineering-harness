@@ -10,13 +10,12 @@ Use this as the default workflow when no more specific task workflow is a better
 
 ## Required Artifacts
 
-- `.harness/GOAL.md`
 - `.harness/STATE.md`
-- `.harness/CONTEXT.md`
-- `.harness/PLAN.md`
-- `.harness/VERIFY.md`
-- `.harness/SHIP.md`
-- `.harness/REMEMBER.md`
+- `.harness/sessions/<active-session>/GOAL.md`
+- `.harness/sessions/<active-session>/PLAN-001.md` or the current numbered plan
+- `.harness/sessions/<active-session>/TASKS.md` when spanning multiple steps
+- `.harness/sessions/<active-session>/VERIFY.md`
+- `.harness/sessions/<active-session>/SHIP.md` when shipping
 
 ## Recommended Skills
 
