@@ -1,6 +1,13 @@
 # Documentation Index
 
-Welcome! This directory contains the complete documentation for **ai-engineering-harness**. Start here to find what you need.
+Welcome! User-facing documentation for **ai-engineering-harness**, organized with [Diátaxis](https://diataxis.fr/):
+
+| Type | Purpose | Start here |
+| --- | --- | --- |
+| **Tutorial** | Learn by doing | [first-5-minutes.md](first-5-minutes.md) |
+| **How-to** | Solve a task | [adoption-guide.md](adoption-guide.md), [harness-init-usage.md](harness-init-usage.md) |
+| **Reference** | Facts & contracts | [harness-command-behavior.md](harness-command-behavior.md), [compatibility-matrix.md](compatibility-matrix.md) |
+| **Explanation** | Concepts & design | [concepts.md](concepts.md), [architecture.md](architecture.md), [architecture/](architecture/) |
 
 ## Quick Navigation
 
@@ -54,8 +61,7 @@ Welcome! This directory contains the complete documentation for **ai-engineering
 |---|---|
 | **v1.0.1** | [Release Notes](v1.0.1-release-notes.md) |
 | v1.0.0 | [Release Notes](v1.0.0-release-notes.md) |
-| v0.11.0 | [Release Notes](v0.11.0-release-notes.md) |
-| v0.10.8 | [Release Notes](v0.10.8-release-notes.md) |
+| v0.x archive | [internal/archive/v0/](internal/archive/v0/) |
 | [Older versions...](versioning.md) | See version history |
 
 ---
@@ -95,10 +101,11 @@ Welcome! This directory contains the complete documentation for **ai-engineering
 The following subdirectories contain internal development notes, planning documents, and release archives. Most users do not need these:
 
 - **`docs/internal/superpowers/`** — Planning and design notes for major features
-- **Release plans & readiness** — `v0.x.x-plan.md`, `v0.x.x-readiness.md`, etc.
+- **`docs/internal/archive/v0/`** — Historical v0 release/plan/readiness notes
+- **`docs/internal/archive/`** — Frozen contracts, gap analysis, positioning
+- **`docs/internal/reviews/`** — Improvement and review reports
+- **`docs/architecture/`** — ADRs for major technical decisions
 - **Dogfood reports** — `docs/pack-dogfood-reports/` — testing logs from the team
-- **Frozen contracts** — `frozen-*.md` — governance documents for stable interfaces
-- **Gap analysis, enforcement reports, etc.** — Internal working documents
 
 ---
 

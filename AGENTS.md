@@ -95,8 +95,8 @@ Never skip the active goal, state, and plan when they exist, but do not read unr
 
 Default minimum read sets by command:
 
-- `harness-map`: `AGENTS.md`, `.harness/STATE.md`, `.harness/GOAL.md`, `.harness/CONTEXT.md`, `.harness/HAZARDS.md`, `.harness/INDEX.md`, `.harness/REMEMBER.md`
-- `harness-start`: `AGENTS.md`, `.harness/STATE.md`, `.harness/GOAL.md`, `.harness/PLAN.md`, `.harness/CONTEXT.md`
+- `harness-start`: `AGENTS.md`, `.harness/STATE.md`, `.harness/context.md`, `.harness/GOAL.md`, `.harness/PLAN.md`, `.harness/HAZARDS.md`, `.harness/INDEX.md`
+- `harness-map`: `AGENTS.md`, `.harness/STATE.md`, `.harness/context.md`, `.harness/HAZARDS.md`, `.harness/INDEX.md`, `.harness/REMEMBER.md`
 - `harness-discuss`: `.harness/STATE.md`, `.harness/GOAL.md`, `.harness/REVIEW.md`, `.harness/PLAN.md`, `.harness/DISCUSSION.md`, `.harness/CONTEXT.md`, `.harness/DECISIONS.md`, `.harness/HAZARDS.md`
 - `harness-plan`: `.harness/GOAL.md`, `.harness/DISCUSSION.md`, `.harness/STATE.md`, `.harness/CONTEXT.md`, `.harness/DECISIONS.md`, `.harness/HAZARDS.md`, `.harness/INDEX.md`
 - `harness-run`: `.harness/PLAN.md`, `.harness/TASKS.md`, `.harness/GOAL.md`, `.harness/STATE.md`, relevant implementation files
@@ -122,7 +122,7 @@ This section summarizes the key points:
 **The Command Loop:**
 
 ```
-Session Start → Map → Discuss → Plan → Run → Verify → Ship → Remember
+Session Start → Discuss → Plan → Run → Verify → Ship → Remember
 ```
 
 **Never skip phases.** Never jump to `harness-run` without an approved plan.
@@ -151,7 +151,7 @@ See [`docs/session-start.md`](../docs/session-start.md) for details.
 
 **Preconditions:**
 
-- `harness-map`: Affected area is not yet understood
+- `harness-map`: Manual repository/current context refresh is needed outside Session Start
 - `harness-discuss`: Goal, scope, or alternatives are ambiguous
 - `harness-plan`: Goal is understood; stop before implementation
 - `harness-run`: Approved plan exists
@@ -243,6 +243,14 @@ Use `docs/quality-gates-matrix.md` when deciding whether a phase is complete.
 ## Memory Discipline
 
 Use memory to store durable decisions, constraints, root causes, and reuse guidance.
+
+Primary `.harness/` storage layout:
+
+- `.harness/STATE.md` is the active pointer.
+- `.harness/context.md` stores repo/current-goal context produced by `harness-start`.
+- `.harness/tasks/` stores task-level working context when task tracking is enabled.
+- `.harness/history/events.jsonl` stores append-only event history.
+- `.harness/memory/` stores durable knowledge extracted by `harness-remember`.
 
 Do store:
 

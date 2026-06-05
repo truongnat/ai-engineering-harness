@@ -6,7 +6,7 @@ Use this when reviewing an implementation, plan, or set of changed artifacts bef
 
 ## Command Sequence
 
-`harness-start -> harness-map -> harness-verify`
+`harness-start -> harness-verify`
 
 Review work usually feeds into `.harness/REVIEW.md`, then returns to `harness-run` or proceeds to `harness-ship`.
 

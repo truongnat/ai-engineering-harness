@@ -1,0 +1,21 @@
+{
+  "id": "response-contract-v1",
+  "description": "Deterministic checks derived from RESPONSE_CONTRACT and OUTPUT_PATTERNS headings.",
+  "behaviorChecks": [
+    {
+      "type": "file-contains",
+      "path": "final-response.txt",
+      "pattern": "Status:"
+    },
+    {
+      "type": "artifact-exists",
+      "path": "final-response.txt"
+    }
+  ],
+  "outcomeWeights": {
+    "successChecks": 1
+  },
+  "behaviorWeights": {
+    "behaviorChecks": 1
+  }
+}

@@ -44,6 +44,7 @@ describe("CLI Arguments Parser", () => {
       "help",
       "eval",
       "insights",
+      "init",
     ]) {
       const opts = cliArgs.parseArgv(["node", "aih.js", cmd]);
       assert.equal(opts.command, cmd);

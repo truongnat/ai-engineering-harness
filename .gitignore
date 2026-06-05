@@ -21,3 +21,7 @@ events.jsonl
 
 # Local eval run artifacts
 artifacts/
+
+# Coverage output
+coverage/
+.nyc_output/

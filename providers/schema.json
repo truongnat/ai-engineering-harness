@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HarnessProviderManifest",
+  "type": "object",
+  "required": ["id", "label", "nativeSlashCommands", "ruleEntrypoints", "installPaths"],
+  "properties": {
+    "id": { "type": "string" },
+    "label": { "type": "string" },
+    "nativeSlashCommands": { "type": "boolean" },
+    "supportsSubagents": { "type": "boolean" },
+    "ruleEntrypoints": { "type": "array", "items": { "type": "string" } },
+    "installPaths": { "type": "array", "items": { "type": "string" } },
+    "pluginPath": { "type": "string" },
+    "status": { "type": "string" },
+    "notes": { "type": "string" }
+  },
+  "additionalProperties": true
+}

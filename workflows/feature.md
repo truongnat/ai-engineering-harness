@@ -6,7 +6,7 @@ Use this for new capabilities, user-visible behavior changes, or meaningful inte
 
 ## Command Sequence
 
-`harness-map -> harness-start -> harness-discuss -> harness-plan -> harness-run -> harness-verify -> harness-ship -> harness-remember`
+`harness-start -> harness-discuss -> harness-plan -> harness-run -> harness-verify -> harness-ship -> harness-remember`
 
 ## Required Artifacts
 

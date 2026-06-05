@@ -42,14 +42,14 @@ A **command** is an operator-facing entry point into the harness loop. Each comm
 **Example:** `harness-plan` reads the GOAL and STATE, asks the agent to create a detailed plan, writes PLAN-001.md, and stops if the plan is vague.
 
 **The 8 canonical commands:**
-1. `harness-map` — Understand current state
-2. `harness-start` — Restore session context
-3. `harness-discuss` — Analyze and decide approach
-4. `harness-plan` — Write detailed implementation plan
-5. `harness-run` — Execute the plan step-by-step
-6. `harness-verify` — Verify with evidence
-7. `harness-ship` — Commit and handoff
-8. `harness-remember` — Store durable lessons
+1. `harness-start` — Restore session context and map repository/current context
+2. `harness-discuss` — Analyze and decide approach
+3. `harness-plan` — Write detailed implementation plan
+4. `harness-run` — Execute the plan step-by-step
+5. `harness-verify` — Verify with evidence
+6. `harness-ship` — Commit and handoff
+7. `harness-remember` — Store durable lessons
+8. `harness-map` — Compatibility/manual context refresh
 
 ### Artifact
 
@@ -109,7 +109,7 @@ A **workflow** is an end-to-end sequence for a class of work: feature, bugfix, r
 
 **Example workflow for "Feature":**
 ```
-Map → Start → Discuss → Plan → Run → Verify → Ship
+Start → Discuss → Plan → Run → Verify → Ship
       └──────────────────────────────────┘
          Skills: brainstorming, planning,
          TDD, code-review, verification
@@ -117,7 +117,7 @@ Map → Start → Discuss → Plan → Run → Verify → Ship
 
 **Example workflow for "Bugfix":**
 ```
-Map → Start → Discuss → Plan → Run → Verify → Ship
+Start → Discuss → Plan → Run → Verify → Ship
       └──────────────────────────────────┘
          Skills: root-cause analysis,
          minimal-fix, regression-testing

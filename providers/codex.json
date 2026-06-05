@@ -1,0 +1,10 @@
+{
+  "id": "codex",
+  "label": "Codex",
+  "nativeSlashCommands": false,
+  "supportsSubagents": false,
+  "status": "plugin-packaging",
+  "pluginPath": ".codex-plugin/plugin.json",
+  "ruleEntrypoints": ["AGENTS.md"],
+  "installPaths": ["AGENTS.md"]
+}

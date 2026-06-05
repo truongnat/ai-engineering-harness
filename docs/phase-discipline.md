@@ -9,7 +9,7 @@ This is the canonical source for phase discipline rules. All other documents (AG
 All work follows this strict sequence:
 
 ```
-Session Start → Map → Discuss → Plan → Run → Verify → Ship → Remember
+Session Start → Discuss → Plan → Run → Verify → Ship → Remember
 ```
 
 **Never skip phases.** Never jump ahead without completing preconditions.
@@ -20,14 +20,13 @@ Session Start → Map → Discuss → Plan → Run → Verify → Ship → Remem
 
 | # | Command | Purpose |
 |---|---|---|
-| **0** | `harness-start` | Restore active session, memory, current phase, blocked state |
-| **1** | `harness-map` | Understand the affected area and current state |
-| **2** | `harness-discuss` | Clarify goal, scope, constraints, and alternatives |
-| **3** | `harness-plan` | Write the plan; stop before implementation |
-| **4** | `harness-run` | Follow the approved plan; update state as you go |
-| **5** | `harness-verify` | Gather fresh evidence; pass/fail/partial with proof |
-| **6** | `harness-ship` | Create reports and handoff notes from real changes |
-| **7** | `harness-remember` | Store durable lessons, decisions, and constraints |
+| **0** | `harness-start` | Restore active session, memory, current phase, blocked state, and repository/current context |
+| **1** | `harness-discuss` | Clarify goal, scope, constraints, and alternatives |
+| **2** | `harness-plan` | Write the plan; stop before implementation |
+| **3** | `harness-run` | Follow the approved plan; update state as you go |
+| **4** | `harness-verify` | Gather fresh evidence; pass/fail/partial with proof |
+| **5** | `harness-ship` | Create reports and handoff notes from real changes |
+| **6** | `harness-remember` | Store durable lessons, decisions, and constraints |
 
 ---
 
@@ -42,9 +41,9 @@ Before entering each phase, these conditions **MUST** be met:
 - **Block If:** Current session state is ambiguous or conflicting
 
 ### harness-map (Context Mapping)
-- **Entry:** The task area is not yet fully understood
+- **Entry:** Manual repository/current context refresh is needed outside Session Start
 - **Required:** Read active `.harness/` artifacts; inspect repository boundaries
-- **Output:** Affected areas, current state, and key unknowns are explicit
+- **Output:** Important paths, current state, commands, quality gates, and key unknowns are explicit
 - **Block If:** Codebase state conflicts with recorded artifacts
 
 ### harness-discuss (Clarification)
@@ -257,4 +256,3 @@ See `docs/provider-rule-configuration.md` for provider differences.
 | See command docs | `commands/harness-*.md` |
 | See provider setup | `docs/provider-rule-configuration.md` |
 | See agent behavior | `AGENTS.md` + `agent-system/SYSTEM_PROMPT.md` |
-

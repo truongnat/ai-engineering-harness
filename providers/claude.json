@@ -1,0 +1,10 @@
+{
+  "id": "claude",
+  "label": "Claude Code",
+  "nativeSlashCommands": true,
+  "supportsSubagents": true,
+  "status": "native-plugin",
+  "pluginPath": ".claude-plugin/plugin.json",
+  "ruleEntrypoints": [".claude/CLAUDE.md", ".claude/commands/"],
+  "installPaths": [".claude/commands/", ".claude-plugin/"]
+}

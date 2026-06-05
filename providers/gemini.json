@@ -1,0 +1,10 @@
+{
+  "id": "gemini",
+  "label": "Gemini CLI",
+  "nativeSlashCommands": false,
+  "supportsSubagents": false,
+  "status": "native-command-files",
+  "pluginPath": "gemini-extension.json",
+  "ruleEntrypoints": [".gemini/extensions/ai-engineering-harness/GEMINI.md"],
+  "installPaths": [".gemini/extensions/ai-engineering-harness/"]
+}

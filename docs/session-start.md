@@ -11,6 +11,8 @@ Session Start = boot sequence before any plan/run/verify/ship work
 harness-start   = command that runs the Session Start protocol
 ```
 
+`harness-start` is session-scoped. It restores or establishes active session state, maps repository/current context, updates `.harness/context.md`, and recommends the next command. Use `harness-map` only for backward-compatible manual context refresh outside the normal workflow.
+
 Session Start must determine:
 
 - active session

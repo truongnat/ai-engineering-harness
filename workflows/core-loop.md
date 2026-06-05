@@ -6,7 +6,7 @@ Use this as the default workflow when no more specific task workflow is a better
 
 ## Command Sequence
 
-`harness-map -> harness-start -> harness-discuss -> harness-plan -> harness-run -> harness-verify -> harness-ship -> harness-remember`
+`harness-start -> harness-discuss -> harness-plan -> harness-run -> harness-verify -> harness-ship -> harness-remember`
 
 ## Required Artifacts
 

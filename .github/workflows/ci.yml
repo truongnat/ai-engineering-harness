@@ -42,6 +42,17 @@ jobs:
       - name: Run eval regression
         run: node bin/aih.js eval run sample-bugfix --yes
 
+      - name: Check lib coverage gate
+        if: matrix.os == 'ubuntu-latest' && matrix.node-version == 20
+        run: npm run test:coverage
+
+      - name: Smoke test install (dry-run)
+        shell: bash
+        run: |
+          TARGET="${RUNNER_TEMP:-/tmp}/aih-smoke-install"
+          mkdir -p "$TARGET"
+          node bin/aih.js install --provider generic --yes --target "$TARGET" --dry-run
+
       - name: Run dogfood demo tests
         working-directory: examples/dogfood-tiny-node-api
         run: npm test

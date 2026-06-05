@@ -8,6 +8,7 @@ A markdown-first, open-source kit that helps agents restore context, plan before
 
 ![Version](https://img.shields.io/badge/version-v1.0.1-2563eb)
 ![CI](https://github.com/truongnat/ai-engineering-harness/actions/workflows/ci.yml/badge.svg)
+![Coverage](https://img.shields.io/badge/coverage-lib%2065%25%2B-0f766e)
 ![License](https://img.shields.io/badge/license-MIT-16a34a)
 ![Open Source](https://img.shields.io/badge/open-source-0f172a)
 ![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-818cf8)
@@ -35,6 +36,16 @@ Session Start → Discuss → Plan → Run → Verify → Ship → Remember
 
 The result is a lighter-weight, easier-to-audit workflow for real software work, not just prompt-driven code generation.
 
+### Why this instead of manual Cursor rules or prompt packs?
+
+| Approach | Limitation | Harness answer |
+| --- | --- | --- |
+| Hand-written rules | No proof they improve outcomes | Deterministic **evals** (`aih eval`) with A/B reports |
+| Single-provider prompt repos | Fragmented install surfaces | **Declarative provider manifests** + one installer |
+| Workflow markdown only | Hard to measure discipline | **Phase guards**, telemetry (`aih insights`), evidence artifacts |
+
+See [compatibility matrix](docs/compatibility-matrix.md) and [evals](docs/evals.md).
+
 ---
 
 ## Why teams use it
@@ -53,7 +64,8 @@ The result is a lighter-weight, easier-to-audit workflow for real software work,
 Inside your target project:
 
 ```bash
-npx ai-engineering-harness install
+npx ai-engineering-harness init
+# or: npx ai-engineering-harness install
 npx ai-engineering-harness status
 npx ai-engineering-harness doctor
 ```

@@ -6,7 +6,7 @@ Use this for urgent failures, outages, security-sensitive breakages, or broken c
 
 ## Command Sequence
 
-`harness-start -> harness-map -> harness-discuss -> harness-plan -> harness-run -> harness-verify -> harness-ship -> harness-remember`
+`harness-start -> harness-discuss -> harness-plan -> harness-run -> harness-verify -> harness-ship -> harness-remember`
 
 The same loop applies, but planning and discussion may be shorter because urgency is high.
 

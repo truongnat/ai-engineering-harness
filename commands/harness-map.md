@@ -2,7 +2,9 @@
 
 ## Purpose
 
-Map the host repository, active `.harness/` artifacts, affected code areas, and current constraints before deeper work.
+Refresh repository/current context manually when Session Start context is stale, missing, or needs explicit regeneration.
+
+`harness-map` is a backward-compatible, advanced/manual context refresh command. It is not required in the normal workflow because `harness-start` already performs context mapping. Use it when you need to regenerate or manually inspect the same context-mapping behavior outside Session Start. It should not plan or implement code.
 
 ## System Prompt Requirement
 
@@ -16,11 +18,10 @@ Read:
 
 - `AGENTS.md`
 - `.harness/STATE.md` if present
-- active session `GOAL.md` if present
-- active session `DISCUSSION.md` if present
 - `.harness/HAZARDS.md` if present
 - `.harness/INDEX.md` if present
 - `.harness/REMEMBER.md` if present
+- repository docs that define constraints, conventions, commands, or quality gates when relevant
 
 ## Preconditions
 
@@ -30,9 +31,10 @@ Read:
 ## When To Use
 
 - at the start of a session in an unfamiliar repository
-- before `harness-discuss` or `harness-plan`
+- when manual context refresh is needed after large repository changes
 - when `.harness/STATE.md` looks stale
 - when impact scope is unclear
+- when provider entrypoints or harness artifacts need to be rediscovered
 
 ## Skills To Use
 
@@ -57,19 +59,19 @@ Read:
 
 1. Read root router artifacts first, then read the active session artifacts before inspecting code, with `.harness/HAZARDS.md` first when present.
 2. Inventory the repository structure and identify likely entry points, boundaries, or ownership areas.
-3. Determine which code, docs, or configs are likely to be affected by the active goal.
+3. Identify important paths, conventions, commands, provider entrypoints, harness artifacts, quality gates, and project constraints.
 4. Separate observed facts from inferred structure.
 5. Capture open questions, risks, and missing context in `.harness/CONTEXT.md` or `.harness/STATE.md`.
-6. Stop once the repository is mapped well enough to discuss or plan without guessing.
+6. Stop once the repository/current context is refreshed well enough to resume the normal workflow without guessing.
 
 ## Required Outputs
 
-- active session discussion or notes updated with observed facts, impact zones, and open questions
-- an explicit statement of what should run next: `harness-discuss`, `harness-plan`, or `harness-start`
+- repository/current context notes updated with observed facts, important paths, conventions, commands, provider entrypoints, harness artifacts, quality gates, project constraints, likely affected areas when relevant, and open questions
+- an explicit statement of what should run next: `harness-start`, `harness-discuss`, `harness-plan`, `harness-run`, or `harness-verify`
 
 ## Redirect Behavior
 
-- If the current goal, state, or command is already clear from active artifacts, stop and redirect to the next needed command instead of remapping.
+- If repository/current context is already fresh enough for the current work, stop and redirect to the next needed command instead of remapping.
 - If artifact conflicts are discovered, stop and redirect to `harness-discuss`.
 
 ## Failure Conditions
@@ -80,17 +82,17 @@ Read:
 
 ## Completion Gate
 
-The command is complete when the relevant repository areas, active artifacts, likely impact zones, and major unknowns are explicit enough to support discussion or planning without invented facts.
+The command is complete when the relevant repository structure, important paths, conventions, available commands, provider entrypoints, harness artifacts, quality gates, project constraints, and major unknowns are explicit enough to support briefing, discussion, or planning without invented facts.
 
 ## Artifact Paths
 
-- Read: `.harness/INDEX.md`, `.harness/STATE.md`, `.harness/sessions/<active-session>/GOAL.md`, `.harness/sessions/<active-session>/DISCUSSION.md`, `.harness/HAZARDS.md`, `.harness/REMEMBER.md`
-- Write: `.harness/sessions/<active-session>/DISCUSSION.md`, `.harness/sessions/<active-session>/NOTES.md`, `.harness/STATE.md`
+- Read: `.harness/INDEX.md`, `.harness/STATE.md`, `.harness/HAZARDS.md`, `.harness/REMEMBER.md`
+- Write: `.harness/CONTEXT.md`, `.harness/STATE.md`, `.harness/sessions/<active-session>/NOTES.md`
 
 ## Human Approval
 
-Ask for approval if the repository map shows the task is much broader than originally stated or if the active goal appears inconsistent with the current codebase state.
+Ask for approval if the repository map shows broader constraints, hazards, or quality gates that materially change the expected direction of the work.
 
 ## Notes
 
-`harness-map` is about situational awareness. It should not produce a plan and should not start implementation.
+`harness-map` is about manual situational awareness refresh. Keep it for compatibility and advanced use, but do not teach it as part of the primary workflow.
