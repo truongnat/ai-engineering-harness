@@ -20,5 +20,22 @@ node scripts/publish-walkthrough-video.js --tag v1.0.1 --file ./AI_Engineering_H
 
 ## Policy
 
-- Do **not** commit `*.mp4` files to this repository.
-- CI tests enforce that no MP4 paths are tracked.
+- Do **not** commit `*.mp4` files to this repository (`*.mp4` is gitignored).
+- `test/media-policy.test.js` enforces that no MP4 paths are tracked.
+
+## History purge (one-time maintainer)
+
+If large MP4 blobs were previously committed, rewrite history and prune:
+
+```bash
+sh scripts/purge-media-from-history.sh
+```
+
+Then push rewritten history:
+
+```bash
+git push --force-with-lease origin main
+git push --force-with-lease origin --tags
+```
+
+Coordinate with collaborators before force-pushing.
