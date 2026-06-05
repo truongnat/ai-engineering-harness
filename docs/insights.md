@@ -15,7 +15,31 @@ Hooks append append-only JSON events when they record:
 aih insights
 aih insights --target <path>
 aih insights --target <path> --json
+aih insights --export
 ```
+
+## Opt-in export
+
+`--export` emits an anonymized aggregate payload (`harness-insights-export-v1`) suitable for sharing bug reports or regression notes. No file paths or raw event bodies are included by default.
+
+Configure defaults in `.harness/config.json` (from `templates/harness-config.json`):
+
+```json
+{
+  "telemetry": {
+    "export": {
+      "enabled": false,
+      "anonymize": true,
+      "remoteUpload": {
+        "enabled": false,
+        "endpointEnv": "HARNESS_TELEMETRY_ENDPOINT"
+      }
+    }
+  }
+}
+```
+
+Remote upload remains disabled until you set `remoteUpload.enabled` and provide `HARNESS_TELEMETRY_ENDPOINT`.
 
 ## Example output
 

@@ -31,3 +31,25 @@ test("runTask passes example-health-report with harness", async () => {
   assert.equal(summary.modes["with-harness"].outcome.passed, 1);
   assert.equal(summary.modes["without-harness"].outcome.passed, 0);
 });
+
+test("runTask passes sample-string-trim with harness", async () => {
+  const result = await runTask(repoRoot, "sample-string-trim");
+  assert.equal(result.exitCode, 0);
+  const summary = JSON.parse(fs.readFileSync(result.summaryPath, "utf8"));
+  assert.equal(summary.modes["with-harness"].outcome.passed, 1);
+});
+
+test("runTask passes sample-response-contract with harness rubric", async () => {
+  const result = await runTask(repoRoot, "sample-response-contract");
+  assert.equal(result.exitCode, 0);
+  const summary = JSON.parse(fs.readFileSync(result.summaryPath, "utf8"));
+  assert.equal(summary.modes["with-harness"].outcome.passed, 1);
+  assert.equal(summary.modes["with-harness"].rubric.passed, true);
+});
+
+test("runTask passes sample-config-patch with harness", async () => {
+  const result = await runTask(repoRoot, "sample-config-patch");
+  assert.equal(result.exitCode, 0);
+  const summary = JSON.parse(fs.readFileSync(result.summaryPath, "utf8"));
+  assert.equal(summary.modes["with-harness"].outcome.passed, 1);
+});

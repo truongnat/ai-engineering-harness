@@ -1,0 +1,8 @@
+{
+  "name": "sample-config-patch-fixture",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "test": "node --test checks/config-check.js"
+  }
+}

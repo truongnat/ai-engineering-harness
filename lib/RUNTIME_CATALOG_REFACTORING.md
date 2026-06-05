@@ -1,8 +1,16 @@
 # Runtime Command Catalog Refactoring Roadmap
 
-## Current State (v1.0.x)
+## Current State (v1.1.x)
 
-The `runtime-command-catalog.js` module (775 lines) is monolithic but well-organized into 6 clear sections:
+Split complete. `lib/runtime-command-catalog.js` is a thin facade re-exporting:
+
+- `lib/catalog/provider-command-metadata.js` — constants, provider matrix, query helpers
+- `lib/catalog/command-rendering.js` — surface building and file rendering
+- `lib/catalog/command-installation.js` — install/merge/write helpers
+
+Re-run `node scripts/split-catalog.js` only when restoring from the pre-split monolith in git history.
+
+### Previous monolith layout (reference)
 
 ### Section 1: Constants & Metadata (~130 lines)
 - `COMMAND_NAMESPACE`, `CACHE_DIR`, `RUNTIME_COMMANDS_DIR`, `PROMPT_TEMPLATES_DIR`

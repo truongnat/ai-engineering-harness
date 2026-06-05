@@ -1,4 +1,14 @@
 {
+  "telemetry": {
+    "export": {
+      "enabled": false,
+      "anonymize": true,
+      "remoteUpload": {
+        "enabled": false,
+        "endpointEnv": "HARNESS_TELEMETRY_ENDPOINT"
+      }
+    }
+  },
   "memory": {
     "backend": "files",
     "sessionStrategy": "date-title",

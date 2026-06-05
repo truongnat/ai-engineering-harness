@@ -46,3 +46,32 @@ test("parseArgv recognizes insights command and --json flag", () => {
   assert.equal(opts.target, ".");
   assert.equal(opts.json, true);
 });
+
+test("runInsightsCommand --export emits anonymized aggregate JSON", async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "aih-cli-export-"));
+  const eventsDir = path.join(tempRoot, ".harness", "history");
+  fs.mkdirSync(eventsDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(eventsDir, "events.jsonl"),
+    '{"type":"tool-run","command":"npm test","exit_code":0}\n',
+    "utf8"
+  );
+
+  const { runInsightsCommand } = fresh("lib/cli-commands/insights.js");
+  let output = "";
+  const originalWrite = process.stdout.write;
+  process.stdout.write = (chunk) => {
+    output += chunk;
+    return true;
+  };
+
+  try {
+    const status = await runInsightsCommand(repoRoot, { target: tempRoot, export: true });
+    assert.equal(status, 0);
+    const payload = JSON.parse(output);
+    assert.equal(payload.schema, "harness-insights-export-v1");
+    assert.equal(payload.aggregate.tools[0].command, "npm test");
+  } finally {
+    process.stdout.write = originalWrite;
+  }
+});

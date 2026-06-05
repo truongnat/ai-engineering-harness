@@ -6,9 +6,9 @@
 
 | Trục | Before | After | Notes |
 | --- | :---: | :---: | --- |
-| A Evals | 1/5 | **3.5/5** | Foundation + CI regression; 2 tasks; LLM-judge & 15–30 corpus deferred |
-| B Telemetry | 2/5 | **3.5/5** | `aih insights` + hook JSONL; opt-in remote deferred |
-| C Architecture | 3/5 | **3.5/5** | Provider manifests; catalog module split deferred to v1.1 |
+| A Evals | 1/5 | **4/5** | 5 golden tasks + rubric judge stub; 15–30 corpus & live LLM judge deferred |
+| B Telemetry | 2/5 | **4/5** | `aih insights --export` + config opt-in; remote upload deferred |
+| C Architecture | 3/5 | **4/5** | Provider manifests + catalog split (`lib/catalog/`) |
 | D CI/CD | 3/5 | **4.5/5** | Coverage, dependabot, changesets, smoke install, branch protection doc |
 | E Docs | 2/5 | **4/5** | 3-tier layout, ADRs, Diátaxis index, v0 archive |
 | F Adoption | 2/5 | **3.5/5** | `aih init`, README moat, compatibility matrix |
@@ -28,23 +28,34 @@
 ## P2 ✅ / partial
 
 - [x] Provider declarative manifests (`providers/*.json`)
-- [ ] Full `runtime-command-catalog.js` module split (roadmap in `lib/RUNTIME_CATALOG_REFACTORING.md`)
+- [x] `runtime-command-catalog.js` split → `lib/catalog/{provider-command-metadata,command-rendering,command-installation}.js`
 - [x] `aih init` quickstart
 
 ## P3 — deferred
 
 - [ ] Migrate `lib/` to TypeScript
-- [ ] 15–30 golden eval tasks
-- [ ] LLM-as-judge rubric (deterministic `response-contract-v1` seeded)
-- [ ] Opt-in anonymized telemetry upload
+- [ ] 15–30 golden eval tasks (5 sample tasks seeded)
+- [ ] Live LLM-as-judge (deterministic rubric + stub fallback shipped)
+- [ ] Remote anonymized telemetry upload (`HARNESS_TELEMETRY_ENDPOINT`)
 
 ## Commands added
 
 ```bash
 aih eval list|run|report
-aih insights [--json]
+aih insights [--json] [--export]
 aih init [--provider <id>] [--yes]
 npm run test:coverage
 node scripts/generate-compatibility-matrix.js
 node scripts/sync-site-version.js
+node scripts/split-catalog.js   # one-time catalog split helper
 ```
+
+## Eval tasks (sample-suite)
+
+| Task | Mode |
+| --- | --- |
+| `sample-bugfix` | bugfix |
+| `sample-string-trim` | bugfix |
+| `sample-config-patch` | bugfix |
+| `example-health-report` | workflow-discipline |
+| `sample-response-contract` | workflow-discipline |

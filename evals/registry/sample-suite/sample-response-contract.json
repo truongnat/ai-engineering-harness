@@ -1,0 +1,26 @@
+{
+  "id": "sample-response-contract",
+  "suite": "sample-suite",
+  "title": "Produce a response contract artifact",
+  "goal": "Validate structured final-response.txt output against the response contract rubric.",
+  "mode": "workflow-discipline",
+  "fixture": {
+    "path": "evals/fixtures/sample-response-contract"
+  },
+  "prompt": "Create final-response.txt following the fixture README and response contract headings.",
+  "successChecks": [
+    {
+      "type": "file-contains",
+      "path": "final-response.txt",
+      "pattern": "Status:"
+    }
+  ],
+  "behaviorChecks": [
+    {
+      "type": "artifact-exists",
+      "path": "final-response.txt"
+    }
+  ],
+  "rubric": "evals/rubrics/response-contract-v1.json",
+  "tags": ["sample", "workflow", "response-contract", "deterministic"]
+}

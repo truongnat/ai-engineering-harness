@@ -1,0 +1,26 @@
+{
+  "id": "sample-string-trim",
+  "suite": "sample-suite",
+  "title": "Fix the broken trim() helper",
+  "goal": "Repair whitespace trimming in a deterministic Node fixture.",
+  "mode": "bugfix",
+  "fixture": {
+    "path": "evals/fixtures/sample-string-trim"
+  },
+  "prompt": "Fix trim() so surrounding whitespace is removed without changing the tests.",
+  "successChecks": [
+    {
+      "type": "command",
+      "command": "npm test",
+      "cwd": "."
+    }
+  ],
+  "behaviorChecks": [
+    {
+      "type": "artifact-exists",
+      "path": "final-response.txt"
+    }
+  ],
+  "rubric": "evals/rubrics/deterministic-v1.json",
+  "tags": ["sample", "bugfix", "deterministic", "node"]
+}

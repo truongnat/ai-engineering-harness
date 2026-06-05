@@ -1,0 +1,26 @@
+{
+  "id": "sample-config-patch",
+  "suite": "sample-suite",
+  "title": "Patch invalid config.json types",
+  "goal": "Convert a string flag to a boolean in a deterministic fixture.",
+  "mode": "bugfix",
+  "fixture": {
+    "path": "evals/fixtures/sample-config-patch"
+  },
+  "prompt": "Fix config.json so enabled is a boolean true value and tests pass.",
+  "successChecks": [
+    {
+      "type": "command",
+      "command": "npm test",
+      "cwd": "."
+    }
+  ],
+  "behaviorChecks": [
+    {
+      "type": "artifact-exists",
+      "path": "final-response.txt"
+    }
+  ],
+  "rubric": "evals/rubrics/deterministic-v1.json",
+  "tags": ["sample", "bugfix", "config", "deterministic"]
+}
