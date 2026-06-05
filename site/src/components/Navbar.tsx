@@ -3,7 +3,6 @@ import { SiteBrand } from './SiteBrand'
 
 const NAV = [
   { href: '#install', label: 'Install' },
-  { href: '#walkthrough', label: 'Walkthrough' },
   { href: '#agent-system', label: 'Agent' },
   { href: '#workflow', label: 'Workflow' },
   { href: '#session-start', label: 'Session' },

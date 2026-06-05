@@ -26,5 +26,5 @@ artifacts/
 coverage/
 .nyc_output/
 
-# Large media — publish via GitHub Releases (see docs/walkthrough-video.md)
+# Large binary media (not shipped in this repo)
 *.mp4

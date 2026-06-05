@@ -3,7 +3,6 @@ import { Navbar } from './components/Navbar'
 import { Hero } from './components/Hero'
 import { ProblemSection } from './components/ProblemSection'
 import { CommandFlow } from './components/CommandFlow'
-import { VideoWalkthroughSection } from './components/VideoWalkthroughSection'
 import { AgentSystemSection } from './components/AgentSystemSection'
 import { SessionStartSection } from './components/SessionStartSection'
 import { EvidenceBlockedSection } from './components/EvidenceBlockedSection'
@@ -27,7 +26,6 @@ export default function App() {
         <ProblemSection />
         <InstallSection />
         <CommandFlow />
-        <VideoWalkthroughSection />
         <SessionStartSection />
         <EvidenceBlockedSection />
         <DemoTerminal />

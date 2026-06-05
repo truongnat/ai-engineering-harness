@@ -13,7 +13,7 @@ A markdown-first, open-source kit that helps agents restore context, plan before
 ![Open Source](https://img.shields.io/badge/open-source-0f172a)
 ![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-818cf8)
 
-[Quickstart](#quickstart) · [Walkthrough](#watch-the-walkthrough) · [Commands](#canonical-commands) · [Providers](#provider-support) · [Demo](#demo) · [Landing page](https://truongnat.github.io/ai-engineering-harness/)
+[Quickstart](#quickstart) · [Commands](#canonical-commands) · [Providers](#provider-support) · [Demo](#demo) · [Landing page](https://truongnat.github.io/ai-engineering-harness/)
 
 </div>
 
@@ -79,16 +79,6 @@ npx ai-engineering-harness install --provider claude --yes
 **Note:** `--provider` is preferred; `--runtime` is a deprecated alias.
 
 Wizard details: [docs/npx-cli-ux.md](docs/npx-cli-ux.md), [docs/terminal-wizard-ux.md](docs/terminal-wizard-ux.md)
-
----
-
-## Watch the walkthrough
-
-Walkthrough video: [AI_Engineering_Harness.mp4](https://github.com/truongnat/ai-engineering-harness/releases/latest/download/AI_Engineering_Harness.mp4)
-
-Landing page with embedded player: [truongnat.github.io/ai-engineering-harness](https://truongnat.github.io/ai-engineering-harness/)
-
-> The MP4 is hosted as a GitHub Release asset (not in git). README links here; the landing page embeds the same URL.
 
 ---
 
@@ -364,6 +354,6 @@ Publish: [docs/npm-publish.md](docs/npm-publish.md)
 
 ## Status
 
-**v1.0.1**: patch release for README clarity, landing-page polish, walkthrough integration, and release metadata alignment. Core workflow contracts and provider support posture are unchanged.
+**v1.0.1**: patch release for README clarity, landing-page polish, and release metadata alignment. Core workflow contracts and provider support posture are unchanged.
 
 MIT · [CONTRIBUTING.md](CONTRIBUTING.md) · [SECURITY.md](SECURITY.md)

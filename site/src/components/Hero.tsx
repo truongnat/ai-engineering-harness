@@ -70,7 +70,6 @@ export function Hero() {
             <motion.div variants={item} className="flex gap-3 flex-wrap">
               <a href="#install" className="btn-primary">Get started</a>
               <a href={GITHUB} target="_blank" rel="noopener noreferrer" className="btn-secondary">View on GitHub</a>
-              <a href="#walkthrough" className="btn-secondary">Watch walkthrough</a>
             </motion.div>
           </div>
 
