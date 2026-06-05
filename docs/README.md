@@ -94,7 +94,7 @@ Welcome! This directory contains the complete documentation for **ai-engineering
 
 The following subdirectories contain internal development notes, planning documents, and release archives. Most users do not need these:
 
-- **`docs/superpowers/`** — Planning and design notes for major features
+- **`docs/internal/superpowers/`** — Planning and design notes for major features
 - **Release plans & readiness** — `v0.x.x-plan.md`, `v0.x.x-readiness.md`, etc.
 - **Dogfood reports** — `docs/pack-dogfood-reports/` — testing logs from the team
 - **Frozen contracts** — `frozen-*.md` — governance documents for stable interfaces

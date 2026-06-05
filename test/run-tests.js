@@ -203,6 +203,47 @@ describe("Session Memory & Documentation", () => {
 });
 
 describe("Workflow Command Documentation", () => {
+  test("start and map docs describe merged start and compatibility map semantics", () => {
+    const start = fs.readFileSync(path.join(repoRoot, "commands", "harness-start.md"), "utf8");
+    const map = fs.readFileSync(path.join(repoRoot, "commands", "harness-map.md"), "utf8");
+    assert.match(start, /Session Start/i);
+    assert.match(start, /session-scoped/i);
+    assert.match(start, /important paths|quality gates|provider entrypoints|context mapping/i);
+    assert.match(map, /compatibility|manual context refresh/i);
+    assert.match(
+      map,
+      /not required in the normal workflow|not teach it as part of the primary workflow/i
+    );
+  });
+
+  test("workflow docs use canonical start -> discuss order without required map", () => {
+    const expected =
+      /harness-start -> harness-discuss -> harness-plan -> harness-run -> harness-verify -> harness-ship -> harness-remember/;
+    for (const relativePath of [
+      "workflows/core-loop.md",
+      "workflows/feature.md",
+      "workflows/bugfix.md",
+      "workflows/refactor.md",
+      "workflows/incident.md",
+    ]) {
+      const text = fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
+      assert.match(text, expected, `${relativePath} must use canonical workflow order`);
+    }
+  });
+
+  test("command metadata keeps start and map with updated descriptions and no brief", () => {
+    const { WORKFLOW_COMMANDS } = require(path.join(repoRoot, "lib", "runtime-command-catalog.js"));
+    const byId = new Map(WORKFLOW_COMMANDS.map((spec) => [spec.id, spec]));
+    assert.equal(byId.get("start").canonical, "harness-start");
+    assert.match(byId.get("start").description, /Session Start|restore|context/i);
+    assert.equal(byId.get("map").canonical, "harness-map");
+    assert.match(
+      byId.get("map").description,
+      /compatibility|manual context refresh|context refresh/i
+    );
+    assert.equal(byId.has("brief"), false);
+  });
+
   test("workflow command docs include tool discovery and routing guidance", () => {
     for (const fileName of [
       "harness-map.md",
@@ -541,5 +582,26 @@ describe("Session Start Protocol", () => {
     assert.match(start, /Session Start/i);
     const agents = fs.readFileSync(path.join(repoRoot, "AGENTS.md"), "utf8");
     assert.match(agents, /## Session Start/i);
+  });
+
+  test("canonical docs describe start map brief semantics", () => {
+    const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
+    const phase = fs.readFileSync(path.join(repoRoot, "docs", "phase-discipline.md"), "utf8");
+    const quick = fs.readFileSync(
+      path.join(repoRoot, "docs", "internal", "process-artifacts", "QUICK_REFERENCE.md"),
+      "utf8"
+    );
+    assert.match(readme, /Session Start → Discuss → Plan → Run → Verify → Ship → Remember/);
+    assert.match(phase, /Session Start → Discuss → Plan → Run → Verify → Ship → Remember/);
+    assert.match(quick, /START → DISCUSS → PLAN → RUN → VERIFY → SHIP → REMEMBER/);
+  });
+
+  test("storage architecture docs describe context history and memory locations", () => {
+    const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
+    const agents = fs.readFileSync(path.join(repoRoot, "AGENTS.md"), "utf8");
+    assert.match(readme, /\.harness\/context\.md/);
+    assert.match(readme, /\.harness\/history\/events\.jsonl/);
+    assert.match(readme, /\.harness\/memory\//);
+    assert.match(agents, /\.harness\/context\.md/);
   });
 });

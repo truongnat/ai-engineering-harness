@@ -14,7 +14,7 @@
 
 **Files:**
 - Modify: `AGENTS.md`
-- Create: `docs/superpowers/specs/2026-06-02-harness-repo-upgrade-design.md`
+- Create: `docs/internal/superpowers/specs/2026-06-02-harness-repo-upgrade-design.md`
 
 - [ ] **Step 1: Rewrite the central contract**
 

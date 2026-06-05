@@ -1,16 +1,16 @@
 #!/bin/sh
 # ai-engineering-harness lifecycle dispatcher — runtime/scope selection + .harness init + manual fallback
 #
-# For secure remote install with checksum verification, use:
-#   curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install-secure.sh | sh
+# For remote install with checksum verification, use:
+#   curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/v1.0.1/install.sh | sh
 #
 # For direct execution (without verification), use:
-#   curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- install
+#   curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/v1.0.1/aih.sh | sh -s -- install
 set -eu
 
 REPO="truongnat/ai-engineering-harness"
 TARGET="."
-REF="main"
+REF="v1.0.1"
 DRY_RUN=0
 FORCE=0
 RUNTIME=""
@@ -66,7 +66,7 @@ Options:
   --legacy-root         Alias for --runtime manual (root copy fallback)
   --dry-run             Show plan or preview without writing
   --force               Overwrite existing .harness/ files; runtime/manual may overwrite their files
-  --ref <git-ref>       GitHub ref to install (branch or tag, default: main)
+  --ref <git-ref>       GitHub ref to install (branch or tag, default: v1.0.1)
   --yes                 Skip interactive confirmation
   --help                Show this help
 
@@ -89,10 +89,10 @@ Advanced examples:
   aih.sh --runtime manual --target . --init-harness --dry-run
 
 Remote one-line install (secure, with checksum verification):
-  curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/install-secure.sh | sh
+  curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/v1.0.1/install.sh | sh
 
 Remote one-line install (direct, without verification):
-  curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/main/aih.sh | sh -s -- install
+  curl -fsSL https://raw.githubusercontent.com/truongnat/ai-engineering-harness/v1.0.1/aih.sh | sh -s -- install
 
 Legacy compatibility:
   install.sh remains available as a compatibility wrapper around aih.sh

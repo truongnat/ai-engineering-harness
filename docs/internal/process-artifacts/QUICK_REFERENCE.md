@@ -7,13 +7,13 @@ Bookmark this. You'll come back to it often.
 ## The 8-Command Loop
 
 ```
-START → MAP → DISCUSS → PLAN → RUN → VERIFY → SHIP → REMEMBER
+START → DISCUSS → PLAN → RUN → VERIFY → SHIP → REMEMBER
 ```
 
 | Command | What to do | Read | Write |
 |---|---|---|---|
-| **start** | Restore active session | GOAL, STATE, MEMORY | SESSION state |
-| **map** | Understand current state | Code, tests, docs | CONTEXT.md |
+| **start** | Restore session + map context | GOAL, STATE, MEMORY | SESSION state, context |
+| **map** | Manual context refresh | Code, docs, commands | CONTEXT.md |
 | **discuss** | Analyze and decide | GOAL, CONTEXT | DISCUSSION.md |
 | **plan** | Write implementation plan | DISCUSSION | PLAN-001.md |
 | **run** | Execute the plan | PLAN-001.md | TASKS.md |
@@ -47,7 +47,6 @@ START → MAP → DISCUSS → PLAN → RUN → VERIFY → SHIP → REMEMBER
 
 ```
 harness-start
-harness-map
 harness-discuss           ← Decide: build from scratch or extend existing?
 harness-plan              ← Break into small tasks (<1 hour each)
 harness-run               ← Code, test as you go
@@ -62,7 +61,6 @@ harness-remember          ← Update STATE.md with new design info
 
 ```
 harness-start
-harness-map               ← Find the code location
 harness-discuss           ← Reproduce bug, understand root cause
 harness-plan              ← Write minimal fix (don't refactor)
 harness-run               ← Apply fix, write regression test
@@ -77,7 +75,6 @@ harness-remember          ← Document root cause in MEMORY.md
 
 ```
 harness-start
-harness-map               ← Read the PR diff
 harness-discuss           ← Analyze: does it solve the problem?
                            ← Is it secure? Maintainable? Tested?
 harness-plan              ← List feedback items
@@ -92,7 +89,6 @@ harness-ship              ← Post review, discuss findings
 
 ```
 harness-start
-harness-map               ← Understand existing code
 harness-discuss           ← Why refactor? What's the benefit?
 harness-plan              ← Atomic changes (each commit works)
 harness-run               ← Refactor piece by piece

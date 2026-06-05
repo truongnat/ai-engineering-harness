@@ -12,8 +12,14 @@ test("release-facing files point at v1.0.1", () => {
   const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
   const docsIndex = fs.readFileSync(path.join(repoRoot, "docs", "README.md"), "utf8");
   const notesPath = path.join(repoRoot, "docs", "v1.0.1-release-notes.md");
-  const hero = fs.readFileSync(path.join(repoRoot, "site", "src", "components", "Hero.tsx"), "utf8");
-  const footer = fs.readFileSync(path.join(repoRoot, "site", "src", "components", "Footer.tsx"), "utf8");
+  const hero = fs.readFileSync(
+    path.join(repoRoot, "site", "src", "components", "Hero.tsx"),
+    "utf8"
+  );
+  const footer = fs.readFileSync(
+    path.join(repoRoot, "site", "src", "components", "Footer.tsx"),
+    "utf8"
+  );
 
   assert.equal(pkg.version, version);
   assert.equal(lock.version, version);

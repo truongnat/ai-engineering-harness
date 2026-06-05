@@ -118,7 +118,7 @@ Other runtimes may use **fallback** execution when the main agent follows the wo
 
 ## Related Docs
 
-- Design: `docs/superpowers/specs/2026-06-04-delegated-workers-design.md`
+- Design: `docs/internal/superpowers/specs/2026-06-04-delegated-workers-design.md`
 - Claude runtime: `docs/runtimes/claude-code.md`
 - Cursor runtime: `docs/runtimes/cursor.md`
 - Codex runtime: `docs/runtimes/codex.md`

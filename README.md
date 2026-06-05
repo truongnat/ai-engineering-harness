@@ -30,7 +30,7 @@ AI coding agents are fast at editing files, but they often skip engineering disc
 `ai-engineering-harness` gives them a repeatable operating contract:
 
 ```text
-Session Start → Map → Discuss → Plan → Run → Verify → Ship → Remember
+Session Start → Discuss → Plan → Run → Verify → Ship → Remember
 ```
 
 The result is a lighter-weight, easier-to-audit workflow for real software work, not just prompt-driven code generation.
@@ -72,11 +72,11 @@ Wizard details: [docs/npx-cli-ux.md](docs/npx-cli-ux.md), [docs/terminal-wizard-
 
 ## Watch the walkthrough
 
-Walkthrough video file: [AI_Engineering_Harness.mp4](./AI_Engineering_Harness.mp4)
+Walkthrough video: [AI_Engineering_Harness.mp4](https://raw.githubusercontent.com/truongnat/ai-engineering-harness/v1.0.1/AI_Engineering_Harness.mp4)
 
 Landing page with embedded player: [truongnat.github.io/ai-engineering-harness](https://truongnat.github.io/ai-engineering-harness/)
 
-> GitHub's README renderer does not reliably provide an inline player for a repo-local MP4, so the video is linked here and embedded on the landing page instead.
+> GitHub's README renderer does not reliably provide an inline player for an MP4, so the video is linked here and embedded on the landing page instead.
 
 ---
 
@@ -86,7 +86,7 @@ Landing page with embedded player: [truongnat.github.io/ai-engineering-harness](
 | --- | --- |
 | Agent system prompt | Senior role, MUST/MUST NOT rules, response formats |
 | Session Start | Restore active session, memory, blockers, and next command |
-| Commands | Canonical workflow contracts for map, discuss, plan, run, verify, ship, and remember |
+| Commands | Canonical workflow contracts for start, discuss, plan, run, verify, ship, and remember, plus compatibility helpers |
 | Prompt templates | Structured execution with blocked and ready branches |
 | Session memory | Store work by session instead of flat root dumps |
 | Tool discovery | Route to git, rg, worktree, markitdown, and code-graph fallbacks |
@@ -116,7 +116,7 @@ See [docs/typescript-usage.md](docs/typescript-usage.md) for the full API refere
 
 | Scenario | Without harness | With harness |
 | --- | --- | --- |
-| Agent starts a task | Reads goal, starts coding | Restores context, maps scope, writes discussion, then plans |
+| Agent starts a task | Reads goal, starts coding | Restores session state, maps repo/current context, then discusses and plans |
 | Agent finishes coding | Says "done" and ships | Runs checks, writes evidence, prepares report artifacts |
 | Session ends | Context disappears | Decisions, state, and lessons are preserved |
 | Next session | Starts from scratch | Continues from explicit session state |
@@ -158,9 +158,47 @@ Every workflow begins with [Session Start](docs/session-start.md).
 - blocked state
 - durable memory and hazards
 - tool context
+- repository/current context:
+  - important paths
+  - conventions
+  - commands
+  - quality gates
+  - provider entrypoints
+  - harness artifacts
+  - constraints
+  - likely affected areas when an active goal exists
 - next allowed command
 
 No implementation, verification, or shipping should happen before session state is established.
+
+`harness-map` is kept as a backward-compatible manual context refresh command. It is not part of the primary workflow because `harness-start` already performs context mapping.
+
+## Harness Storage
+
+Primary workflow storage lives under `.harness/`:
+
+```text
+.harness/
+├── STATE.md
+├── context.md
+├── tasks/
+│   └── <task-id>.md
+├── history/
+│   └── events.jsonl
+├── memory/
+│   ├── project.md
+│   ├── decisions.md
+│   ├── conventions.md
+│   └── lessons.md
+└── archive/
+    └── tasks/
+```
+
+- `.harness/STATE.md` is the current active pointer.
+- `.harness/context.md` stores repo/current-goal context produced by `harness-start`.
+- `.harness/tasks/*.md` stores task-level working context when task tracking is enabled.
+- `.harness/history/events.jsonl` stores append-only event history.
+- `.harness/memory/` stores durable knowledge extracted by `harness-remember`.
 
 ---
 

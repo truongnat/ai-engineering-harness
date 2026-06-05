@@ -28,6 +28,9 @@
   },
   "license": "MIT",
   "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
   "types": "./index.d.ts",
   "bin": {
     "ai-engineering-harness": "./bin/aih.js",
@@ -48,6 +51,18 @@
     "hooks/",
     "tool-capabilities/",
     "docs/",
+    "!docs/internal/",
+    "!docs/pack-dogfood-reports/",
+    "!docs/pack-dogfood-*.md",
+    "!docs/*-plan.md",
+    "!docs/*-readiness.md",
+    "!docs/*-scope.md",
+    "!docs/v0*.md",
+    "!docs/enforcement-system-report-*.md",
+    "!docs/gap-analysis.md",
+    "!docs/frozen-*.md",
+    "!docs/stable-contract-index.md",
+    "!docs/system-positioning.md",
     ".cursor-plugin/",
     ".claude-plugin/",
     ".codex-plugin/",
@@ -76,7 +91,7 @@
   ],
   "scripts": {
     "install:harness": "node install.js",
-    "test": "node --test test/run-tests.js test/cli-tests.js",
+    "test": "node --test",
     "validate": "node validate.js",
     "lint": "eslint lib/ bin/ test/ --max-warnings 0",
     "lint:fix": "eslint lib/ bin/ test/ --fix",
