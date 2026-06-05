@@ -3,14 +3,16 @@
 
 const path = require("node:path");
 const {
+  appendHarnessEvent,
   emitResult,
   exitFromResult,
+  findHarnessRoot,
   parseCliArgs,
   printHelp,
   resolveSessionDir,
   sanitizeSlug,
   timestampSlug,
-  writeMarkdownArtifact
+  writeMarkdownArtifact,
 } = require("./_util.js");
 
 const SPEC = {
@@ -19,7 +21,7 @@ const SPEC = {
   status: { required: true },
   summary: { required: true },
   "ready-to-continue": { required: false },
-  "next-command": { required: false }
+  "next-command": { required: false },
 };
 
 function recordSubagentResult(options) {
@@ -43,13 +45,13 @@ function recordSubagentResult(options) {
     "Paste the worker Agent Result envelope here when available.",
     "## Main Agent Decision",
     "",
-    `next_command: ${options["next-command"] || "harness-verify"}`
+    `next_command: ${options["next-command"] || "harness-verify"}`,
   ]);
 
   return {
     ok: true,
     status: "recorded",
-    artifact: path.relative(process.cwd(), artifactPath).replace(/\\/g, "/")
+    artifact: path.relative(process.cwd(), artifactPath).replace(/\\/g, "/"),
   };
 }
 
@@ -59,11 +61,23 @@ function main() {
     if (options.help) {
       printHelp("record-subagent-result.js", [
         "Usage:",
-        "  node hooks/core/record-subagent-result.js --session <path> --agent harness-reviewer --status issues-found --summary \"Review complete\" [--json]"
+        '  node hooks/core/record-subagent-result.js --session <path> --agent harness-reviewer --status issues-found --summary "Review complete" [--json]',
       ]);
       return;
     }
+    const sessionDir = resolveSessionDir(options.session);
     const result = recordSubagentResult(options);
+    try {
+      appendHarnessEvent(findHarnessRoot(sessionDir), {
+        type: "subagent-run",
+        agent: options.agent,
+        status: options.status,
+        ready_to_continue: options["ready-to-continue"] || null,
+        next_command: options["next-command"] || null,
+      });
+    } catch {
+      // Event logging is best-effort when harness root cannot be resolved.
+    }
     emitResult(result, options.json);
     exitFromResult({ ok: true });
   } catch (error) {

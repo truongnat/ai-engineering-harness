@@ -3,14 +3,16 @@
 
 const path = require("node:path");
 const {
+  appendHarnessEvent,
   emitResult,
   exitFromResult,
+  findHarnessRoot,
   parseCliArgs,
   printHelp,
   resolveSessionDir,
   sanitizeSlug,
   timestampSlug,
-  writeMarkdownArtifact
+  writeMarkdownArtifact,
 } = require("./_util.js");
 
 const SPEC = {
@@ -18,7 +20,7 @@ const SPEC = {
   command: { required: true },
   "exit-code": { required: true },
   summary: { required: true },
-  "used-by": { required: false }
+  "used-by": { required: false },
 };
 
 function recordToolOutput(options) {
@@ -44,14 +46,14 @@ function recordToolOutput(options) {
     "",
     "```txt",
     "Full command output was not stored by default.",
-    "```"
+    "```",
   ]);
 
   return {
     ok: true,
     status: "recorded",
     artifact: path.relative(process.cwd(), artifactPath).replace(/\\/g, "/"),
-    result
+    result,
   };
 }
 
@@ -61,11 +63,24 @@ function main() {
     if (options.help) {
       printHelp("record-tool-output.js", [
         "Usage:",
-        "  node hooks/core/record-tool-output.js --session <path> --command \"npm test\" --exit-code 0 --summary \"All tests passed\" [--used-by harness-verify] [--json]"
+        '  node hooks/core/record-tool-output.js --session <path> --command "npm test" --exit-code 0 --summary "All tests passed" [--used-by harness-verify] [--json]',
       ]);
       return;
     }
+    const sessionDir = resolveSessionDir(options.session);
     const result = recordToolOutput(options);
+    try {
+      const exitCode = Number(options["exit-code"]);
+      appendHarnessEvent(findHarnessRoot(sessionDir), {
+        type: "tool-run",
+        command: options.command,
+        exit_code: Number.isNaN(exitCode) ? options["exit-code"] : exitCode,
+        result: result.result,
+        used_by: options["used-by"] || "harness-verify",
+      });
+    } catch {
+      // Event logging is best-effort when harness root cannot be resolved.
+    }
     emitResult(result, options.json);
     exitFromResult({ ok: true });
   } catch (error) {

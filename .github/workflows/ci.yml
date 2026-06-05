@@ -39,6 +39,9 @@ jobs:
       - name: Run repository tests
         run: npm test
 
+      - name: Run eval regression
+        run: node bin/aih.js eval run sample-bugfix --yes
+
       - name: Run dogfood demo tests
         working-directory: examples/dogfood-tiny-node-api
         run: npm test

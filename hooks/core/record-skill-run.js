@@ -3,21 +3,23 @@
 
 const path = require("node:path");
 const {
+  appendHarnessEvent,
   emitResult,
   exitFromResult,
+  findHarnessRoot,
   parseCliArgs,
   printHelp,
   resolveSessionDir,
   sanitizeSlug,
   timestampSlug,
-  writeMarkdownArtifact
+  writeMarkdownArtifact,
 } = require("./_util.js");
 
 const SPEC = {
   session: { required: true },
   skill: { required: true },
   status: { required: true },
-  summary: { required: true }
+  summary: { required: true },
 };
 
 function recordSkillRun(options) {
@@ -37,13 +39,13 @@ function recordSkillRun(options) {
     options.summary,
     "## Outputs",
     "",
-    "- Record skill outputs in session artifacts or linked files."
+    "- Record skill outputs in session artifacts or linked files.",
   ]);
 
   return {
     ok: true,
     status: "recorded",
-    artifact: path.relative(process.cwd(), artifactPath).replace(/\\/g, "/")
+    artifact: path.relative(process.cwd(), artifactPath).replace(/\\/g, "/"),
   };
 }
 
@@ -53,11 +55,21 @@ function main() {
     if (options.help) {
       printHelp("record-skill-run.js", [
         "Usage:",
-        "  node hooks/core/record-skill-run.js --session <path> --skill verification --status completed --summary \"Checks recorded\" [--json]"
+        '  node hooks/core/record-skill-run.js --session <path> --skill verification --status completed --summary "Checks recorded" [--json]',
       ]);
       return;
     }
+    const sessionDir = resolveSessionDir(options.session);
     const result = recordSkillRun(options);
+    try {
+      appendHarnessEvent(findHarnessRoot(sessionDir), {
+        type: "skill-run",
+        skill: options.skill,
+        status: options.status,
+      });
+    } catch {
+      // Event logging is best-effort when harness root cannot be resolved.
+    }
     emitResult(result, options.json);
     exitFromResult({ ok: true });
   } catch (error) {

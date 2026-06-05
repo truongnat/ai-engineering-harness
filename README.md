@@ -124,6 +124,17 @@ npx ai-engineering-harness eval report <run-id>
 
 See [docs/evals.md](docs/evals.md) for the benchmark model and report format.
 
+## Insights
+
+Summarize local harness telemetry from `.harness/history/events.jsonl`:
+
+```bash
+npx ai-engineering-harness insights
+npx ai-engineering-harness insights --target . --json
+```
+
+See [docs/insights.md](docs/insights.md).
+
 ---
 
 ## Comparison: with vs without

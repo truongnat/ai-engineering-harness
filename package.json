@@ -93,6 +93,7 @@
   "scripts": {
     "install:harness": "node install.js",
     "test": "node --test",
+    "test:evals": "node --test test/evals/",
     "validate": "node validate.js",
     "lint": "eslint lib/ bin/ test/ --max-warnings 0",
     "lint:fix": "eslint lib/ bin/ test/ --fix",

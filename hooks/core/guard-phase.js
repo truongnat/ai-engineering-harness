@@ -4,6 +4,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const {
+  appendHarnessEvent,
   emitResult,
   exitFromResult,
   extractField,
@@ -11,12 +12,12 @@ const {
   parseCliArgs,
   printHelp,
   readText,
-  resolveSessionDir
+  resolveSessionDir,
 } = require("./_util.js");
 
 const SPEC = {
   command: { required: true },
-  session: { required: true }
+  session: { required: true },
 };
 
 function hasSubstantiveSection(content, heading) {
@@ -38,7 +39,7 @@ function planApproved(sessionDir, stateContent) {
       ok: false,
       reason: `${planName} is missing.`,
       nextCommand: "harness-plan",
-      questions: ["Which plan should be approved before implementation?"]
+      questions: ["Which plan should be approved before implementation?"],
     };
   }
   const planContent = readText(planPath);
@@ -47,7 +48,7 @@ function planApproved(sessionDir, stateContent) {
       ok: false,
       reason: `${planName} is not approved.`,
       nextCommand: "harness-plan",
-      questions: ["Do you approve the current plan for implementation?"]
+      questions: ["Do you approve the current plan for implementation?"],
     };
   }
   return { ok: true };
@@ -62,7 +63,10 @@ function hasImplementationEvidence(sessionDir) {
     }
   }
   const toolRunsDir = path.join(sessionDir, "artifacts", "tool-runs");
-  if (fs.existsSync(toolRunsDir) && fs.readdirSync(toolRunsDir).some((name) => name.endsWith(".md"))) {
+  if (
+    fs.existsSync(toolRunsDir) &&
+    fs.readdirSync(toolRunsDir).some((name) => name.endsWith(".md"))
+  ) {
     return true;
   }
   return false;
@@ -75,7 +79,7 @@ function verifyReady(sessionDir) {
       ok: false,
       reason: "VERIFY.md is missing.",
       nextCommand: "harness-verify",
-      questions: ["Which verification commands should prove the current claim?"]
+      questions: ["Which verification commands should prove the current claim?"],
     };
   }
   const verify = readText(verifyPath);
@@ -86,15 +90,18 @@ function verifyReady(sessionDir) {
       ok: false,
       reason: "VERIFY.md status is pending or blocked.",
       nextCommand: "harness-verify",
-      questions: ["What verification evidence is still missing?"]
+      questions: ["What verification evidence is still missing?"],
     };
   }
-  if (!hasSubstantiveSection(verify, "## Tests Run") && !hasSubstantiveSection(verify, "## Evidence")) {
+  if (
+    !hasSubstantiveSection(verify, "## Tests Run") &&
+    !hasSubstantiveSection(verify, "## Evidence")
+  ) {
     return {
       ok: false,
       reason: "VERIFY.md lacks tests run or evidence.",
       nextCommand: "harness-verify",
-      questions: ["Which checks were run and what evidence supports the status?"]
+      questions: ["Which checks were run and what evidence supports the status?"],
     };
   }
   return { ok: true };
@@ -111,7 +118,7 @@ function guardPhase(options) {
       command: options.command,
       reason: ".harness/STATE.md is missing.",
       nextCommand: "harness-start",
-      questions: ["Which session should be active before continuing?"]
+      questions: ["Which session should be active before continuing?"],
     };
   }
 
@@ -137,7 +144,7 @@ function guardPhase(options) {
         command,
         reason: "No implementation evidence or completed tasks found for verification.",
         nextCommand: "harness-run",
-        questions: ["What implementation work should be verified?"]
+        questions: ["What implementation work should be verified?"],
       };
     }
   }
@@ -153,7 +160,7 @@ function guardPhase(options) {
     ok: true,
     status: "ready",
     command,
-    nextCommand: command
+    nextCommand: command,
   };
 }
 
@@ -170,11 +177,24 @@ function main() {
         "  harness-verify → implementation evidence required",
         "  harness-ship   → VERIFY.md with explicit status and evidence required",
         "",
-        "Exit code 0 when ready, 1 when blocked."
+        "Exit code 0 when ready, 1 when blocked.",
       ]);
       return;
     }
+    const sessionDir = resolveSessionDir(options.session);
     const result = guardPhase(options);
+    try {
+      appendHarnessEvent(findHarnessRoot(sessionDir), {
+        type: "guard-phase",
+        command: result.command,
+        status: result.status,
+        ok: result.ok,
+        reason: result.reason || null,
+        next_command: result.nextCommand || null,
+      });
+    } catch {
+      // Event logging is best-effort when harness root cannot be resolved.
+    }
     emitResult(result, options.json);
     exitFromResult(result);
   } catch (error) {

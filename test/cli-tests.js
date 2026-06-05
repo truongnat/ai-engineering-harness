@@ -35,7 +35,16 @@ describe("CLI Arguments Parser", () => {
   });
 
   test("parseArgv recognizes valid commands", () => {
-    for (const cmd of ["install", "status", "doctor", "update", "uninstall", "help", "eval"]) {
+    for (const cmd of [
+      "install",
+      "status",
+      "doctor",
+      "update",
+      "uninstall",
+      "help",
+      "eval",
+      "insights",
+    ]) {
       const opts = cliArgs.parseArgv(["node", "aih.js", cmd]);
       assert.equal(opts.command, cmd);
     }
@@ -154,6 +163,13 @@ describe("CLI Help", () => {
     assert.match(help, /ai-engineering-harness eval list/);
     assert.match(help, /ai-engineering-harness eval run <task-or-suite>/);
     assert.match(help, /ai-engineering-harness eval report <run-id>/);
+  });
+
+  test("renderHelp includes insights command", () => {
+    const { renderHelp } = fresh("lib/cli-help.js");
+    const help = renderHelp();
+    assert.match(help, /ai-engineering-harness insights/);
+    assert.match(help, /--json/);
   });
 });
 

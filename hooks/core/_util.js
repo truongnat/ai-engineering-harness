@@ -109,7 +109,11 @@ function timestampSlug(date = new Date()) {
 }
 
 function sanitizeSlug(value) {
-  return String(value).replace(/[^a-zA-Z0-9._-]+/g, "-").replace(/^-+|-+$/g, "") || "record";
+  return (
+    String(value)
+      .replace(/[^a-zA-Z0-9._-]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "record"
+  );
 }
 
 function writeMarkdownArtifact(filePath, sections) {
@@ -119,7 +123,23 @@ function writeMarkdownArtifact(filePath, sections) {
   return filePath;
 }
 
+function resolveEventsPath(targetRoot) {
+  return path.join(targetRoot, ".harness", "history", "events.jsonl");
+}
+
+function appendHarnessEvent(targetRoot, event) {
+  const eventsPath = resolveEventsPath(targetRoot);
+  ensureDir(path.dirname(eventsPath));
+  const payload = {
+    ts: new Date().toISOString(),
+    ...event,
+  };
+  fs.appendFileSync(eventsPath, `${JSON.stringify(payload)}\n`, "utf8");
+  return eventsPath;
+}
+
 module.exports = {
+  appendHarnessEvent,
   emitResult,
   ensureDir,
   exitFromResult,
@@ -128,8 +148,9 @@ module.exports = {
   parseCliArgs,
   printHelp,
   readText,
+  resolveEventsPath,
   resolveSessionDir,
   sanitizeSlug,
   timestampSlug,
-  writeMarkdownArtifact
+  writeMarkdownArtifact,
 };
