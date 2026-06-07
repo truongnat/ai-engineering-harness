@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.2
+
+### Patch Changes
+
+- a2ebdf0: Fix core review findings across git hygiene, evals, and policy enforcement.
+  Also keep CI green when the repo no longer has root-level JavaScript files.
+
 ## [1.0.1] - 2026-06-05
 
 ### Added
@@ -224,6 +231,7 @@
 ## [Unreleased]
 
 ### Changed
+
 - Windows bootstrap docs and `aih.ps1` help: recommended PowerShell install includes `-Yes` for copy-paste flows
 - `aih.ps1` warns when private project install/update targets a non-Git directory (`.git/info/exclude` unavailable)
 - `doctor` and docs: clearer non-Git target messaging (`git init` or cloned repo)
