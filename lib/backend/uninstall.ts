@@ -1,17 +1,12 @@
 /**
  * Uninstall orchestrator.
- *
- * Mirrors aih.sh:
- *   - file_contains_harness_marker (667-671)
- *   - remove_file_if_harness_owned  (673-715)
- *   - remove_dir_if_requested       (717-747)
- *   - run_uninstall                 (1173-1209)
  */
 
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { uninstallPathsForProvider, HARNESS_MARKER } from "./constants";
 import { removeIgnoreBlock } from "./git-hygiene";
+import { isGitRepo } from "../provider-detection";
 
 export interface UninstallContext {
   targetAbs: string;
@@ -28,7 +23,6 @@ export interface UninstallResult {
   messages: string[];
 }
 
-/** Mirrors aih.sh file_contains_harness_marker (667-671). */
 function fileContainsHarnessMarker(filePath: string): boolean {
   if (!fs.existsSync(filePath)) return false;
   try {
@@ -39,14 +33,7 @@ function fileContainsHarnessMarker(filePath: string): boolean {
   }
 }
 
-/**
- * Mirrors aih.sh remove_file_if_harness_owned (673-715).
- *
- * Ownership rules:
- *   "marker"        – remove only if file contains the harness marker string.
- *   "claude-settings" – always skip (user may have their own settings).
- *   "always"        – remove regardless of content.
- */
+/** Remove a file only when its ownership policy allows it. */
 function removeFileIfHarnessOwned(
   rel: string,
   ownership: "marker" | "claude-settings" | "always",
@@ -83,9 +70,7 @@ function removeFileIfHarnessOwned(
   process.stdout.write(`REMOVE ${rel}\n`);
 }
 
-/**
- * Mirrors aih.sh remove_dir_if_requested (717-747).
- */
+/** Remove a directory when requested. */
 function removeDirIfRequested(
   rel: string,
   shouldRemove: boolean,
@@ -116,18 +101,10 @@ function removeDirIfRequested(
   process.stdout.write(`REMOVE ${rel}\n`);
 }
 
-/**
- * Mirrors aih.sh run_uninstall (1173-1209).
- *
- * Ownership rules applied per path:
- *   AGENTS.md            → "marker"
- *   .claude/settings.json → "claude-settings"
- *   everything else      → "always"
- */
+/** Remove provider-owned files plus optional cache/state directories. */
 export function runUninstall(ctx: UninstallContext): UninstallResult {
   const messages: string[] = [];
 
-  // Global scope: not implemented (mirrors aih.sh:1174-1181)
   if (ctx.scope === "global") {
     if (ctx.dryRun) {
       process.stdout.write("\n--- Uninstall ---\n");
@@ -143,13 +120,11 @@ export function runUninstall(ctx: UninstallContext): UninstallResult {
     };
   }
 
-  // Resolve all=true → force removeCache and removeState
   const removeCache = ctx.all || ctx.removeCache;
   const removeState = ctx.all || ctx.removeState;
 
   process.stdout.write("\n--- Uninstall ---\n");
 
-  // Process per-provider paths
   const paths = uninstallPathsForProvider(ctx.provider);
   for (const rel of paths) {
     if (!rel) continue;
@@ -166,12 +141,10 @@ export function runUninstall(ctx: UninstallContext): UninstallResult {
     removeFileIfHarnessOwned(rel, ownership, ctx.targetAbs, ctx.dryRun);
   }
 
-  // Cache and state dirs
   removeDirIfRequested(".ai-harness", removeCache, ctx.targetAbs, ctx.dryRun);
   removeDirIfRequested(".harness", removeState, ctx.targetAbs, ctx.dryRun);
 
-  // Git exclude block
-  if (fs.existsSync(path.join(ctx.targetAbs, ".git"))) {
+  if (isGitRepo(ctx.targetAbs)) {
     removeIgnoreBlock({ targetAbs: ctx.targetAbs, dryRun: ctx.dryRun });
   } else {
     process.stdout.write("SKIP .git/info/exclude\n");

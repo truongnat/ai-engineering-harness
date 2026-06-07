@@ -110,6 +110,7 @@
     "lint:fix": "eslint bin/ test/ *.js --fix",
     "format": "prettier --write lib/ bin/ test/ *.js *.md",
     "format:check": "prettier --check lib/ bin/ test/ *.js *.md",
+    "ci:local": "node scripts/run-local-ci.js",
     "generate:policy-docs": "node scripts/generate-policy-docs.js"
   },
   "dependencies": {

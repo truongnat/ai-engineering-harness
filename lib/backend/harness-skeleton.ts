@@ -1,21 +1,4 @@
-/**
- * Harness skeleton generator: scaffolds a project-local `.harness/` directory
- * of markdown stubs when the user runs `aih init` or installs the harness.
- *
- * Mirrors the shell functions in aih.sh:
- *   - write_target_file         (1479-1511)
- *   - harness_skeleton_harness_md   (1513-1549)
- *   - harness_skeleton_team_md      (1551-1583)
- *   - harness_skeleton_skills_md    (1585-1613)
- *   - harness_skeleton_workflow_md  (1615-1643)
- *   - harness_skeleton_gates_md     (1645-1673)
- *   - harness_skeleton_memory_md    (1675-1707)
- *   - harness_skeleton_decisions_md (1709-1735)
- *   - harness_skeleton_hazards_md   (1737-1763)
- *   - harness_skeleton_index_md     (1766-1796)
- *   - harness_policies_json         (policy engine defaults)
- *   - init_harness_profile          (1798-1811)
- */
+/** Harness skeleton generator for project-local `.harness/` files. */
 
 import * as fs from "node:fs";
 import * as path from "node:path";
@@ -41,7 +24,6 @@ export interface SkeletonResult {
   skipped: string[];
 }
 
-/** Mirrors aih.sh harness_skeleton_harness_md (1513-1549). */
 function skeletonHarnessMd(): string {
   return `# Harness Profile
 
@@ -54,32 +36,49 @@ Describe the repository-specific harness operating model, the artifacts it owns,
 ## Current Status
 
 - Status: draft
-- Last updated:
-- Owner:
+- Last updated: YYYY-MM-DD
+- Owner: team-or-person
+- Review cadence: weekly | release-based | ad hoc
 
 ## Scope
 
-List the commands, artifacts, and validation gates this harness owns in this repository.
+- Commands: \`harness-start\`, \`harness-plan\`, \`harness-run\`, \`harness-verify\`, \`harness-ship\`, \`harness-remember\`
+- Primary artifacts: \`.harness/GOAL.md\`, \`.harness/PLAN.md\`, \`.harness/VERIFY.md\`, \`.harness/SHIP.md\`
+- Validation gates: unit tests, integration checks, docs review, release checks
 
 ## Operating Model
 
-Describe the command loop, artifact update rules, and any repository-specific exceptions.
+1. Start every session by reading state and goal artifacts.
+2. Record scope and plan before editing code.
+3. Verify with commands and evidence before claiming completion.
+4. Capture durable lessons only after verified work ships.
 
 ## Assumptions
 
-Record assumptions that affect planning, implementation, or verification.
+| Assumption | Why it matters | How to verify |
+| --- | --- | --- |
+| CI is the main release gate | Local pass alone is not enough | link CI run in \`VERIFY.md\` |
+| \`.harness/\` is project-local state | Users may have multiple concurrent goals | keep artifacts scoped to one repo |
 
 ## Unknowns
 
-Record open questions that still need human input or future investigation.
+| Question | Blocking? | Owner | Next step |
+| --- | --- | --- | --- |
+|  | yes/no |  |  |
 
 ## Human Review
 
-Record anything that should be reviewed by a human before shipping.
+List any policy, scope, or release decisions that still need a human sign-off.
+
+## Example Profile
+
+- Repository: example-service
+- Purpose: keep API changes tied to written goals, explicit verification, and release notes
+- Active artifacts: \`GOAL.md\`, \`PLAN.md\`, \`VERIFY.md\`, \`SHIP.md\`
+- Default verification: \`npm test\`, contract validation, and CI confirmation before ship
 `;
 }
 
-/** Mirrors aih.sh harness_skeleton_team_md (1551-1583). */
 function skeletonTeamMd(): string {
   return `# Team Profile
 
@@ -89,31 +88,43 @@ Describe who owns the repository, who reviews changes, and how handoffs work.
 
 ## Current Status
 
-Record whether the team profile is draft, adopted, or needs attention.
+- Status: draft
+- Primary maintainer:
+- Backup reviewer:
+- Escalation channel:
 
 ## Selected Pattern
 
-Describe the operating pattern the team follows by default.
+- Small scoped changes with explicit verification
+- Human approval for scope changes and destructive actions
+- Evidence-first ship decisions
 
 ## Roles
 
-List the roles and responsibilities that matter for this repository.
+| Role | Responsibilities | Notes |
+| --- | --- | --- |
+| Maintainer | approves plan and ship decisions |  |
+| Implementer | edits code and records verification |  |
+| Reviewer | checks regressions and risks |  |
 
 ## Handoff Rules
 
-Describe what must be handed off in markdown before work changes owners.
+- Update \`STATE.md\` with current phase
+- Link the active \`GOAL.md\` and \`PLAN.md\`
+- Record unfinished checks in \`VERIFY.md\` or \`BLOCKED.md\`
 
 ## Escalation Rules
 
-Describe when a human must be consulted or a decision must be escalated.
+- Acceptance criteria change
+- Destructive migration or data loss risk appears
+- Verification is blocked by missing credentials, infra, or production access
 
 ## Human Review
 
-Record the specific items that need human review before shipping.
+List pending staffing, ownership, or escalation gaps that need human review.
 `;
 }
 
-/** Mirrors aih.sh harness_skeleton_skills_md (1585-1613). */
 function skeletonSkillsMd(): string {
   return `# Skills Profile
 
@@ -123,27 +134,33 @@ Describe which skills or skill packs are available in this repository.
 
 ## Current Status
 
-Record whether the selected skills are complete, partial, or still being defined.
+- Status: draft
+- Last reviewed: YYYY-MM-DD
 
 ## Selected Core Skills
 
-List the core skills that are actively expected in this workspace.
+| Skill | When to use it | Owner | Notes |
+| --- | --- | --- | --- |
+| repo-review | code review and risk surfacing |  |  |
+| frontend-polish | final UI pass |  | optional |
 
 ## Selected Skill Packs
 
-List any broader skill packs that are intentionally enabled.
+| Pack | Coverage | Notes |
+| --- | --- | --- |
+| base engineering | planning, implementation, verification |  |
 
 ## Excluded Skills Or Packs
 
-List capabilities that are intentionally not part of this repository setup.
+- Release automation that requires private credentials
+- Direct production access without human approval
 
 ## Human Review
 
-Record any missing or pending skill decisions for human review.
+List missing skills, overlaps, or deprecations that need a decision.
 `;
 }
 
-/** Mirrors aih.sh harness_skeleton_workflow_md (1615-1643). */
 function skeletonWorkflowMd(): string {
   return `# Workflow Profile
 
@@ -153,27 +170,46 @@ Describe the workflow stages, command loop, and how the repository uses them.
 
 ## Current Status
 
-Record whether the workflow is draft, adopted, or needs review.
+- Status: draft
+- Primary workflow: Session Start -> Discuss -> Plan -> Run -> Verify -> Ship -> Remember
 
 ## Selected Workflow
 
-Describe the workflow pattern in use for this repository.
+- Default path: \`harness-start\` -> \`harness-discuss\` -> \`harness-plan\` -> \`harness-run\` -> \`harness-verify\` -> \`harness-ship\` -> \`harness-remember\`
+- Compatibility command: \`harness-map\` for manual context refresh only
 
 ## Command Sequence
 
-List the command sequence that the repository expects operators to follow.
+| Phase | Required artifact updates | Exit condition |
+| --- | --- | --- |
+| Start | \`STATE.md\`, session context | active goal and phase known |
+| Plan | \`GOAL.md\`, \`PLAN.md\` | approved plan exists |
+| Run | \`TASKS.md\`, changed files | scoped implementation complete |
+| Verify | \`VERIFY.md\` | evidence recorded |
+| Ship | \`SHIP.md\` | user-facing status matches evidence |
 
 ## Execution Rules
 
-Describe how state changes, plan approval, verification, and shipping are handled.
+- Never skip plan approval for non-trivial changes
+- Record blocked state instead of guessing
+- Ship summary must link verification evidence
 
 ## Human Review
 
-Record workflow exceptions or unresolved process questions for human review.
+List repo-specific workflow exceptions that still need approval.
+
+## Concrete Example
+
+\`harness-start\` -> refresh \`STATE.md\` and confirm the active goal
+\`harness-discuss\` -> capture open questions and tradeoffs
+\`harness-plan\` -> write an approved \`PLAN.md\`
+\`harness-run\` -> implement the scoped change and update \`TASKS.md\`
+\`harness-verify\` -> record commands, results, and gaps in \`VERIFY.md\`
+\`harness-ship\` -> summarize outcome in \`SHIP.md\`
+\`harness-remember\` -> promote durable lessons into \`DECISIONS.md\`, \`HAZARDS.md\`, or \`INDEX.md\`
 `;
 }
 
-/** Mirrors aih.sh harness_skeleton_gates_md (1645-1673). */
 function skeletonGatesMd(): string {
   return `# Quality Gates
 
@@ -183,27 +219,43 @@ Describe the quality gates that protect repository changes.
 
 ## Current Status
 
-Record whether the gate set is draft, adopted, or needs review.
+- Status: draft
+- Last calibrated: YYYY-MM-DD
 
 ## Quality Gates
 
-List the gates that must pass before shipping or remembering lessons.
+| Gate | Applies when | Evidence |
+| --- | --- | --- |
+| Build/typecheck | source or package changes | command output in \`VERIFY.md\` |
+| Tests | behavior changes | exact command + result |
+| Manual validation | UX/docs/install flows | screenshots, snippets, or notes |
+| CI | merge/release-sensitive work | linked run URL or run id |
 
 ## Evidence Requirements
 
-Describe the evidence required for verification and shipping decisions.
+- Record the exact commands executed
+- Capture pass/fail status, not intent
+- Note skipped checks and why they were skipped
 
 ## Stop Conditions
 
-Describe the conditions that force the workflow to stop.
+- Plan missing or not approved
+- Acceptance criteria unclear
+- Verification failed or is blocked
 
 ## Human Review
 
-Record gate exceptions or missing evidence that still need human review.
+List temporary waivers and who approved them.
+
+## Example Gates
+
+| Gate | Applies when | Evidence |
+| --- | --- | --- |
+| Regression tests pass | source behavior changes | \`npm test\` output copied into \`VERIFY.md\` |
+| Shipping evidence is concrete | any ship step | CI run id plus exact verification commands |
 `;
 }
 
-/** Mirrors aih.sh harness_skeleton_memory_md (1675-1707). */
 function skeletonMemoryMd(): string {
   return `# Memory Profile
 
@@ -213,31 +265,48 @@ Describe what long-lived memory this repository should retain.
 
 ## Current Status
 
-Record whether memory capture is draft, active, or needs review.
+- Status: draft
+- Storage model: markdown files in \`.harness/\`
 
 ## Recall Before Planning
 
-Describe what should be reviewed before planning new work.
+- Relevant entries in \`DECISIONS.md\`
+- Known regression areas in \`HAZARDS.md\`
+- Reusable commands in \`INDEX.md\`
 
 ## Remember After Shipping
 
-Describe what durable lessons should be recorded after shipping work.
+- Root causes worth reusing
+- Verification recipes that saved time
+- Project-level decisions that affect future plans
 
 ## Memory Types
 
-List the types of memory this repository captures.
+| Artifact | Stores | When to update |
+| --- | --- | --- |
+| \`DECISIONS.md\` | durable project decisions | after approval |
+| \`HAZARDS.md\` | recurring failure modes | after confirmed incident or review |
+| \`INDEX.md\` | reusable commands and references | after a repeatable workflow is proven |
+| \`REMEMBER.md\` | goal-level lessons | after shipping verified work |
 
 ## Forbidden Content
 
-Describe what must never be written into repository memory.
+- Secrets, credentials, tokens
+- Customer data or private business data
+- One-off notes that belong only in a local scratchpad
 
 ## Human Review
 
-Record memory items that need human review before they are committed.
+List borderline memory items that may need promotion or deletion.
+
+## Example Entry
+
+- Lesson: release-facing doc changes must update validator assertions in the same patch
+- Why it matters: docs can drift silently while tests stay green
+- Where to store it: promote to \`INDEX.md\` if repeated across multiple goals
 `;
 }
 
-/** Mirrors aih.sh harness_skeleton_decisions_md (1709-1735). */
 function skeletonDecisionsMd(): string {
   return `# Decisions
 
@@ -253,19 +322,36 @@ function skeletonDecisionsMd(): string {
 
 ### DECISION-000
 
-- Date:
+- Date: YYYY-MM-DD
 - Status: proposed | accepted | superseded
-- Area:
-- Decision:
-- Why this decision exists:
-- What changes if revisited:
-- Related hazards:
-- Verification impact:
-- Follow-up:
+- Area: runtime | docs | release | tooling
+- Decision: one-sentence statement
+- Rationale: what pain, constraint, or tradeoff this decision resolves
+- Alternatives considered: rejected options and why they were not chosen
+- Consequences: follow-on costs, migration impact, or rollback expectations
+- What changes if revisited: migration cost, breaking surface, or rollback path
+- Related hazards: \`HAZARD-###\`, if any
+- Verification impact: what checks become required
+- Follow-up: owner + next review date
+
+## Example
+
+### DECISION-001
+
+- Date: 2026-06-07
+- Status: accepted
+- Area: install
+- Decision: Keep provider-specific entrypoints project-local instead of copying root-level command packs.
+- Rationale: avoids stale duplicated surfaces and keeps uninstall predictable.
+- Alternatives considered: keeping the flat-root fallback or provider-specific shims for backward compatibility.
+- Consequences: install, update, and uninstall stay smaller, but manual fallback must stay AGENTS-based.
+- What changes if revisited: install/update/uninstall contracts and docs must change together.
+- Related hazards: \`HAZARD-002\`
+- Verification impact: install smoke tests and package surface checks must pass.
+- Follow-up: review after the next release cut.
 `;
 }
 
-/** Mirrors aih.sh harness_skeleton_hazards_md (1737-1763). */
 function skeletonHazardsMd(): string {
   return `# Hazards
 
@@ -281,20 +367,34 @@ function skeletonHazardsMd(): string {
 
 ### HAZARD-000
 
-- Date:
+- Date: YYYY-MM-DD
 - Severity: low | medium | high
-- Area:
-- Trigger:
-- Failure mode:
-- Early warning signs:
-- Mitigation:
-- Verification focus:
-- Related decisions:
-- Notes:
+- Area: install | runtime | release | docs | evals
+- Trigger: what condition causes the hazard
+- Failure mode: what breaks
+- Early warning signs: first signals to watch
+- Mitigation: how to reduce or prevent the risk
+- Verification focus: exact checks to run
+- Related decisions: \`DECISION-###\`, if any
+- Notes: links, incidents, or follow-up
+
+## Example
+
+### HAZARD-001
+
+- Date: 2026-06-07
+- Severity: medium
+- Area: install
+- Trigger: worktree repo or non-standard \`.git\` layout
+- Failure mode: git hygiene writes to the wrong exclude path or silently skips it
+- Early warning signs: install says success but \`status\` still shows missing exclude block
+- Mitigation: resolve the effective git dir before reading or writing \`.git/info/exclude\`
+- Verification focus: install into a normal repo and a worktree-backed repo
+- Related decisions: \`DECISION-001\`
+- Notes: keep one shared helper for git-dir resolution
 `;
 }
 
-/** Mirrors aih.sh harness_skeleton_index_md (1766-1796). */
 function skeletonIndexMd(): string {
   return `# Memory Index
 
@@ -310,19 +410,22 @@ function skeletonIndexMd(): string {
 
 | Name | Command | When To Use | Notes |
 | --- | --- | --- | --- |
-|  |  |  |  |
+| Full test suite | \`npm test\` | before shipping behavior changes | records build + test coverage of the public surface |
+| Package validation | \`node bin/validate.js\` | when docs/templates/contracts move | catches repo-surface drift |
 
 ## Verification Recipes
 
 | Area | Check | Evidence To Capture | Notes |
 | --- | --- | --- | --- |
-|  |  |  |  |
+| Install flow | dry-run + real install in temp repo | created files and warnings | cover private and shared modes |
+| Runtime docs | read rendered markdown in target | key headings and commands | verify wording, not just file existence |
 
 ## Useful References
 
 | Topic | Artifact Or Doc | Why It Matters |
 | --- | --- | --- |
-|  |  |  |
+| Workflow rules | \`docs/phase-discipline.md\` | defines hard phase stops |
+| Session start | \`docs/session-start.md\` | explains state restoration contract |
 `;
 }
 
@@ -397,7 +500,7 @@ function skeletonPoliciesJson(): string {
 `;
 }
 
-/** Map of relative path (under .harness/) to content generator. */
+/** Map of relative path (under `.harness/`) to content generator. */
 const SKELETON_FILES: Array<{ rel: string; content: () => string }> = [
   { rel: ".harness/HARNESS.md", content: skeletonHarnessMd },
   { rel: ".harness/TEAM.md", content: skeletonTeamMd },
@@ -413,24 +516,11 @@ const SKELETON_FILES: Array<{ rel: string; content: () => string }> = [
 ];
 
 /**
- * Mirrors aih.sh write_target_file (1479-1511).
+ * Write one skeleton file and report whether it was created, skipped, or overwritten.
  *
- * - If the file exists and force is false: SKIP (print "SKIP <rel>").
- * - If the file exists and force is true: OVERWRITE (print "OVERWRITE <rel>").
- * - If the file does not exist: CREATE (print "CREATE <rel>").
- * - In dryRun mode: prints "WOULD CREATE/SKIP/OVERWRITE <rel>" without writing.
- *
- * Returns "created", "skipped", or "overwritten".
- *
- * NOTE: All skeleton file content strings end with a trailing `\n` (POSIX text
- * file convention). The original shell functions in aih.sh use `$()` command
- * substitution which silently strips the final newline. A byte-for-byte diff
- * against shell-generated output will therefore show a 1-byte difference.
- *
- * That means a repository initialized by the shell-era path can see the first
- * TypeScript-backed install or re-init treat those files as changed/overwrite
- * candidates even when the visible markdown content is otherwise identical.
- * This is intentional and an improvement over the shell behaviour.
+ * All generated markdown ends with a trailing newline. Repositories that were
+ * initialized by older installers may therefore show a first overwrite even
+ * when the visible text is unchanged.
  */
 function writeTargetFile(
   rel: string,
@@ -472,13 +562,7 @@ function writeTargetFile(
   return "created";
 }
 
-/**
- * Scaffolds the `.harness/` skeleton directory under `ctx.targetAbs`.
- *
- * Mirrors aih.sh init_harness_profile (1798-1811).
- *
- * @returns which relative paths were created vs skipped.
- */
+/** Scaffolds the `.harness/` skeleton directory under `ctx.targetAbs`. */
 export function initHarnessProfile(ctx: SkeletonContext): SkeletonResult {
   const { targetAbs, dryRun, force = false } = ctx;
   const created: string[] = [];

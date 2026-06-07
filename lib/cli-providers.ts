@@ -56,7 +56,7 @@ const FALLBACK_TARGETS: readonly ProviderDescriptor[] = Object.freeze([
   {
     id: "manual",
     label: "Manual fallback",
-    description: "Legacy root-copy fallback",
+    description: "Project-local AGENTS.md fallback without runtime-native extras",
     implemented: true,
     priority: "fallback",
   },

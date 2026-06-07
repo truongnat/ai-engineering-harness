@@ -1,9 +1,8 @@
 export const EXCLUDE_BLOCK_START = "# ai-engineering-harness start";
 export const EXCLUDE_BLOCK_END = "# ai-engineering-harness end";
-/** Canonical marker string; lib/cli-detect.ts has a local duplicate that should migrate to import this during the CLI rewire task. */
 export const HARNESS_MARKER = "ai-engineering-harness";
 
-/** Provider command surface paths (relative to target). Mirrors aih.sh harness_provider_command_paths. */
+/** Provider command surface paths written into a target repo. */
 export function providerCommandPaths(provider: string): string[] {
   switch (provider) {
     case "cursor":
@@ -17,7 +16,7 @@ export function providerCommandPaths(provider: string): string[] {
   }
 }
 
-/** Paths to ignore for a provider install. Mirrors aih.sh harness_ignore_paths_for_runtime. */
+/** Paths to ignore for a provider install. */
 export function ignorePathsForProvider(provider: string, initHarness: boolean): string[] {
   const out: string[] = [];
   if (initHarness) out.push(".harness/");
@@ -55,11 +54,7 @@ export function ignorePathsForProvider(provider: string, initHarness: boolean): 
   return out;
 }
 
-/** Paths removed on uninstall for a provider. Mirrors aih.sh runtime_paths_for_uninstall (aih.sh:281-315).
- *
- * Confirmed: runtime_paths_for_uninstall in the shell exactly matches harness_ignore_paths_for_runtime
- * with _init=0 (no .harness/ prefix). No divergence found.
- */
+/** Paths removed on uninstall for a provider. */
 export function uninstallPathsForProvider(provider: string): string[] {
   return ignorePathsForProvider(provider, false);
 }

@@ -8,7 +8,7 @@ A markdown-first, open-source kit that helps agents restore context, plan before
 
 ![Version](https://img.shields.io/badge/version-v1.0.1-2563eb)
 ![CI](https://github.com/truongnat/ai-engineering-harness/actions/workflows/ci.yml/badge.svg)
-![Coverage](https://img.shields.io/badge/coverage-lib%2065%25%2B-0f766e)
+![Coverage](https://img.shields.io/badge/coverage-lib%2075%25%2B-0f766e)
 ![License](https://img.shields.io/badge/license-MIT-16a34a)
 ![Open Source](https://img.shields.io/badge/open-source-0f172a)
 ![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-818cf8)

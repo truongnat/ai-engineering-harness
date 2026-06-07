@@ -24,12 +24,22 @@ interface MutationRegistry {
   [taskId: string]: MutationEntry;
 }
 
+const registryCache = new Map<string, MutationRegistry>();
+
 function loadMutationRegistry(packRoot: string): MutationRegistry {
+  const cached = registryCache.get(packRoot);
+  if (cached) {
+    return cached;
+  }
   const registryPath = path.join(packRoot, "evals", "mutations", "registry.json");
   if (!fs.existsSync(registryPath)) {
-    return {};
+    const empty: MutationRegistry = {};
+    registryCache.set(packRoot, empty);
+    return empty;
   }
-  return JSON.parse(fs.readFileSync(registryPath, "utf8"));
+  const registry = JSON.parse(fs.readFileSync(registryPath, "utf8")) as MutationRegistry;
+  registryCache.set(packRoot, registry);
+  return registry;
 }
 
 function applyModeMutation(mode: string, cwd: string, task: Task, packRoot: string): void {

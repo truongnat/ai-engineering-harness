@@ -4,7 +4,12 @@ import path from "node:path";
 import { modeToScopeVisibility, isNonInteractive, type ParseOptions } from "../cli-args";
 import { ACTIVE_PROVIDERS, providerPriorityLabel, isRuntimeNative } from "../cli-providers";
 import { detectRecommendedProviders, detectLegacyProviderResidue, isGitRepo } from "../cli-detect";
-import { buildInstallPlan, type PlanProviderId } from "../cli-plan";
+import {
+  NON_GIT_PRIVATE_WARNING,
+  NON_GIT_PRIVATE_WARNING_FOLLOWUP,
+  buildInstallPlan,
+  type PlanProviderId,
+} from "../cli-plan";
 import * as ui from "../cli-ui";
 import {
   readPackageVersion,
@@ -131,9 +136,7 @@ async function runInstallWizard(packRoot: string, options: ParseOptions): Promis
     });
     ui.showInstallPlan(plan, { compact: true });
     if (plan.mode === "project-private" && !plan.isGit) {
-      console.log(
-        "\nwarning: target is not a Git repo; private .git/info/exclude cannot be updated."
-      );
+      console.log(`\n${NON_GIT_PRIVATE_WARNING}`);
     }
 
     const status = await runInstallBackend(
@@ -208,9 +211,7 @@ async function runInstallWizard(packRoot: string, options: ParseOptions): Promis
   });
   ui.showInstallPlan(plan);
   if (plan.mode === "project-private" && !plan.isGit) {
-    ui.showWarning(
-      "Target is not a Git repo; private .git/info/exclude cannot be updated.\nRun `git init` first or choose project shared."
-    );
+    ui.showWarning(`${NON_GIT_PRIVATE_WARNING}\n${NON_GIT_PRIVATE_WARNING_FOLLOWUP}`);
   }
 
   const proceed = await ui.confirmProceed("Proceed with install?");

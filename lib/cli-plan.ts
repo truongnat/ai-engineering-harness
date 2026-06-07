@@ -4,6 +4,11 @@ import {
   formatCommandSupportForPlan,
 } from "./runtime-command-catalog";
 
+const NON_GIT_PRIVATE_WARNING =
+  "warning: target is not a Git repo; private .git/info/exclude cannot be updated.";
+const NON_GIT_PRIVATE_WARNING_FOLLOWUP =
+  "Run `git init` first or choose project shared / install inside a cloned repo.";
+
 type PlanProviderId = "claude" | "cursor" | "codex" | "gemini" | "generic" | "manual";
 type InstallMode = "project-private" | "project-shared" | "global";
 
@@ -104,8 +109,8 @@ function buildInstallPlan(options: {
 function warnNonGitPrivate(plan: InstallPlan): void {
   if (plan.mode === "project-private" && !plan.isGit) {
     console.log("");
-    console.log("warning: target is not a Git repo; private .git/info/exclude cannot be updated.");
-    console.log("Run `git init` first or choose project shared / install inside a cloned repo.");
+    console.log(NON_GIT_PRIVATE_WARNING);
+    console.log(NON_GIT_PRIVATE_WARNING_FOLLOWUP);
   }
 }
 
@@ -124,5 +129,12 @@ function printPlan(plan: InstallPlan): void {
   }
 }
 
-export { pathsForProvider, buildInstallPlan, printPlan, warnNonGitPrivate };
+export {
+  NON_GIT_PRIVATE_WARNING,
+  NON_GIT_PRIVATE_WARNING_FOLLOWUP,
+  pathsForProvider,
+  buildInstallPlan,
+  printPlan,
+  warnNonGitPrivate,
+};
 export type { PlanProviderId, InstallMode, InstallPlan };

@@ -1,7 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-
-const HARNESS_MARKER = "ai-engineering-harness";
+import { HARNESS_MARKER } from "./backend/constants";
 
 interface DetectInstalledProviderOptions {
   includeLegacy?: boolean;
@@ -91,11 +90,12 @@ function detectLegacyProviderResidue(targetRoot: string): string[] {
 
 function isGitRepo(targetRoot: string): boolean {
   const gitPath = path.join(targetRoot, ".git");
-  if (fs.existsSync(gitPath)) {
-    return true;
-  }
   try {
-    return fs.statSync(gitPath).isFile();
+    if (!fs.existsSync(gitPath)) {
+      return false;
+    }
+    const stat = fs.statSync(gitPath);
+    return stat.isDirectory() || stat.isFile();
   } catch {
     return false;
   }

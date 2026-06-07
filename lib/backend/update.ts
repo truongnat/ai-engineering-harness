@@ -1,13 +1,4 @@
-/**
- * In-process update orchestrator.
- *
- * Ports aih.sh `run_update` (lines 1211-1232):
- *   - Rejects the "manual" provider (no supported update path).
- *   - Handles global scope as not-yet-implemented (dry-run → ok notice, real → error).
- *   - Applies private git-exclude when visibility=private + info-exclude strategy.
- *   - Runs capability-cache install + runtime-native install, both with force=true.
- *   - Does NOT init the .harness skeleton (unlike install).
- */
+/** In-process update orchestrator. */
 
 import { runInstall } from "./install-orchestrator";
 
@@ -30,13 +21,11 @@ export interface UpdateResult {
 export function runUpdate(ctx: UpdateContext): UpdateResult {
   const messages: string[] = [];
 
-  // Guard: manual provider is not supported for update.
   if (ctx.provider === "manual") {
     messages.push("error: Manual fallback update is not supported. Re-run install instead.");
     return { ok: false, messages };
   }
 
-  // Guard: global scope update is not yet implemented.
   if (ctx.scope === "global") {
     const notice = "Global update is planned but not implemented in this step.";
     if (ctx.dryRun) {
@@ -49,10 +38,6 @@ export function runUpdate(ctx: UpdateContext): UpdateResult {
     return { ok: false, messages };
   }
 
-  // Delegate to runInstall with:
-  //   initHarness: false  — update must NOT touch the .harness skeleton
-  //   installCache: true  — mirrors run_capability_cache_install 1
-  //   force: true         — mirrors the shell '1' arg (force overwrite)
   return runInstall(
     {
       packRoot: ctx.packRoot,

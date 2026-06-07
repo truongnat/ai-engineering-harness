@@ -78,20 +78,14 @@ test("initHarnessProfile overwrites an existing file when force=true", () => {
   assert.equal(result.skipped.length, 0);
 });
 
-test("writeTargetFile docstring explains shell-era newline drift and first re-init overwrite candidates", () => {
+test("writeTargetFile docstring explains newline normalization and first overwrite candidates", () => {
   const source = fs.readFileSync(
     path.join(__dirname, "..", "..", "lib", "backend", "harness-skeleton.ts"),
     "utf8"
   );
 
-  assert.match(source, /shell functions in aih\.sh use `\$\(\)` command[\s\S]*substitution/);
-  assert.match(source, /show a 1-byte difference/);
-  assert.match(source, /shell-era path can see the first/);
-  assert.match(
-    source,
-    /TypeScript-backed install or re-init treat those files as changed\/overwrite/
-  );
-  assert.match(source, /improvement over the shell behaviour/);
+  assert.match(source, /All generated markdown ends with a trailing newline/);
+  assert.match(source, /older installers may therefore show a first overwrite/);
 });
 
 test("generated harness skeleton sources do not contain placeholder TODO or FIXME markers", () => {
@@ -119,15 +113,15 @@ test("policy skeleton stays aligned without a default scope guard rule", () => {
   assert.match(policyGenerator, /No default scope-guard rule is enabled\./);
 });
 
-test("legacy manual install path emits the deprecation warning in TypeScript", () => {
-  const legacySource = fs.readFileSync(
-    path.join(__dirname, "..", "..", "lib", "install-legacy.ts"),
-    "utf8"
-  );
+test("skeleton files include concrete examples instead of empty placeholders", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "hs-"));
+  initHarnessProfile({ targetAbs: dir, dryRun: false });
 
-  assert.match(legacySource, /DEPRECATION WARNING/);
-  assert.match(legacySource, /This install path \(flat-root\) is deprecated\./);
-  assert.match(legacySource, /It will be removed in v1\.1\.0\./);
-  assert.match(legacySource, /npx ai-engineering-harness install --provider claude --yes/);
-  assert.match(legacySource, /node bin\/aih\.js install for provider-aware installation/);
+  const decisions = fs.readFileSync(path.join(dir, ".harness", "DECISIONS.md"), "utf8");
+  const hazards = fs.readFileSync(path.join(dir, ".harness", "HAZARDS.md"), "utf8");
+  const index = fs.readFileSync(path.join(dir, ".harness", "INDEX.md"), "utf8");
+
+  assert.match(decisions, /## Example/);
+  assert.match(hazards, /worktree-backed repo/);
+  assert.match(index, /npm test/);
 });

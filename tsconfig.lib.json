@@ -37,7 +37,6 @@
     "lib/provider-rule-renderer.ts",
     "lib/install-runtime.ts",
     "lib/install-cache.ts",
-    "lib/install-legacy.ts",
     "lib/command-surface-report.ts",
     "lib/file-operations.ts",
     "lib/plugin-packaging.ts",

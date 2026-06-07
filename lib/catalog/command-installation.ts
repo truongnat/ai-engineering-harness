@@ -21,6 +21,7 @@ import {
   buildCommandSurface,
   type Manifest,
 } from "./command-rendering";
+import { HARNESS_MARKER } from "../backend/constants";
 
 type SupportedRuntime = "claude" | "cursor" | "codex" | "generic" | "gemini";
 type InstallScope = "project" | "global";
@@ -277,7 +278,6 @@ function appendAgentsCommandAliases(
 ): WriteResult {
   const marker = "## Harness commands (project-scoped, fallback aliases)";
   const legacyMarker = "## Harness slash commands (project-scoped)";
-  const harnessMarker = "ai-engineering-harness";
   let content = fs.existsSync(agentsPath) ? fs.readFileSync(agentsPath, "utf8") : "";
   if (content.includes(".ai-harness/runtime-commands/") && content.includes("harness-plan")) {
     return {
@@ -288,7 +288,7 @@ function appendAgentsCommandAliases(
   }
   if (
     content &&
-    !content.includes(harnessMarker) &&
+    !content.includes(HARNESS_MARKER) &&
     !content.includes(marker) &&
     !content.includes(legacyMarker)
   ) {
@@ -302,11 +302,7 @@ function appendAgentsCommandAliases(
     const splitMarker = content.includes(marker) ? marker : legacyMarker;
     const before = content.split(splitMarker)[0].trimEnd();
     content = `${before}\n${renderAgentsCommandAliasesSection()}`;
-  } else if (
-    fs.existsSync(agentsPath) &&
-    !content.includes("ai-engineering-harness") &&
-    !options.force
-  ) {
+  } else if (fs.existsSync(agentsPath) && !content.includes(HARNESS_MARKER) && !options.force) {
     return { action: "SKIP", relativePath: path.basename(agentsPath) };
   } else {
     content = `${content.trimEnd()}\n${renderAgentsCommandAliasesSection()}`;

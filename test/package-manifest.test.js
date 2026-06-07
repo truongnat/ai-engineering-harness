@@ -118,10 +118,6 @@ test("package exposes an incremental TypeScript typecheck for lib", () => {
     "tsconfig.lib.json must include lib/install-cache.ts"
   );
   assert.ok(
-    tsconfig.include.includes("lib/install-legacy.ts"),
-    "tsconfig.lib.json must include lib/install-legacy.ts"
-  );
-  assert.ok(
     tsconfig.include.includes("lib/cli-help.ts"),
     "tsconfig.lib.json must include lib/cli-help.ts"
   );
@@ -218,13 +214,10 @@ test("README declares the Node CLI as the only install surface", () => {
   assert.doesNotMatch(readme, /aih\.sh/);
 });
 
-test("legacy install path is explicitly marked deprecated with a migration path", () => {
-  const legacyInstall = fs.readFileSync(path.join(repoRoot, "lib", "install-legacy.ts"), "utf8");
+test("README advertises the current coverage target", () => {
+  const readme = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
 
-  assert.match(legacyInstall, /@deprecated Use `npx ai-engineering-harness install`/);
-  assert.match(legacyInstall, /removed in v1\.1\.0/);
-  assert.match(legacyInstall, /node bin\/aih\.js install/);
-  assert.doesNotMatch(legacyInstall, /@ts-ignore/);
+  assert.match(readme, /coverage-lib%2075%25%2B/);
 });
 
 test("cli-ui uses typed imports without ts-ignore suppressions", () => {
@@ -299,12 +292,15 @@ test("lib/ and workers/ source tree stays free of @ts-ignore suppressions", () =
 
 test("CI smoke install uses a runner-agnostic Node invocation instead of bash", () => {
   const workflow = fs.readFileSync(path.join(repoRoot, ".github", "workflows", "ci.yml"), "utf8");
+  const smokeInstall = fs.readFileSync(path.join(repoRoot, "scripts", "smoke-install.js"), "utf8");
 
   assert.match(workflow, /name: Smoke test install \(dry-run\)/);
-  assert.match(workflow, /process\.env\.RUNNER_TEMP \|\| os\.tmpdir\(\)/);
-  assert.match(workflow, /spawnSync\(process\.execPath, \['bin\/aih\.js', 'install'/);
-  assert.match(workflow, /--provider', 'generic'/);
-  assert.match(workflow, /--dry-run/);
+  assert.match(workflow, /run: node scripts\/smoke-install\.js/);
+  assert.match(smokeInstall, /process\.env\.RUNNER_TEMP \|\| os\.tmpdir\(\)/);
+  assert.match(smokeInstall, /spawnSync\(\s*process\.execPath,/);
+  assert.match(smokeInstall, /"bin\/aih\.js", "install"/);
+  assert.match(smokeInstall, /"--provider", "generic"/);
+  assert.match(smokeInstall, /"--dry-run"/);
 });
 
 test("active adoption docs use Session Start as the primary loop and keep Map as compatibility", () => {

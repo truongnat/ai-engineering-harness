@@ -8,7 +8,6 @@ const path = require("node:path");
 const repoRoot = path.resolve(__dirname, "..");
 const validateApi = require(path.join(repoRoot, "dist", "lib", "validate", "index.js"));
 const validateConstants = require(path.join(repoRoot, "dist", "lib", "validate", "constants.js"));
-const installApi = require(path.join(repoRoot, "dist", "lib", "install-legacy.js"));
 const installCacheApi = require(path.join(repoRoot, "dist", "lib", "install-cache.js"));
 
 function makeTempDir() {
@@ -346,11 +345,11 @@ describe("Workflow Command Documentation", () => {
 
 describe("Installation & Packaging", () => {
   test("install surface includes tool discovery assets and excludes harness-build docs", () => {
-    assert.ok(installApi.exportPaths.includes("docs/tool-discovery-and-routing.md"));
     assert.ok(installCacheApi.cacheExportPaths.includes("tool-capabilities"));
     assert.ok(installCacheApi.cacheExportPaths.includes("scripts/discover-tools.js"));
     assert.ok(installCacheApi.cacheExportPaths.includes("agent-system/"));
-    assert.equal(installApi.exportPaths.includes("docs/harness-build-usage.md"), false);
+    assert.ok(installCacheApi.cacheExportPaths.includes("docs/tool-discovery-and-routing.md"));
+    assert.equal(installCacheApi.cacheExportPaths.includes("docs/harness-build-usage.md"), false);
   });
 
   test("install cache dry-run includes tool assets", () => {
@@ -366,12 +365,8 @@ describe("Installation & Packaging", () => {
     assert.ok(results.some((entry) => /agent-system\/SYSTEM_PROMPT\.md/.test(entry.relativePath)));
   });
 
-  test("install next steps no longer mention harness-build", () => {
-    const text = installApi.formatNextSteps({
-      target: path.resolve("/tmp/example"),
-      targetDisplay: "../example",
-      dryRun: false,
-    });
+  test("README install guidance points to current adoption docs", () => {
+    const text = fs.readFileSync(path.join(repoRoot, "README.md"), "utf8");
     assert.doesNotMatch(text, /harness-build/i);
     assert.match(text, /adoption-guide/i);
   });

@@ -1,25 +1,8 @@
-/**
- * In-process status and doctor reporting.
- *
- * Ports the shell functions from aih.sh:
- *   - runtime_list_count (145-153)
- *   - detect_runtimes_from_target (154-176)
- *   - is_git_repo (200-202)
- *   - has_harness_exclude_block (208-211)
- *   - runtime_references_cache (317-340)
- *   - doctor_plan_status (341-358)
- *   - doctor_verify_has_concrete_tests (360-364)
- *   - doctor_verify_has_concrete_evidence (366-370)
- *   - doctor_verify_status (372-386)
- *   - workflow_phase_line (388-434)
- *   - print_workflow_summary (436-555)
- *   - print_status (1234-1285)
- *   - run_doctor (1287-1462)
- */
+/** In-process status and doctor reporting. */
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { EXCLUDE_BLOCK_START } from "./constants";
+import { hasHarnessExcludeBlock } from "./git-hygiene";
 import { detectInstalledProviders, isGitRepo } from "../provider-detection";
 import { readInstalledCommandSurface } from "../runtime-command-catalog";
 import { formatStatusCommandLines, formatDoctorCommandLines } from "../command-surface-report";
@@ -37,16 +20,10 @@ export interface DoctorResult {
   ok: boolean;
 }
 
-// ---------------------------------------------------------------------------
-// Helpers mirroring aih.sh
-// ---------------------------------------------------------------------------
-
-/** Mirrors aih.sh runtime_list_count (145-153). */
 function runtimeListCount(list: string[]): number {
   return list.filter((r) => r.trim().length > 0).length;
 }
 
-/** Mirrors aih.sh detect_runtimes_from_target (154-175). */
 function detectRuntimesFromTarget(targetAbs: string): string[] {
   const installedProviders = readInstalledCommandSurface(targetAbs)?.installedProviders || [];
   if (installedProviders.length > 0) {
@@ -55,19 +32,6 @@ function detectRuntimesFromTarget(targetAbs: string): string[] {
   return detectInstalledProviders(targetAbs, { includeLegacy: true });
 }
 
-/** Mirrors aih.sh has_harness_exclude_block (208-211). */
-function hasHarnessExcludeBlock(targetAbs: string): boolean {
-  const excludeFile = path.join(targetAbs, ".git", "info", "exclude");
-  if (!fs.existsSync(excludeFile)) return false;
-  try {
-    const content = fs.readFileSync(excludeFile, "utf8");
-    return content.split("\n").some((line) => line === EXCLUDE_BLOCK_START);
-  } catch {
-    return false;
-  }
-}
-
-/** Mirrors aih.sh runtime_references_cache (317-339). */
 function runtimeReferencesCache(targetAbs: string, rt: string): boolean {
   const grep = (filePath: string): boolean => {
     if (!fs.existsSync(filePath)) return false;
@@ -96,7 +60,6 @@ function runtimeReferencesCache(targetAbs: string, rt: string): boolean {
   }
 }
 
-/** Mirrors aih.sh doctor_plan_status (341-358). */
 function doctorPlanStatus(targetAbs: string): string {
   const planFile = path.join(targetAbs, ".harness/PLAN.md");
   if (!fs.existsSync(planFile)) {
@@ -126,7 +89,6 @@ function doctorPlanStatus(targetAbs: string): string {
   return "";
 }
 
-/** Mirrors aih.sh doctor_verify_has_concrete_tests (360-364). */
 function doctorVerifyHasConcreteTests(targetAbs: string): boolean {
   const verifyFile = path.join(targetAbs, ".harness/VERIFY.md");
   if (!fs.existsSync(verifyFile)) return false;
@@ -139,7 +101,6 @@ function doctorVerifyHasConcreteTests(targetAbs: string): boolean {
   }
 }
 
-/** Mirrors aih.sh doctor_verify_has_concrete_evidence (366-370). */
 function doctorVerifyHasConcreteEvidence(targetAbs: string): boolean {
   const verifyFile = path.join(targetAbs, ".harness/VERIFY.md");
   if (!fs.existsSync(verifyFile)) return false;
@@ -154,7 +115,6 @@ function doctorVerifyHasConcreteEvidence(targetAbs: string): boolean {
   }
 }
 
-/** Mirrors aih.sh doctor_verify_status (372-386). */
 function doctorVerifyStatus(targetAbs: string): string {
   const verifyFile = path.join(targetAbs, ".harness/VERIFY.md");
   if (!fs.existsSync(verifyFile)) {
@@ -175,11 +135,6 @@ function doctorVerifyStatus(targetAbs: string): string {
   return "";
 }
 
-// ---------------------------------------------------------------------------
-// workflow_phase_line + print_workflow_summary
-// ---------------------------------------------------------------------------
-
-/** Mirrors aih.sh workflow_phase_line (388-434). */
 function workflowPhaseLine(label: string, state: string): string {
   let icon: string;
   let text: string;
@@ -227,11 +182,9 @@ function workflowPhaseLine(label: string, state: string): string {
       break;
   }
 
-  // printf '  %-12s %s %s\n' "$_label" "$_icon" "$_text"
   return `  ${label.padEnd(12)} ${icon} ${text}`;
 }
 
-/** Mirrors aih.sh print_workflow_summary (436-555). */
 function printWorkflowSummary(targetAbs: string): string[] {
   const lines: string[] = [];
 
@@ -359,14 +312,7 @@ function printWorkflowSummary(targetAbs: string): string[] {
   return lines;
 }
 
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
-
-/**
- * Mirrors aih.sh print_status (1234-1285).
- * Returns collected output as text (does NOT print to stdout).
- */
+/** Returns collected output as text without printing to stdout. */
 export function runStatus(ctx: ReportContext): StatusResult {
   const { targetAbs } = ctx;
   const lines: string[] = [];
@@ -406,12 +352,10 @@ export function runStatus(ctx: ReportContext): StatusResult {
       : "no";
   lines.push(`  provider commands:     ${providerCmds}`);
 
-  // Print workflow summary if .harness exists
   if (fs.existsSync(path.join(targetAbs, ".harness"))) {
     lines.push(...printWorkflowSummary(targetAbs));
   }
 
-  // Call formatStatusCommandLines in-process (mirrors shell out to node command-surface-report.js)
   try {
     const surfaceLines = formatStatusCommandLines(targetAbs);
     lines.push(...surfaceLines);
@@ -422,10 +366,7 @@ export function runStatus(ctx: ReportContext): StatusResult {
   return { text: lines.join("\n") };
 }
 
-/**
- * Mirrors aih.sh run_doctor (1287-1462).
- * Returns collected output as text and ok flag (does NOT print to stdout).
- */
+/** Returns collected output as text and ok flag without printing to stdout. */
 export function runDoctor(ctx: ReportContext): DoctorResult {
   const { targetAbs } = ctx;
   const lines: string[] = [];
@@ -436,11 +377,8 @@ export function runDoctor(ctx: ReportContext): DoctorResult {
 
   lines.push("ai-engineering-harness doctor");
 
-  // node available check
-  // In-process we are already running in node, so node is always available.
   lines.push("PASS node available");
 
-  // git repo check
   if (isGitRepo(targetAbs)) {
     lines.push("PASS target is a Git repo");
   } else {
@@ -448,7 +386,6 @@ export function runDoctor(ctx: ReportContext): DoctorResult {
     failCount++;
   }
 
-  // .ai-harness check
   if (fs.existsSync(path.join(targetAbs, ".ai-harness"))) {
     lines.push("PASS .ai-harness exists");
   } else {
@@ -456,7 +393,6 @@ export function runDoctor(ctx: ReportContext): DoctorResult {
     failCount++;
   }
 
-  // .harness check
   if (fs.existsSync(path.join(targetAbs, ".harness"))) {
     lines.push("PASS .harness exists");
   } else {
@@ -464,7 +400,6 @@ export function runDoctor(ctx: ReportContext): DoctorResult {
     failCount++;
   }
 
-  // runtime entrypoint check
   if (count === 0) {
     lines.push("FAIL no runtime entrypoint detected");
     failCount++;
@@ -481,14 +416,12 @@ export function runDoctor(ctx: ReportContext): DoctorResult {
     }
   }
 
-  // exclude block check (WARN — does not increment failCount)
   if (hasHarnessExcludeBlock(targetAbs)) {
     lines.push("PASS .git/info/exclude harness block exists");
   } else {
     lines.push("WARN .git/info/exclude harness block missing");
   }
 
-  // runtime-commands check
   if (fs.existsSync(path.join(targetAbs, ".ai-harness/runtime-commands"))) {
     lines.push("PASS .ai-harness/runtime-commands exists");
   } else {
@@ -496,7 +429,6 @@ export function runDoctor(ctx: ReportContext): DoctorResult {
     failCount++;
   }
 
-  // activation.md check
   if (fs.existsSync(path.join(targetAbs, ".ai-harness/activation.md"))) {
     lines.push("PASS .ai-harness/activation.md exists");
   } else {
@@ -504,7 +436,6 @@ export function runDoctor(ctx: ReportContext): DoctorResult {
     failCount++;
   }
 
-  // harness-plan catalog check (only if file exists)
   const planCatalog = path.join(targetAbs, ".ai-harness/runtime-commands/harness-plan.md");
   if (fs.existsSync(planCatalog)) {
     try {
@@ -602,8 +533,6 @@ export function runDoctor(ctx: ReportContext): DoctorResult {
     }
   }
 
-  // Call formatDoctorCommandLines in-process (mirrors shell out to node command-surface-report.js)
-  // FAIL* lines from this call also increment failCount (mirrors aih.sh:1452-1455)
   try {
     const surfaceLines = formatDoctorCommandLines(targetAbs, detected);
     for (const line of surfaceLines) {

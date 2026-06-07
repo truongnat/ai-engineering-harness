@@ -98,30 +98,22 @@ test("runInstall with shared visibility writes no git exclude block", () => {
   }
 });
 
-test("runInstall warns when manual legacy install path is used", () => {
+test("runInstall uses the manual fallback as a project-local AGENTS install", () => {
   const dir = tmpRepo();
-  const warnings = [];
-  const originalWarn = console.warn;
-  console.warn = (...args) => warnings.push(args.join(" "));
-
-  try {
-    const r = runInstall({
-      packRoot: PACK_ROOT,
-      target: dir,
-      provider: "manual",
-      scope: "project",
-      visibility: "private",
-      dryRun: true,
-      initHarness: false,
-      installCache: false,
-      force: false,
-    });
-    assert.equal(r.ok, true);
-  } finally {
-    console.warn = originalWarn;
-  }
-
-  assert.match(warnings.join("\n"), /DEPRECATION WARNING/);
-  assert.match(warnings.join("\n"), /flat-root/);
-  assert.match(warnings.join("\n"), /removed in v1\.1\.0/);
+  const r = runInstall({
+    packRoot: PACK_ROOT,
+    target: dir,
+    provider: "manual",
+    scope: "project",
+    visibility: "private",
+    dryRun: false,
+    initHarness: true,
+    installCache: false,
+    force: false,
+  });
+  assert.equal(r.ok, true);
+  assert.equal(fs.existsSync(path.join(dir, "AGENTS.md")), true);
+  assert.equal(fs.existsSync(path.join(dir, ".harness", "HARNESS.md")), true);
+  assert.equal(fs.existsSync(path.join(dir, ".ai-harness")), false);
+  assert.match(r.messages.join("\n"), /runtime-native\(manual\): ok/);
 });

@@ -1,23 +1,11 @@
-/**
- * In-process install orchestrator.
- *
- * Replaces the aih.sh dispatch sequence (lines ~2120-2167):
- *   apply_private_ignore → run_capability_cache_install → init_harness_profile → run_runtime_native_install
- *
- * Calling these functions in-process (rather than shelling out to the compiled
- * dist/ scripts) is what fixes the provider-file no-op bug: the compiled scripts
- * had no main() invocation, so shelling out was effectively a no-op for all
- * provider file writes.
- */
+/** In-process install orchestrator. */
 
-import fs from "node:fs";
-import path from "node:path";
 import { applyPrivateIgnore } from "./git-hygiene";
 import { initHarnessProfile } from "./harness-skeleton";
 import { installCapabilityCache } from "../install-cache";
 import { installRuntime } from "../install-runtime";
-import { installHarness } from "../install-legacy";
 import { isRuntimeNative } from "../cli-providers";
+import { isGitRepo } from "../provider-detection";
 import type { RuntimeId } from "../install-runtime";
 
 export interface InstallContext {
@@ -41,13 +29,7 @@ interface InstallRunOptions {
   runtimeBannerVerb?: "install" | "update";
 }
 
-/**
- * Resolve EFFECTIVE_IGNORE_STRATEGY from scope/visibility.
- * Mirrors aih.sh resolve_git_hygiene_settings (lines 814-855):
- *   - scope === "global" → "none"
- *   - visibility === "shared" → "none"
- *   - project + private → "info-exclude"
- */
+/** Resolve the effective ignore strategy from scope/visibility. */
 function resolveIgnoreStrategy(scope: string, visibility: string): string {
   if (scope === "global") {
     return "none";
@@ -59,15 +41,7 @@ function resolveIgnoreStrategy(scope: string, visibility: string): string {
   return "info-exclude";
 }
 
-/**
- * Run the full install dispatch sequence in-process.
- *
- * Step 1: applyPrivateIgnore (git hygiene) — with computed ignoreStrategy.
- * Step 2: capability cache — if scope === "project" AND installCache.
- * Step 3: initHarnessProfile — if initHarness AND scope === "project".
- * Step 4a: runtime-native install (cursor/claude/codex/gemini/generic).
- * Step 4b: manual install (legacy root-copy fallback).
- */
+/** Run the full install dispatch sequence in-process. */
 export function runInstall(ctx: InstallContext, options: InstallRunOptions = {}): InstallResult {
   const messages: string[] = [];
   const force = ctx.force ?? false;
@@ -75,12 +49,8 @@ export function runInstall(ctx: InstallContext, options: InstallRunOptions = {})
   try {
     const ignoreStrategy = resolveIgnoreStrategy(ctx.scope, ctx.visibility);
 
-    // Step 1: Git hygiene (apply_private_ignore)
-    // Print banners only when strategy is info-exclude AND target is a git repo.
-    // Mirrors aih.sh:657-664: non-git repos degrade to a stderr warning (applyPrivateIgnore
-    // handles that path itself), so we must not emit the success banners in that case.
-    const isGitRepo = fs.existsSync(path.join(ctx.target, ".git"));
-    if (ignoreStrategy === "info-exclude" && isGitRepo) {
+    const gitRepo = isGitRepo(ctx.target);
+    if (ignoreStrategy === "info-exclude" && gitRepo) {
       process.stdout.write("\n--- Git exclude (private) ---\n");
     }
     applyPrivateIgnore({
@@ -93,12 +63,11 @@ export function runInstall(ctx: InstallContext, options: InstallRunOptions = {})
       dryRun: ctx.dryRun,
       ignoreStrategy,
     });
-    if (ignoreStrategy === "info-exclude" && isGitRepo) {
+    if (ignoreStrategy === "info-exclude" && gitRepo) {
       process.stdout.write("--- Git exclude complete ---\n\n");
     }
     messages.push("git-hygiene: ok");
 
-    // Step 2: Capability cache (.ai-harness/)
     if (ctx.scope === "project" && ctx.installCache) {
       process.stdout.write("\n--- Capability cache (.ai-harness/) ---\n");
       const cacheResults = installCapabilityCache({
@@ -111,7 +80,6 @@ export function runInstall(ctx: InstallContext, options: InstallRunOptions = {})
       messages.push(`cache: ${cacheResults.length} entries`);
     }
 
-    // Step 3: Harness skeleton init
     if (ctx.initHarness && ctx.scope === "project") {
       initHarnessProfile({
         targetAbs: ctx.target,
@@ -121,14 +89,13 @@ export function runInstall(ctx: InstallContext, options: InstallRunOptions = {})
       messages.push("harness-skeleton: ok");
     }
 
-    // Step 4: Provider install
     const verb = options.runtimeBannerVerb ?? "install";
-    if (isRuntimeNative(ctx.provider)) {
-      // Runtime-native path: cursor/claude/codex/gemini/generic
+    const runtime = ctx.provider === "manual" ? "generic" : ctx.provider;
+    if (isRuntimeNative(runtime)) {
       process.stdout.write(`\n--- Runtime-native ${verb} ---\n`);
       installRuntime({
         packRoot: ctx.packRoot,
-        runtime: ctx.provider as RuntimeId,
+        runtime: runtime as RuntimeId,
         scope: ctx.scope as "project" | "global",
         target: ctx.target,
         dryRun: ctx.dryRun,
@@ -136,26 +103,6 @@ export function runInstall(ctx: InstallContext, options: InstallRunOptions = {})
       });
       process.stdout.write(`\nRuntime '${ctx.provider}' install finished.\n`);
       messages.push(`runtime-native(${ctx.provider}): ok`);
-    } else {
-      // Manual/legacy fallback path
-      installHarness({
-        target: ctx.target,
-        targetArg: ctx.target,
-        targetDisplay: ctx.target,
-        dryRun: ctx.dryRun,
-        force,
-      });
-      messages.push("manual-install: ok");
-
-      // Manual path also calls initHarnessProfile (mirrors aih.sh:2163-2166)
-      if (ctx.initHarness) {
-        initHarnessProfile({
-          targetAbs: ctx.target,
-          dryRun: ctx.dryRun,
-          force,
-        });
-        messages.push("harness-skeleton (manual): ok");
-      }
     }
 
     return { ok: true, messages };
