@@ -27,6 +27,20 @@ function installClaude(dir) {
   });
 }
 
+function installCodex(dir) {
+  require("../../dist/lib/backend/install-orchestrator.js").runInstall({
+    packRoot: PACK_ROOT,
+    target: dir,
+    provider: "codex",
+    scope: "project",
+    visibility: "private",
+    dryRun: false,
+    initHarness: true,
+    installCache: true,
+    force: false,
+  });
+}
+
 test("runStatus reports the status header and key fields", () => {
   const dir = tmpRepo();
   installClaude(dir);
@@ -47,6 +61,14 @@ test("runDoctor passes core checks on a freshly installed repo", () => {
   assert.match(text, /PASS \.ai-harness exists/);
   assert.match(text, /PASS \.harness exists/);
   assert.equal(typeof ok, "boolean");
+});
+
+test("runStatus prefers manifest providers over generic AGENTS fallback", () => {
+  const dir = tmpRepo();
+  installCodex(dir);
+  const { text } = runStatus({ targetAbs: dir });
+  assert.match(text, /detected runtimes:\s+codex/);
+  assert.doesNotMatch(text, /detected runtimes:.*generic/);
 });
 
 test("runDoctor flags failures on an empty (non-installed) repo", () => {

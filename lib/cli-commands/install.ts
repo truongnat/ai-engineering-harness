@@ -9,15 +9,14 @@ import { ACTIVE_PROVIDERS, providerPriorityLabel, isRuntimeNative } from "../cli
 import { detectRecommendedProviders, detectLegacyProviderResidue, isGitRepo } from "../cli-detect";
 // @ts-ignore - JS file with checkJs
 import { buildInstallPlan } from "../cli-plan";
-import { runAihSh, buildInstallArgs, type InstallContext } from "../cli-backend";
 import {
   readPackageVersion,
   resolveTargetAbs,
   validateProviderSelection,
   validateManualMix,
-  backendOpts,
   failWithBackendError,
 } from "../cli-command-helpers";
+import { runInstall } from "../backend/install-orchestrator";
 
 interface InstallWizardOptions extends ParseOptions {
   command: string;
@@ -25,12 +24,16 @@ interface InstallWizardOptions extends ParseOptions {
   visibility: string;
 }
 
-interface InstallContextExtended extends InstallContext {
+interface InstallContextExtended {
   target: string;
   ref: string;
   dryRun: boolean;
   yes: boolean;
   providers: string[];
+  scope: string;
+  visibility: string;
+  initHarness: boolean;
+  installCache: boolean;
 }
 
 async function runInstallBackend(
@@ -39,20 +42,33 @@ async function runInstallBackend(
   options: ParseOptions
 ): Promise<number> {
   const run = () => {
-    let lastResult: { status: number | null; combined: string } = { status: 0, combined: "" };
+    let lastResult: { ok: boolean; messages: string[] } = { ok: true, messages: [] };
     for (let i = 0; i < ctx.providers.length; i += 1) {
       const provider = ctx.providers[i];
-      const args = buildInstallArgs(provider, ctx, i);
-      lastResult = runAihSh(packRoot, args, { cwd: process.cwd(), ...backendOpts(options) });
-      if ((lastResult.status ?? 0) !== 0) {
+      lastResult = runInstall({
+        packRoot,
+        target: ctx.target,
+        provider,
+        scope: ctx.scope,
+        visibility: ctx.visibility,
+        dryRun: ctx.dryRun,
+        initHarness: ctx.initHarness && i === 0,
+        installCache: ctx.installCache && i === 0,
+        force: false,
+      });
+      if (!lastResult.ok) {
         break;
       }
     }
-    if ((lastResult.status ?? 0) !== 0) {
+    if (!lastResult.ok) {
       return {
         ok: false,
-        status: failWithBackendError("Install", lastResult, options),
-        combined: lastResult.combined,
+        status: failWithBackendError(
+          "Install",
+          { status: 1, combined: lastResult.messages.join("\n") },
+          options
+        ),
+        combined: lastResult.messages.join("\n"),
       };
     }
     return { ok: true, status: 0, spinnerMessage: ctx.dryRun ? "Dry-run complete" : "Installed" };

@@ -20,6 +20,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { EXCLUDE_BLOCK_START } from "./constants";
+import { readInstalledCommandSurface } from "../runtime-command-catalog";
 import { formatStatusCommandLines, formatDoctorCommandLines } from "../command-surface-report";
 
 export interface ReportContext {
@@ -56,6 +57,11 @@ function fileContainsHarnessMarker(filePath: string): boolean {
 
 /** Mirrors aih.sh detect_runtimes_from_target (154-175). */
 function detectRuntimesFromTarget(targetAbs: string): string[] {
+  const installedProviders = readInstalledCommandSurface(targetAbs)?.installedProviders || [];
+  if (installedProviders.length > 0) {
+    return [...installedProviders];
+  }
+
   const detected: string[] = [];
   const seen = new Set<string>();
 
@@ -443,7 +449,9 @@ export function runStatus(ctx: ReportContext): StatusResult {
     `  manifest.json:         ${fs.existsSync(path.join(targetAbs, ".ai-harness/manifest.json")) ? "yes" : "no"}`
   );
 
+  const installedProviders = readInstalledCommandSurface(targetAbs)?.installedProviders || [];
   const providerCmds =
+    installedProviders.length > 0 ||
     fs.existsSync(path.join(targetAbs, ".cursor/commands")) ||
     fs.existsSync(path.join(targetAbs, ".claude/commands/harness-plan.md")) ||
     fs.existsSync(path.join(targetAbs, ".opencode/commands/harness-plan.md")) ||

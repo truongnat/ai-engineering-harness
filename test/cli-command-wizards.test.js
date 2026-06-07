@@ -35,14 +35,14 @@ test("runInstallWizard non-interactive install calls backend with selected provi
   const calls = [];
   const target = makeTempDir();
 
-  patchModule("dist/lib/cli-backend.js", (mod) => {
-    const originalRunAihSh = mod.runAihSh;
-    mod.runAihSh = (_packRoot, args) => {
-      calls.push(args);
-      return { status: 0, combined: "" };
+  patchModule("dist/lib/backend/install-orchestrator.js", (mod) => {
+    const originalRunInstall = mod.runInstall;
+    mod.runInstall = (ctx) => {
+      calls.push(ctx);
+      return { ok: true, messages: [] };
     };
     return () => {
-      mod.runAihSh = originalRunAihSh;
+      mod.runInstall = originalRunInstall;
     };
   });
 
@@ -68,39 +68,28 @@ test("runInstallWizard non-interactive install calls backend with selected provi
 
   assert.equal(status, 0);
   assert.deepEqual(calls, [
-    [
-      "install",
-      "--runtime",
-      "cursor",
-      "--target",
-      path.resolve(target),
-      "--ref",
-      "v1.0.1",
-      "--scope",
-      "project",
-      "--visibility",
-      "private",
-      "--dry-run",
-      "--yes",
-      "--init-harness",
-      "--install-cache",
-    ],
-    [
-      "install",
-      "--runtime",
-      "claude",
-      "--target",
-      path.resolve(target),
-      "--ref",
-      "v1.0.1",
-      "--scope",
-      "project",
-      "--visibility",
-      "private",
-      "--dry-run",
-      "--yes",
-      "--no-install-cache",
-    ],
+    {
+      packRoot: repoRoot,
+      target: path.resolve(target),
+      provider: "cursor",
+      scope: "project",
+      visibility: "private",
+      dryRun: true,
+      initHarness: true,
+      installCache: true,
+      force: false,
+    },
+    {
+      packRoot: repoRoot,
+      target: path.resolve(target),
+      provider: "claude",
+      scope: "project",
+      visibility: "private",
+      dryRun: true,
+      initHarness: false,
+      installCache: false,
+      force: false,
+    },
   ]);
 });
 
@@ -229,14 +218,14 @@ test("runStatusOrDoctor forwards status to aih.sh", () => {
   const calls = [];
   const target = makeTempDir();
 
-  patchModule("dist/lib/cli-backend.js", (mod) => {
-    const originalRunAihSh = mod.runAihSh;
-    mod.runAihSh = (_packRoot, args) => {
-      calls.push(args);
-      return { status: 0, combined: "  target: ok" };
+  patchModule("dist/lib/backend/status-doctor.js", (mod) => {
+    const originalRunStatus = mod.runStatus;
+    mod.runStatus = ({ targetAbs }) => {
+      calls.push(targetAbs);
+      return { text: "status text" };
     };
     return () => {
-      mod.runAihSh = originalRunAihSh;
+      mod.runStatus = originalRunStatus;
     };
   });
 
@@ -258,7 +247,7 @@ test("runStatusOrDoctor forwards status to aih.sh", () => {
   });
 
   assert.equal(status, 0);
-  assert.deepEqual(calls, [["status", "--target", path.resolve(target), "--scope", "project"]]);
+  assert.deepEqual(calls, [path.resolve(target)]);
 });
 
 test("runEvalCommand lists registry tasks", async () => {
