@@ -60,6 +60,7 @@ test("runInstall dryRun writes no provider files", () => {
   });
   assert.equal(fs.existsSync(path.join(dir, ".claude")), false);
   assert.equal(fs.existsSync(path.join(dir, ".harness")), false);
+  assert.equal(fs.existsSync(path.join(dir, ".ai-harness")), false);
 });
 
 test("runInstall with shared visibility writes no git exclude block", () => {

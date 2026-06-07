@@ -4,12 +4,12 @@ import path from "node:path";
 import { ensureDirectory } from "./file-operations.js";
 
 /**
- * DEPRECATED: Use install-runtime.js instead.
+ * DEPRECATED: Use node bin/aih.js install instead.
  *
  * This module provides flat-root installation (all files to target/).
  * It is maintained for backward compatibility only.
  *
- * New code should use install-runtime.js which provides:
+ * New code should use node bin/aih.js install which provides:
  * - Provider-aware installation
  * - Capability caching (.ai-harness/)
  * - Command surface rendering
@@ -19,7 +19,7 @@ import { ensureDirectory } from "./file-operations.js";
  * - v1.1.0: Legacy path removed
  *
  * To migrate:
- * 1. Use install-runtime.js instead
+ * 1. Use node bin/aih.js install instead
  * 2. Or use the npx CLI: npx ai-engineering-harness install
  */
 
@@ -211,7 +211,7 @@ function installHarness(options: LegacyInstallOptions): LegacyInstallResult[] {
     });
 
     if (!options.dryRun) {
-      ensureDirectory(destinationPath, false);
+      ensureDirectory(path.dirname(destinationPath), false);
       fs.copyFileSync(sourcePath, destinationPath);
     }
   }
@@ -257,7 +257,7 @@ function formatNextSteps(options: LegacyInstallOptions): string {
     return [
       "Next steps:",
       "1. Review the files marked WOULD COPY.",
-      `2. Run: node install.js --target ${options.targetDisplay}`,
+      `2. Run: node bin/aih.js install --target ${options.targetDisplay}`,
       "3. After install, initialize or refine the `.harness/` artifacts needed for your workflow.",
     ].join("\n");
   }
@@ -268,7 +268,7 @@ function formatNextSteps(options: LegacyInstallOptions): string {
     "2. Read AGENTS.md.",
     "3. Create or refine the `.harness/` artifacts needed for your current workflow stage.",
     "4. Use docs/adoption-guide.md and docs/target-repo-validation.md for setup guidance.",
-    `5. Validate from the harness source pack: node validate.js --target ${options.targetDisplay} --profile-only`,
+    `5. Validate from the harness source pack: node bin/validate.js --target ${options.targetDisplay} --profile-only`,
   ].join("\n");
 }
 
@@ -282,7 +282,7 @@ function main(argv = process.argv.slice(2)): LegacyInstallResult[] {
   console.warn("Recommended: Use the CLI instead");
   console.warn("  npx ai-engineering-harness install --provider claude --yes");
   console.warn("");
-  console.warn("Or use install-runtime.js for provider-aware installation.");
+  console.warn("Or use node bin/aih.js install for provider-aware installation.");
   console.warn("────────────────────────────────────────────────────\n");
 
   const options = parseArgs(argv);

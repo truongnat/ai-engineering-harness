@@ -10,6 +10,8 @@
  * provider file writes.
  */
 
+import fs from "node:fs";
+import path from "node:path";
 import { applyPrivateIgnore } from "./git-hygiene";
 import { initHarnessProfile } from "./harness-skeleton";
 import { installCapabilityCache } from "../install-cache";
@@ -70,8 +72,11 @@ export function runInstall(ctx: InstallContext): InstallResult {
     const ignoreStrategy = resolveIgnoreStrategy(ctx.scope, ctx.visibility);
 
     // Step 1: Git hygiene (apply_private_ignore)
-    // Print banners only when strategy is info-exclude (matching aih.sh apply_private_ignore)
-    if (ignoreStrategy === "info-exclude") {
+    // Print banners only when strategy is info-exclude AND target is a git repo.
+    // Mirrors aih.sh:657-664: non-git repos degrade to a stderr warning (applyPrivateIgnore
+    // handles that path itself), so we must not emit the success banners in that case.
+    const isGitRepo = fs.existsSync(path.join(ctx.target, ".git"));
+    if (ignoreStrategy === "info-exclude" && isGitRepo) {
       process.stdout.write("\n--- Git exclude (private) ---\n");
     }
     applyPrivateIgnore({
@@ -84,7 +89,7 @@ export function runInstall(ctx: InstallContext): InstallResult {
       dryRun: ctx.dryRun,
       ignoreStrategy,
     });
-    if (ignoreStrategy === "info-exclude") {
+    if (ignoreStrategy === "info-exclude" && isGitRepo) {
       process.stdout.write("--- Git exclude complete ---\n\n");
     }
     messages.push("git-hygiene: ok");
