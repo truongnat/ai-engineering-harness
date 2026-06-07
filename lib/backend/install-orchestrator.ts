@@ -30,6 +30,8 @@ export interface InstallContext {
   initHarness: boolean;
   installCache: boolean;
   force?: boolean;
+  /** Controls the runtime-native banner verb: "install" (default) or "update". */
+  bannerVerb?: "install" | "update";
 }
 
 export interface InstallResult {
@@ -118,9 +120,10 @@ export function runInstall(ctx: InstallContext): InstallResult {
     }
 
     // Step 4: Provider install
+    const verb = ctx.bannerVerb ?? "install";
     if (isRuntimeNative(ctx.provider)) {
       // Runtime-native path: cursor/claude/codex/gemini/generic
-      process.stdout.write("\n--- Runtime-native install ---\n");
+      process.stdout.write(`\n--- Runtime-native ${verb} ---\n`);
       installRuntime({
         packRoot: ctx.packRoot,
         runtime: ctx.provider as RuntimeId,
