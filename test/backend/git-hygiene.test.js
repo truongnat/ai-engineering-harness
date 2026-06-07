@@ -78,6 +78,22 @@ test("dryRun never mutates the exclude file", () => {
   assert.equal(fs.existsSync(path.join(dir, ".git", "info", "exclude")), false);
 });
 
+test("applyPrivateIgnore skips when ignoreStrategy is not info-exclude", () => {
+  const dir = tmpGitRepo();
+  const res = applyPrivateIgnore({
+    targetAbs: dir,
+    provider: "claude",
+    initHarness: true,
+    installCache: false,
+    scope: "project",
+    visibility: "private",
+    dryRun: false,
+    ignoreStrategy: "none",
+  });
+  assert.equal(res.action, "skip");
+  assert.equal(fs.existsSync(path.join(dir, ".git", "info", "exclude")), false);
+});
+
 test("collectIgnorePaths dedupes and includes .ai-harness when installCache", () => {
   const paths = collectIgnorePaths({
     targetAbs: "/x",

@@ -26,6 +26,9 @@ export interface IgnoreContext {
   scope: string;
   visibility: string;
   dryRun: boolean;
+  /** Mirrors aih.sh EFFECTIVE_IGNORE_STRATEGY. Valid values include "info-exclude" and "none".
+   *  When undefined, defaults to "info-exclude" so existing callers are unaffected. */
+  ignoreStrategy?: string;
 }
 
 export interface IgnoreResult {
@@ -95,7 +98,9 @@ function replaceBlock(existing: string, newBlock: string): string {
     }
   }
 
-  return out.join("\n") + (existing.endsWith("\n") ? "\n" : "");
+  const joined = out.join("\n");
+  // Always guarantee exactly one trailing newline (mirrors awk print behaviour)
+  return joined.endsWith("\n") ? joined : joined + "\n";
 }
 
 /** Strip the harness block from content. Mirrors aih.sh:629-634. */
@@ -118,7 +123,9 @@ function stripBlock(existing: string): string {
     }
   }
 
-  return out.join("\n") + (existing.endsWith("\n") ? "\n" : "");
+  const joined = out.join("\n");
+  // Always guarantee exactly one trailing newline (mirrors awk print behaviour)
+  return joined.endsWith("\n") ? joined : joined + "\n";
 }
 
 /** Print manual ignore instructions to stderr. Mirrors aih.sh print_manual_ignore_instructions. */
@@ -151,6 +158,11 @@ export function applyPrivateIgnore(ctx: IgnoreContext): IgnoreResult {
   // Mirror apply_private_ignore guard: skip if not project/private scope
   if (ctx.scope !== "project" || ctx.visibility !== "private") {
     return { action: "skip", paths };
+  }
+
+  // Mirror apply_private_ignore guard: skip if EFFECTIVE_IGNORE_STRATEGY != info-exclude
+  if (ctx.ignoreStrategy !== undefined && ctx.ignoreStrategy !== "info-exclude") {
+    return { action: "skip", paths: [] };
   }
 
   const gitDir = path.join(ctx.targetAbs, ".git");
