@@ -237,10 +237,12 @@ describe("Session Memory & Documentation", () => {
 
   test("validate repository fails when harness config no longer uses file-backed memory", () => {
     const tempRepo = makeTempRepoCopy();
-    const configPath = path.join(tempRepo, "templates", "harness-config.json");
-    const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
-    config.memory.backend = "sqlite";
-    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    let config;
+    writeRepoFile(tempRepo, "templates/harness-config.json", (content) => {
+      config = JSON.parse(content);
+      config.memory.backend = "sqlite";
+      return JSON.stringify(config, null, 2);
+    });
     assertRepositoryFailure(
       tempRepo,
       /templates\/harness-config\.json must set memory\.backend to "files"/

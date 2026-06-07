@@ -58,8 +58,19 @@ function tokenizeCommand(command: string): string[] {
   return tokens;
 }
 
-function runCommand(command: string, cwd: string): childProcess.SpawnSyncReturns<string> {
-  const [executable, ...args] = tokenizeCommand(command);
+function hasExecutableExtension(executable: string): boolean {
+  return path.extname(executable) !== "";
+}
+
+function isEnoentError(error: Error | undefined): boolean {
+  return Boolean(error && "code" in error && error.code === "ENOENT");
+}
+
+function spawnCommand(
+  executable: string,
+  args: string[],
+  cwd: string
+): childProcess.SpawnSyncReturns<string> {
   return childProcess.spawnSync(executable, args, {
     cwd,
     encoding: "utf8",
@@ -67,6 +78,29 @@ function runCommand(command: string, cwd: string): childProcess.SpawnSyncReturns
     timeout: 15000,
     env: isolatedCommandEnv(),
   });
+}
+
+function runCommand(command: string, cwd: string): childProcess.SpawnSyncReturns<string> {
+  const [executable, ...args] = tokenizeCommand(command);
+  const firstAttempt = spawnCommand(executable, args, cwd);
+  if (
+    process.platform !== "win32" ||
+    !isEnoentError(firstAttempt.error) ||
+    executable.includes("\\") ||
+    executable.includes("/") ||
+    hasExecutableExtension(executable)
+  ) {
+    return firstAttempt;
+  }
+
+  for (const suffix of [".cmd", ".exe", ".bat"]) {
+    const retried = spawnCommand(`${executable}${suffix}`, args, cwd);
+    if (!isEnoentError(retried.error)) {
+      return retried;
+    }
+  }
+
+  return firstAttempt;
 }
 
 function runSingleCheck(cwd: string, check: Check): CheckResult {
