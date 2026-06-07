@@ -107,3 +107,66 @@ test("collectIgnorePaths dedupes and includes .ai-harness when installCache", ()
   assert.ok(paths.includes(".ai-harness/"));
   assert.equal(new Set(paths).size, paths.length); // no dupes
 });
+
+test("applyPrivateIgnore appends block to an existing exclude file without a block", () => {
+  const dir = tmpGitRepo();
+  const excl = path.join(dir, ".git", "info", "exclude");
+  fs.writeFileSync(excl, "node_modules/\nbuild/\n");
+  applyPrivateIgnore({
+    targetAbs: dir,
+    provider: "claude",
+    initHarness: true,
+    installCache: false,
+    scope: "project",
+    visibility: "private",
+    dryRun: false,
+  });
+  const content = fs.readFileSync(excl, "utf8");
+  assert.match(content, /^node_modules\/\nbuild\/\n/); // original preserved at top
+  assert.match(content, /# ai-engineering-harness start/);
+  assert.ok(content.endsWith("\n"));
+});
+
+test("applyPrivateIgnore skips when scope is not project or visibility is not private", () => {
+  const dir = tmpGitRepo();
+  const r1 = applyPrivateIgnore({
+    targetAbs: dir,
+    provider: "claude",
+    initHarness: true,
+    installCache: false,
+    scope: "global",
+    visibility: "private",
+    dryRun: false,
+  });
+  assert.equal(r1.action, "skip");
+  const r2 = applyPrivateIgnore({
+    targetAbs: dir,
+    provider: "claude",
+    initHarness: true,
+    installCache: false,
+    scope: "project",
+    visibility: "shared",
+    dryRun: false,
+  });
+  assert.equal(r2.action, "skip");
+  assert.equal(fs.existsSync(path.join(dir, ".git", "info", "exclude")), false);
+});
+
+test("removeIgnoreBlock skips when file absent or has no harness block", () => {
+  const dir = tmpGitRepo();
+  assert.equal(removeIgnoreBlock({ targetAbs: dir, dryRun: false }).action, "skip");
+  const excl = path.join(dir, ".git", "info", "exclude");
+  fs.writeFileSync(excl, "node_modules/\n");
+  assert.equal(removeIgnoreBlock({ targetAbs: dir, dryRun: false }).action, "skip");
+  assert.equal(fs.readFileSync(excl, "utf8"), "node_modules/\n"); // untouched
+});
+
+test("removeIgnoreBlock dryRun reports update without mutating", () => {
+  const dir = tmpGitRepo();
+  const excl = path.join(dir, ".git", "info", "exclude");
+  const before = "x/\n# ai-engineering-harness start\n.harness/\n# ai-engineering-harness end\n";
+  fs.writeFileSync(excl, before);
+  const r = removeIgnoreBlock({ targetAbs: dir, dryRun: true });
+  assert.equal(r.action, "update");
+  assert.equal(fs.readFileSync(excl, "utf8"), before); // unchanged
+});

@@ -1,5 +1,6 @@
 export const EXCLUDE_BLOCK_START = "# ai-engineering-harness start";
 export const EXCLUDE_BLOCK_END = "# ai-engineering-harness end";
+/** Canonical marker string; lib/cli-detect.ts has a local duplicate that should migrate to import this during the CLI rewire task. */
 export const HARNESS_MARKER = "ai-engineering-harness";
 
 /** Provider command surface paths (relative to target). Mirrors aih.sh harness_provider_command_paths. */

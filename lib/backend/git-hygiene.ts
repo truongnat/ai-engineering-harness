@@ -68,9 +68,14 @@ function hasHarnessBlock(excludeFile: string): boolean {
   return content.split("\n").some((line) => line === EXCLUDE_BLOCK_START);
 }
 
-/** Replace the existing block in the file content with newBlock.
- *  Mirrors the awk at aih.sh:594-607. */
-function replaceBlock(existing: string, newBlock: string): string {
+/**
+ * Filter the lines of `existing`, handling the harness block delimited by
+ * EXCLUDE_BLOCK_START/END. When `replacement` is provided, the block (markers + body)
+ * is replaced by `replacement` lines at the position of the first START marker; when
+ * omitted, the block (markers + body) is removed. Lines outside the block are preserved.
+ * Always returns text ending in exactly one trailing newline (matches awk `print`).
+ */
+function filterExcludeLines(existing: string, replacement?: string[]): string {
   const lines = existing.split("\n");
   const out: string[] = [];
   let skip = false;
@@ -79,10 +84,8 @@ function replaceBlock(existing: string, newBlock: string): string {
   for (const line of lines) {
     if (line === EXCLUDE_BLOCK_START) {
       skip = true;
-      if (!replaced) {
-        // Append the new block lines (strip trailing newline from newBlock before splitting)
-        const blockLines = newBlock.replace(/\n$/, "").split("\n");
-        for (const bl of blockLines) {
+      if (replacement !== undefined && !replaced) {
+        for (const bl of replacement) {
           out.push(bl);
         }
         replaced = true;
@@ -103,29 +106,17 @@ function replaceBlock(existing: string, newBlock: string): string {
   return joined.endsWith("\n") ? joined : joined + "\n";
 }
 
+/** Replace the existing block in the file content with newBlock.
+ *  Mirrors the awk at aih.sh:594-607. */
+function replaceBlock(existing: string, newBlock: string): string {
+  // Strip trailing newline from newBlock before splitting into replacement lines
+  const replacement = newBlock.replace(/\n$/, "").split("\n");
+  return filterExcludeLines(existing, replacement);
+}
+
 /** Strip the harness block from content. Mirrors aih.sh:629-634. */
 function stripBlock(existing: string): string {
-  const lines = existing.split("\n");
-  const out: string[] = [];
-  let skip = false;
-
-  for (const line of lines) {
-    if (line === EXCLUDE_BLOCK_START) {
-      skip = true;
-      continue;
-    }
-    if (line === EXCLUDE_BLOCK_END) {
-      skip = false;
-      continue;
-    }
-    if (!skip) {
-      out.push(line);
-    }
-  }
-
-  const joined = out.join("\n");
-  // Always guarantee exactly one trailing newline (mirrors awk print behaviour)
-  return joined.endsWith("\n") ? joined : joined + "\n";
+  return filterExcludeLines(existing);
 }
 
 /** Print manual ignore instructions to stderr. Mirrors aih.sh print_manual_ignore_instructions. */
