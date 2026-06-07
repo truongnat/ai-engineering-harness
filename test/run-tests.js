@@ -32,8 +32,9 @@ const VALIDATION_REPO_COPY_PATHS = new Set([
 ]);
 
 function shouldCopyValidationPath(relative) {
+  const normalized = relative.split(path.sep).join("/");
   for (const allowed of VALIDATION_REPO_COPY_PATHS) {
-    if (relative === allowed || allowed.startsWith(`${relative}${path.sep}`)) {
+    if (normalized === allowed || allowed.startsWith(`${normalized}/`)) {
       return true;
     }
   }
