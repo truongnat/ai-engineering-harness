@@ -463,6 +463,9 @@ describe("Provider Rules & Adapters", () => {
     for (const [relativePath, content] of samples) {
       renderer.assertProviderRuleContent(relativePath, content, failures);
       assert.match(content, /harness-plan/);
+      if (relativePath.includes(".cursor/")) {
+        assert.match(content, /\.cursor\/commands\//);
+      }
     }
     assert.deepEqual(failures, []);
   });
@@ -493,7 +496,7 @@ describe("Provider Rules & Adapters", () => {
     );
     assert.equal(PROVIDER_RULE_ADAPTERS.claude.nativeSlashCommands, true);
     assert.equal(PROVIDER_RULE_ADAPTERS.claude.supportsSubagents, true);
-    assert.equal(PROVIDER_RULE_ADAPTERS.cursor.nativeSlashCommands, false);
+    assert.equal(PROVIDER_RULE_ADAPTERS.cursor.nativeSlashCommands, true);
     assert.equal(PROVIDER_RULE_ADAPTERS.codex.nativeSlashCommands, false);
     assert.equal(PROVIDER_RULE_ADAPTERS.gemini.nativeSlashCommands, false);
   });
@@ -509,7 +512,8 @@ describe("Provider Command Support", () => {
     assert.equal(claude.nativeSlashCommands, true);
     assert.ok(Array.isArray(claude.ruleEntrypoints));
     assert.match(claude.ruleEntrypoints.join(" "), /\.claude\/agents/);
-    assert.equal(cursor.nativeSlashCommands, false);
+    assert.equal(cursor.nativeSlashCommands, true);
+    assert.match(cursor.ruleEntrypoints.join(" "), /\.cursor\/commands/);
     assert.match(cursor.ruleEntrypoints.join(" "), /guardrails/);
   });
 });

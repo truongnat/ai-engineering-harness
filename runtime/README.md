@@ -10,11 +10,11 @@ Files here are installed by `dist/lib/install-runtime.js` (from `aih.sh` / `inst
 .harness/             →  project state (--init-harness)
 ```
 
-Every project runtime-native install should run **cache + optional harness init + runtime payload**. Entrypoints only tell the agent where to read; without `.ai-harness/` there is no local `commands/`, `skills/`, or `workflows/`.
+Every project runtime-native install should run **cache + optional harness init + runtime payload**. Entrypoints only tell the agent where to read; without `.ai-harness/` there is no local capability-pack source for `commands/`, `skills/`, or `workflows/`, even if the runtime has native project commands.
 
 | Layer | Examples |
 |---|---|
-| Entrypoint | `.cursor/rules/ai-engineering-harness.mdc`, `.claude/CLAUDE.md`, `AGENTS.md`, `.gemini/extensions/.../GEMINI.md`, `.opencode/plugins/...js` |
+| Entrypoint | `.cursor/commands/harness-*.md`, `.cursor/rules/ai-engineering-harness.mdc`, `.claude/CLAUDE.md`, `AGENTS.md`, `.gemini/extensions/.../GEMINI.md`, `.opencode/plugins/...js` |
 | Capability | `.ai-harness/AGENTS.md`, `commands/`, `skills/`, `workflows/`, … |
 | State | `.harness/HARNESS.md`, goals, memory |
 

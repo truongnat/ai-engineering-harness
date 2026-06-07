@@ -17,14 +17,14 @@ Before acting on a harness request:
 1. Read `.ai-harness/activation.md`
 2. Read `.harness/STATE.md`
 3. Read the active session under `.harness/sessions/`
-4. Read the relevant command contract in `.ai-harness/commands/`
-5. Read the matching prompt template in `.ai-harness/prompt-templates/`
+4. Read the relevant Cursor project command in `.cursor/commands/`
+5. Read the relevant command contract in `.ai-harness/commands/`
+6. Read the matching prompt template in `.ai-harness/prompt-templates/`
 
 ## Important
 
-Cursor project install does **not** provide native `/harness-*` slash commands.
-
-When the user says harness-plan, harness-run, harness-verify, or harness-ship, treat it as a local harness command and route through `.ai-harness/runtime-commands/`.
+Cursor project install provides native `/harness-*` commands through `.cursor/commands/`.
+Use `.cursor/rules/` for guardrails and repository activation, and keep `.ai-harness/runtime-commands/` as the local catalog mirror.
 
 Do not invent slash commands.
 Do not use legacy colon-separated command IDs.
@@ -33,8 +33,6 @@ Always follow `.ai-harness/agent-system/SYSTEM_PROMPT.md`.
 
 Use the response formats in `.ai-harness/agent-system/RESPONSE_CONTRACT.md`.
 
-Cursor does **not** have verified native `/harness-*` slash support in this install.
-
-Fallback instruction: **Use harness-plan for this repository.**
+Fallback instruction: **Use /harness-plan for this repository.**
 
 <!-- @core -->

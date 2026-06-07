@@ -5,9 +5,9 @@ Active scope (v0.11.0): Claude, Cursor, Codex, Gemini — **not OpenCode**.
 | Provider | Native support status | Packaging path | Install method | Invocation | Dogfood | Next step |
 |----------|----------------------|----------------|----------------|------------|---------|-------------|
 | Claude Code | native-plugin + project command files | `.claude-plugin/plugin.json`, `.claude/commands/` | `/plugin install …` or npx project install | `/harness-plan` for workflow commands where project command files exist; plugin skills documented separately | partial | Primary polish + marketplace |
-| Cursor | plugin-ready | `.cursor-plugin/plugin.json` | `/add-plugin` (pending publish) | Plugin commands when installed | no | Secondary polish + marketplace |
+| Cursor | native-command-files + rules | `.cursor-plugin/plugin.json`, `.cursor/commands/`, `.cursor/rules/` | `/add-plugin` (pending publish) or npx project install | `/harness-plan` from project command files | no | Secondary polish + marketplace |
 | Codex | plugin-packaging | `.codex-plugin/plugin.json` + `skills/` | `/plugins` marketplace once published | plugin skills (no `/harness-*` claim) | pending | Marketplace submit |
-| Gemini | fallback-only | `gemini-extension.json` | `gemini extensions install <git-url>` | ask harness-plan | partial | Extension dogfood |
+| Gemini | native-command-files + extension context | `gemini-extension.json`, `.gemini/extensions/ai-engineering-harness/` | `gemini extensions install <git-url>` or project extension dir | `GEMINI.md` context; ask harness-plan | partial | Extension dogfood |
 
 ## Removed from active scope
 
@@ -36,7 +36,7 @@ Per provider in `commandSurface.providers.<id>`:
 | Provider | Rule entrypoints | Native `/harness-*` | Subagents | Rule mode |
 |----------|------------------|--------------------:|----------:|-----------|
 | Claude Code | `.claude/CLAUDE.md`, `.claude/commands/`, `.claude/agents/` | Yes | Yes | claude-project |
-| Cursor | `.cursor/rules/ai-engineering-harness*.mdc` | No | No | cursor-rules |
+| Cursor | `.cursor/commands/`, `.cursor/rules/` | Yes | No | cursor-rules |
 | Codex | `AGENTS.md` | No | No | agents-md |
 | Gemini | `.gemini/extensions/ai-engineering-harness/GEMINI.md` | No | No | gemini-extension |
 | Generic | `AGENTS.md` | No | No | agents-md |

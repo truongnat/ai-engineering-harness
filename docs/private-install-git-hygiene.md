@@ -50,7 +50,8 @@ Expect `WOULD UPDATE .git/info/exclude` before file writes.
 # ai-engineering-harness start
 .ai-harness/
 .harness/
-.cursor/rules/ai-engineering-harness.mdc
+.cursor/commands/
+.cursor/rules/
 # ai-engineering-harness end
 ```
 
@@ -66,7 +67,7 @@ See [private-capability-cache.md](private-capability-cache.md).
 
 | Runtime | Paths in block |
 |---|---|
-| cursor, windsurf | `.cursor/rules/ai-engineering-harness.mdc` |
+| cursor, windsurf | `.cursor/commands/`, `.cursor/rules/` |
 | claude | `.claude/CLAUDE.md`, `.claude/settings.json` |
 | gemini | `.gemini/extensions/ai-engineering-harness/` |
 | opencode | `.opencode/plugins/ai-engineering-harness.js` only (not `opencode.json`) |

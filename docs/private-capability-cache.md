@@ -17,7 +17,7 @@ Without `.ai-harness/`, every provider only gets an entrypoint that says “go r
 | Problem | Fix |
 |---|---|
 | Root copy pollutes product repos | Cache under `.ai-harness/` only |
-| Runtime-only install has no `commands/`, `skills/`, … locally | Copy selected pack surface into cache |
+| Runtime-only install has no shared pack `commands/`, `skills/`, … locally in `.ai-harness/` | Copy selected pack surface into cache while allowing native provider commands separately |
 | `.harness/` is project-specific state | Keep capabilities separate from goals/profile |
 
 ## Difference Between `.ai-harness/` and `.harness/`
@@ -26,7 +26,7 @@ Without `.ai-harness/`, every provider only gets an entrypoint that says “go r
 |---|---|
 | `.ai-harness/` | **Capability source** — shared pack: `AGENTS.md`, `commands/`, `skills/`, `workflows/`, `patterns/`, `templates/`, selected `docs/` |
 | `.harness/` | **Project state** — this repo's profile, gates, memory, active goals |
-| Runtime bootstrap (e.g. `.cursor/rules/ai-engineering-harness.mdc`) | **Provider entrypoint** — tells the agent where to read cache + state |
+| Runtime bootstrap (e.g. `.cursor/commands/harness-plan.md`, `.cursor/rules/ai-engineering-harness.mdc`) | **Provider entrypoint** — tells the agent where to read cache + state |
 
 Agents should read `.ai-harness/AGENTS.md` first, use `.ai-harness/commands/` and `.ai-harness/skills/` for capabilities, then read `.harness/` artifacts for this project.
 
@@ -51,8 +51,10 @@ your-project/
 │   ├── TEAM.md
 │   └── …
 └── .cursor/
+    ├── commands/
+    │   └── harness-*.md
     └── rules/
-        └── ai-engineering-harness.mdc
+        └── ai-engineering-harness*.mdc
 ```
 
 Root must **not** contain `commands/`, `skills/`, `workflows/`, or `templates/` from the pack.
@@ -61,7 +63,7 @@ Root must **not** contain `commands/`, `skills/`, `workflows/`, or `templates/` 
 
 | Runtime | Entrypoint | Also installed |
 |---|---|---|
-| `cursor` | `.cursor/rules/ai-engineering-harness.mdc` | `.ai-harness/`, `.harness/` |
+| `cursor` | `.cursor/commands/`, `.cursor/rules/ai-engineering-harness.mdc` | `.ai-harness/`, `.harness/` |
 | `claude` | `.claude/CLAUDE.md`, `.claude/settings.json` | `.ai-harness/`, `.harness/` |
 | `codex`, `generic` | `AGENTS.md` (bootstrap → `.ai-harness/`) | `.ai-harness/`, `.harness/` |
 | `gemini` | `.gemini/extensions/ai-engineering-harness/` | `.ai-harness/`, `.harness/` |
@@ -91,7 +93,8 @@ Private installs append a delimited block to **`.git/info/exclude`** (not `.giti
 # ai-engineering-harness start
 .ai-harness/
 .harness/
-.cursor/rules/ai-engineering-harness.mdc
+.cursor/commands/
+.cursor/rules/
 # ai-engineering-harness end
 ```
 

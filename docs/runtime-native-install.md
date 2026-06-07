@@ -21,7 +21,7 @@ Flag semantics and defaults live in [install-command-model.md](install-command-m
 | Runtime | Alias | Project scope | Global scope |
 |---|---|---|---|
 | `opencode` | — | `.opencode/plugins/ai-engineering-harness.js` | `~/.config/opencode/plugins/` |
-| `cursor` | — | `.cursor/rules/ai-engineering-harness.mdc` | `~/.cursor/rules/` |
+| `cursor` | — | `.cursor/commands/`, `.cursor/rules/` | `~/.cursor/commands/`, `~/.cursor/rules/` |
 | `windsurf` | same as cursor | same | same |
 | `claude` | — | `.claude/CLAUDE.md`, merge `.claude/settings.json` | `~/.claude/CLAUDE.md`, settings |
 | `codex` | — | `AGENTS.md` bootstrap | `~/.codex/AGENTS.md` |

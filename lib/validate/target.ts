@@ -13,7 +13,12 @@ function getRuntimeBootstrapPaths(runtime: string): string[] | null {
     case "manual":
       return ["AGENTS.md"];
     case "cursor":
-      return [".cursor/rules/ai-engineering-harness.mdc"];
+      return [
+        ".cursor/commands/",
+        ".cursor/rules/ai-engineering-harness.mdc",
+        ".cursor/rules/ai-engineering-harness-commands.mdc",
+        ".cursor/rules/ai-engineering-harness-guardrails.mdc",
+      ];
     case "gemini":
       return [
         ".gemini/extensions/ai-engineering-harness/gemini-extension.json",

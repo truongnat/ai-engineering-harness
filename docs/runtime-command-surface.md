@@ -47,23 +47,23 @@ How a command runs after routing is defined in `.ai-harness/commands/` — same 
 | Provider | Mode | Native slash | Project install adds |
 |----------|------|--------------|----------------------|
 | Claude Code | native-plugin | `/harness-plan` via project command files where installed | `.claude/commands/harness-*.md`, `.claude/agents/harness-*.md` (delegated workers) |
-| Cursor | plugin-ready | via plugin when published | `.cursor/rules/` (fallback) |
+| Cursor | native-command-files | `/harness-plan` via project command files | `.cursor/commands/`, `.cursor/rules/` |
 | Codex | plugin-packaging | plugin skills via `/plugins` | `AGENTS.md` fallback |
-| Gemini | fallback-only | none | extension `GEMINI.md` + manifest |
+| Gemini | native-command-files | none | `.gemini/extensions/ai-engineering-harness/` (`GEMINI.md` + manifest) |
 | Generic | fallback-only | none | `AGENTS.md` aliases |
 
 ## Install methods
 
 | Provider | Preferred | Fallback |
 |----------|-----------|----------|
-| Cursor | `/add-plugin ai-engineering-harness` | npx + rules → `.ai-harness/` |
+| Cursor | npx + project commands/rules | `/add-plugin ai-engineering-harness` when published |
 | Claude | `/plugin install …` | npx + `.claude/commands/` |
-| Gemini | `gemini extensions install <url>` | ask harness-plan |
+| Gemini | `gemini extensions install <url>` | ask harness-plan via `GEMINI.md` context |
 
 ## Troubleshooting
 
 | Symptom | Action |
 |---------|--------|
-| `/harness-plan` missing | Expected on most providers — use `/harness-plan` (Claude project file) or ask **harness-plan** |
-| Cursor slash empty | Install plugin when published; use rules fallback |
+| `/harness-plan` missing | Expected on most providers — use `/harness-plan` where project commands are installed or ask **harness-plan** |
+| Cursor slash empty | Install project commands/rules; plugin publish remains optional |
 | Doctor WARN plugin-ready | Informational |

@@ -66,7 +66,10 @@ function detectRuntimesFromTarget(targetAbs: string): string[] {
     }
   };
 
-  if (fs.existsSync(path.join(targetAbs, ".cursor/rules/ai-engineering-harness.mdc"))) {
+  if (
+    fs.existsSync(path.join(targetAbs, ".cursor/commands")) ||
+    fs.existsSync(path.join(targetAbs, ".cursor/rules/ai-engineering-harness.mdc"))
+  ) {
     add("cursor");
   }
   if (fs.existsSync(path.join(targetAbs, ".claude/CLAUDE.md"))) {
@@ -441,6 +444,7 @@ export function runStatus(ctx: ReportContext): StatusResult {
   );
 
   const providerCmds =
+    fs.existsSync(path.join(targetAbs, ".cursor/commands")) ||
     fs.existsSync(path.join(targetAbs, ".claude/commands/harness-plan.md")) ||
     fs.existsSync(path.join(targetAbs, ".opencode/commands/harness-plan.md")) ||
     fs.existsSync(path.join(targetAbs, ".cursor/rules/ai-engineering-harness-commands.mdc"))

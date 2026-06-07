@@ -81,26 +81,26 @@ const PROVIDER_COMMAND_SUPPORT: Readonly<Record<ProviderId, ProviderCommandSuppo
     },
     cursor: {
       provider: "Cursor",
-      status: "plugin-ready",
-      nativeCommandSupport: false,
-      nativeCommands: false,
+      status: "native-command-files",
+      nativeCommandSupport: true,
+      nativeCommands: true,
+      nativeSlashCommands: true,
       fallbackActivation: true,
       packagingPath: ".cursor-plugin/plugin.json",
       installMethod:
-        "/add-plugin ai-engineering-harness (marketplace pending) or npx project install + rules",
+        "/add-plugin ai-engineering-harness (marketplace pending) or npx project install + .cursor/commands + rules",
       installedPaths: [
+        ".cursor/commands/",
+        ".cursor/rules/",
         ".cursor-plugin/plugin.json (package)",
-        ".cursor/rules/ai-engineering-harness.mdc",
-        ".cursor/rules/ai-engineering-harness-commands.mdc",
-        ".cursor/rules/ai-engineering-harness-guardrails.mdc",
       ],
-      workflowInvocation: null,
+      workflowInvocation: "/harness-plan (project command file)",
       pluginSkillNamespace: null,
       fallbackInstruction:
-        "Install plugin: /add-plugin ai-engineering-harness when published. Project npx install: .cursor/rules activate .ai-harness/ (fallback).",
+        "Project install adds .cursor/commands/ plus .cursor/rules/; use /harness-plan in Cursor after install.",
       notes:
-        "Native commands come from Cursor plugin manifest commands field — not project .cursor/commands/.",
-      invocations: {},
+        "Cursor project commands are native Markdown slash commands from .cursor/commands/. Rules provide guardrails and fallback routing.",
+      invocations: { plan: "/harness-plan" },
     },
     codex: {
       provider: "Codex",
@@ -140,21 +140,19 @@ const PROVIDER_COMMAND_SUPPORT: Readonly<Record<ProviderId, ProviderCommandSuppo
     },
     gemini: {
       provider: "Gemini",
-      status: "fallback-only",
-      nativeCommandSupport: false,
-      nativeCommands: false,
+      status: "native-command-files",
+      nativeCommandSupport: true,
+      nativeCommands: true,
       fallbackActivation: true,
       packagingPath: "gemini-extension.json",
-      installMethod: "gemini extensions install <git-url> or project .gemini/extensions/...",
-      installedPaths: [
-        ".gemini/extensions/ai-engineering-harness/gemini-extension.json",
-        "GEMINI.md",
-      ],
-      workflowInvocation: null,
+      installMethod: "gemini extensions install <git-url> or project .gemini/extensions/ package",
+      installedPaths: [".gemini/extensions/ai-engineering-harness/"],
+      workflowInvocation: "GEMINI.md extension context",
       pluginSkillNamespace: null,
       fallbackInstruction:
-        'gemini extensions install https://github.com/truongnat/ai-engineering-harness — context via GEMINI.md; ask "use harness-plan".',
-      notes: "Extension context/skills — no invented slash commands under extension commands/.",
+        "Project install adds .gemini/extensions/ai-engineering-harness/; use harness-plan via GEMINI.md context.",
+      notes:
+        "Gemini project install uses extension manifest + GEMINI.md context. No /harness-* slash claim.",
       invocations: {},
     },
     antigravity: {

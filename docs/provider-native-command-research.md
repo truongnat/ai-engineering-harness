@@ -33,13 +33,13 @@ Cursor manifest (upstream): `commands: "./commands/"`, `skills: "./skills/"` —
 
 ## Cursor
 
-**Source:** Superpowers README — `/add-plugin superpowers` or marketplace; [`.cursor-plugin/plugin.json`](https://github.com/obra/superpowers/blob/main/.cursor-plugin/plugin.json) declares `commands`, `skills`, `agents`, `hooks`.
+**Source:** Cursor docs — [Commands](https://docs.cursor.com/en/agent/chat/commands) and [Rules](https://docs.cursor.com/context/rules-for-ai). Custom commands are stored in `.cursor/commands` and show up after `/`.
 
 **ai-engineering-harness commands*
 
 - Pack: `.cursor-plugin/plugin.json` → `./commands/`, `./skills/`
-- **Do not** treat project `.cursor/commands/harness-*.md` as native (removed)
-- npx project install: `.cursor/rules/*.mdc` = **fallback activation** for `.ai-harness/`
+- Project install: `.cursor/commands/` = native project commands
+- Project install: `.cursor/rules/` = activation / guardrail rules for `.ai-harness/`
 - Marketplace publish: **pending** — packaging-ready
 
 ## OpenCode (removed from active scope v0.11.0)
@@ -82,7 +82,7 @@ Regardless of provider:
 .ai-harness/activation.md
 ```
 
-Canonical names: `harness-plan`, … — use when asking the agent on fallback-only providers.
+Canonical names: `harness-plan`, … — use when asking the agent through local catalog routing or fallback-only providers.
 
 ## Related
 

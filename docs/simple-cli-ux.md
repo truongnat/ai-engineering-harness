@@ -12,7 +12,7 @@ npx ai-engineering-harness uninstall
 
 See [npx-cli-ux.md](npx-cli-ux.md) and [terminal-wizard-ux.md](terminal-wizard-ux.md). Detection **recommends** providers; the wizard requires explicit selection.
 
-After install, use the local command catalog (`harness-plan`, `harness-verify`, …). Ask the agent explicitly on fallback-only providers — [runtime-command-surface.md](runtime-command-surface.md).
+After install, use the local command catalog (`harness-plan`, `harness-verify`, …). Cursor and Claude expose native project commands; Codex uses plugin packaging plus `AGENTS.md` fallback; Gemini uses extension packaging plus `GEMINI.md` context — [runtime-command-surface.md](runtime-command-surface.md).
 
 ## Shell fallback
 
@@ -113,7 +113,7 @@ After default uninstall, kept `.ai-harness/` and `.harness/` may become visible 
 
 Installed runtime detection order:
 
-- `.cursor/rules/ai-engineering-harness.mdc` → `cursor`
+- `.cursor/commands/harness-plan.md` or `.cursor/rules/ai-engineering-harness.mdc` → `cursor`
 - `.claude/CLAUDE.md` → `claude`
 - `.gemini/extensions/ai-engineering-harness/GEMINI.md` → `gemini`
 - `AGENTS.md` containing `ai-engineering-harness` → `generic`
@@ -143,7 +143,8 @@ Manual fallback is still supported explicitly with `--runtime manual` or `--lega
 
 - `.ai-harness/`
 - `.harness/`
-- `.cursor/rules/ai-engineering-harness.mdc`
+- `.cursor/commands/`
+- `.cursor/rules/`
 - `.git/info/exclude` harness block
 
 ## Update

@@ -8,7 +8,7 @@ Explain how Cursor should consume `ai-engineering-harness` as a capability pack 
 
 Cursor is a good fit when the harness operating surface is installed in the same workspace as the target product repository.
 
-Cursor should use repo-local markdown context: `AGENTS.md`, commands, skills, templates, and `.harness/` artifacts.
+Cursor should use repo-local markdown context: `AGENTS.md`, project commands, rules, templates, and `.harness/` artifacts.
 
 Cursor should not treat the `ai-engineering-harness` source repo as the product workspace unless that repo itself is being maintained.
 
@@ -35,6 +35,8 @@ Run these commands from the source pack repo, open Cursor in the target repo for
 Inside the target repository, Cursor should read:
 
 - `AGENTS.md`
+- `.cursor/commands/harness-*.md`
+- `.cursor/rules/ai-engineering-harness*.mdc`
 - `docs/consume-as-pack.md`
 - `docs/install-to-profile-walkthrough.md`
 - `docs/target-repo-validation.md`

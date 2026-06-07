@@ -22,7 +22,7 @@ Hints (`.cursor/`, `.claude/`, `.gemini/`, harness `AGENTS.md`) mark providers *
 
 ## Slash commands after install
 
-Project-scoped **canonical commands** (`harness-plan`, `harness-verify`, …) route through `.ai-harness/runtime-commands/` → `.ai-harness/commands/`. Native slash support is provider-dependent — see [runtime-command-surface.md](runtime-command-surface.md).
+Project-scoped **canonical commands** (`harness-plan`, `harness-verify`, …) route through `.ai-harness/runtime-commands/` → `.ai-harness/commands/`. Native slash support is provider-dependent — Cursor uses `.cursor/commands/`, Claude uses `.claude/commands/`; Codex uses plugin packaging plus `AGENTS.md` fallback; Gemini uses extension packaging plus `GEMINI.md` context. See [runtime-command-surface.md](runtime-command-surface.md).
 
 ## Install wizard
 
@@ -43,7 +43,8 @@ Uses `@clack/prompts` when stdin/stdout is a TTY:
 Will install:
   .ai-harness/
   .harness/
-  .cursor/rules/ai-engineering-harness.mdc
+  .cursor/commands/
+  .cursor/rules/
   .git/info/exclude block
 
 Will not modify:

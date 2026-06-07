@@ -26,6 +26,7 @@ function detectRecommendedProviders(targetRoot: string): string[] {
   }
   if (
     pathExists(targetRoot, ".cursor") ||
+    pathExists(targetRoot, ".cursor/commands") ||
     pathExists(targetRoot, ".cursor/rules/ai-engineering-harness.mdc")
   ) {
     recommended.push("cursor");
@@ -46,7 +47,10 @@ function detectRecommendedProviders(targetRoot: string): string[] {
 function detectInstalledProviders(targetRoot: string): string[] {
   const installed: string[] = [];
 
-  if (pathExists(targetRoot, ".cursor/rules/ai-engineering-harness.mdc")) {
+  if (
+    pathExists(targetRoot, ".cursor/commands") ||
+    pathExists(targetRoot, ".cursor/rules/ai-engineering-harness.mdc")
+  ) {
     installed.push("cursor");
   }
   if (pathExists(targetRoot, ".claude/CLAUDE.md")) {

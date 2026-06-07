@@ -22,14 +22,14 @@ const ACTIVE_PROVIDERS: readonly ProviderDescriptor[] = Object.freeze([
   {
     id: "cursor",
     label: "Cursor",
-    description: "Secondary - plugin packaging + rules fallback",
+    description: "Secondary - native command files + rules",
     implemented: true,
     priority: "secondary",
   },
   {
     id: "codex",
     label: "Codex",
-    description: "Experimental - .codex-plugin/ + AGENTS.md fallback",
+    description: "Experimental - plugin packaging + AGENTS.md fallback",
     implemented: true,
     priority: "experimental",
     installMode: "plugin-packaging-plus-project-fallback",
@@ -39,7 +39,7 @@ const ACTIVE_PROVIDERS: readonly ProviderDescriptor[] = Object.freeze([
   {
     id: "gemini",
     label: "Gemini",
-    description: "Experimental - gemini extension context",
+    description: "Experimental - extension packaging + context",
     implemented: true,
     priority: "experimental",
   },

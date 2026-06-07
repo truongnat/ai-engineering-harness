@@ -45,7 +45,7 @@ Core scripts:
 | Claude | native hook adapter example |
 | Cursor | rules/prompt fallback |
 | Codex | AGENTS/prompt fallback |
-| Gemini | extension/prompt fallback |
+| Gemini | extension context / prompt fallback |
 
 ## Skills
 

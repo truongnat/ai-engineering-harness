@@ -260,6 +260,13 @@ describe("CLI Provider Detection", () => {
     assert.ok(providers.includes("cursor"));
   });
 
+  test("detectInstalledProviders detects Cursor from .cursor/commands", () => {
+    const tmpDir = makeTempDir();
+    createMockFileStructure(tmpDir, [".cursor/commands/harness-plan.md"]);
+    const providers = cliDetect.detectInstalledProviders(tmpDir);
+    assert.ok(providers.includes("cursor"));
+  });
+
   test("detectInstalledProviders detects Codex from .codex-plugin/plugin.json", () => {
     const tmpDir = makeTempDir();
     createMockFileStructure(tmpDir, [".codex-plugin/plugin.json"]);

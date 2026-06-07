@@ -29,7 +29,7 @@ sh aih.sh uninstall --runtime all --scope project --remove-cache --remove-state 
 
 | Runtime | Paths removed |
 |---|---|
-| `cursor` | `.cursor/rules/ai-engineering-harness.mdc` |
+| `cursor` | `.cursor/commands/`, `.cursor/rules/` |
 | `codex`, `generic`, `manual` | `AGENTS.md` only when clearly harness-owned |
 | `claude` | `.claude/CLAUDE.md`; `.claude/settings.json` is skipped unless future safe ownership logic is added |
 | `gemini` | `.gemini/extensions/ai-engineering-harness/` |

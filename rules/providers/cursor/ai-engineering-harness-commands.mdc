@@ -21,12 +21,13 @@ Canonical commands:
 
 When a canonical command is requested:
 
-1. Read `.ai-harness/runtime-commands/<command>.md`
-2. Read `.ai-harness/commands/<command>.md`
-3. Read matching `.ai-harness/prompt-templates/<command>.md` if present
-4. Follow phase guards
-5. Stop and ask if blocked
+1. Read `.cursor/commands/<command>.md`
+2. Read `.ai-harness/runtime-commands/<command>.md`
+3. Read `.ai-harness/commands/<command>.md`
+4. Read matching `.ai-harness/prompt-templates/<command>.md` if present
+5. Follow phase guards
+6. Stop and ask if blocked
 
-Cursor does **not** have verified native `/harness-*` support in this install.
+Cursor project install provides native `/harness-*` commands from `.cursor/commands/`.
 
 <!-- @core:command-naming,phase-guards,blocking -->

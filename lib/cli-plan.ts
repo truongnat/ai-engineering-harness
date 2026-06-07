@@ -27,7 +27,7 @@ function pathsForProvider(providerId: PlanProviderId, initHarness: boolean): str
   }
   switch (providerId) {
     case "cursor":
-      paths.push(".cursor/rules/ai-engineering-harness.mdc");
+      paths.push(".cursor/commands/", ".cursor/rules/");
       break;
     case "claude":
       paths.push(".claude/CLAUDE.md", ".claude/settings.json");

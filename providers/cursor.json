@@ -1,14 +1,15 @@
 {
   "id": "cursor",
   "label": "Cursor",
-  "nativeSlashCommands": false,
+  "nativeSlashCommands": true,
   "supportsSubagents": false,
-  "status": "plugin-ready",
+  "status": "native-command-files",
   "pluginPath": ".cursor-plugin/plugin.json",
   "ruleEntrypoints": [
+    ".cursor/commands/",
     ".cursor/rules/ai-engineering-harness.mdc",
     ".cursor/rules/ai-engineering-harness-commands.mdc",
     ".cursor/rules/ai-engineering-harness-guardrails.mdc"
   ],
-  "installPaths": [".cursor/rules/"]
+  "installPaths": [".cursor/commands/", ".cursor/rules/"]
 }

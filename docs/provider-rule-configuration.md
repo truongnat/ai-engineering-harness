@@ -16,7 +16,7 @@ lib/provider-rule-renderer.js
 provider-specific entrypoints at install time
 ```
 
-Only Claude currently gets project-native `/harness-*` command files. Cursor, Codex, and Gemini use fallback routing through rules or context files.
+Claude and Cursor get project-native `/harness-*` command files. Codex uses plugin packaging with AGENTS fallback, and Gemini uses extension packaging with `GEMINI.md` context.
 
 ## Core Fragments
 
@@ -35,12 +35,12 @@ Provider templates include `<!-- @core -->` markers. The renderer expands them a
 | Provider | Rule entrypoints | Native `/harness-*` | Subagents |
 |----------|------------------|--------------------:|----------:|
 | Claude Code | `.claude/CLAUDE.md`, `.claude/commands/`, `.claude/agents/` | Yes (project commands) | Yes |
-| Cursor | `.cursor/rules/*.mdc` | No | No |
+| Cursor | `.cursor/commands/`, `.cursor/rules/` | Yes (project commands) | No |
 | Codex | `AGENTS.md` | No | No |
-| Gemini | `.gemini/extensions/ai-engineering-harness/GEMINI.md` | No | No |
+| Gemini | `.gemini/extensions/ai-engineering-harness/` (`GEMINI.md`) | No | No |
 | Generic | `AGENTS.md` | No | No |
 
-Source templates live under `rules/providers/<provider>/`, including `rules/providers/claude/command.md` for project-native Claude command files.
+Source templates live under `rules/providers/<provider>/`, including `rules/providers/claude/command.md` for project-native Claude command files and `rules/providers/cursor/ai-engineering-harness-commands.mdc` for Cursor command routing.
 
 ## Install Mapping
 
@@ -48,9 +48,9 @@ Project install writes:
 
 ```txt
 Claude  → .claude/CLAUDE.md + .claude/commands/harness-*.md + .claude/agents/harness-*.md
-Cursor  → .cursor/rules/ai-engineering-harness*.mdc (3 files)
+Cursor  → .cursor/commands/ + .cursor/rules/ (harness commands + guardrails)
 Codex   → AGENTS.md
-Gemini  → .gemini/extensions/ai-engineering-harness/GEMINI.md
+Gemini  → .gemini/extensions/ai-engineering-harness/
 Generic → AGENTS.md (generic adapter)
 ```
 

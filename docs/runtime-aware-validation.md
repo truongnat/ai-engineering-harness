@@ -8,7 +8,7 @@ Validate **target repositories** after runtime-native install without forcing ev
 
 Legacy target profile validation (`node bin/validate.js --target <repo> --profile-only`) always required `AGENTS.md`. That matched manual legacy adoption and generic/codex project modes, but not:
 
-- **Cursor** — `.cursor/rules/ai-engineering-harness.mdc`
+- **Cursor** — `.cursor/commands/harness-*.md` + `.cursor/rules/ai-engineering-harness.mdc`
 - **Gemini** — `.gemini/extensions/ai-engineering-harness/…`
 - **Claude** — `.claude/CLAUDE.md` + `.claude/settings.json`
 
@@ -62,7 +62,7 @@ Structural **path existence** only:
 | Runtime | Required paths |
 |---|---|
 | `generic`, `codex`, `manual` | `AGENTS.md` |
-| `cursor` | `.cursor/rules/ai-engineering-harness.mdc` |
+| `cursor` | `.cursor/commands/`, `.cursor/rules/` |
 | `gemini` | `.gemini/extensions/ai-engineering-harness/gemini-extension.json`, `.gemini/extensions/ai-engineering-harness/GEMINI.md` (project scope; load path best-effort per audit) |
 | `claude` | `.claude/CLAUDE.md`, `.claude/settings.json` |
 

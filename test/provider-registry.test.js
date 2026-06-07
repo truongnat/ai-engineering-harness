@@ -21,3 +21,9 @@ test("getProviderManifest returns claude native slash support", () => {
   assert.equal(claude.nativeSlashCommands, true);
   assert.equal(claude.supportsSubagents, true);
 });
+
+test("getProviderManifest returns cursor native slash support", () => {
+  const cursor = getProviderManifest(repoRoot, "cursor");
+  assert.equal(cursor.nativeSlashCommands, true);
+  assert.ok(cursor.ruleEntrypoints.includes(".cursor/commands/"));
+});

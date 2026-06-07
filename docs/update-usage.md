@@ -52,7 +52,7 @@ Update refreshes the selected runtime entrypoint with overwrite semantics.
 
 Examples:
 
-- `cursor` → `.cursor/rules/ai-engineering-harness.mdc`
+- `cursor` → `.cursor/commands/`, `.cursor/rules/`
 - `generic` / `codex` → `AGENTS.md`
 - `claude` → `.claude/CLAUDE.md`, `.claude/settings.json`
 - `gemini` → `.gemini/extensions/ai-engineering-harness/`

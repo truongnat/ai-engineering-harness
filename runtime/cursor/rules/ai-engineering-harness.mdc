@@ -10,11 +10,12 @@ This project uses the ai-engineering-harness capability pack.
 ## Capability source (read first)
 
 1. Read `.ai-harness/AGENTS.md` for the operating contract.
-2. Use `.ai-harness/commands/` for command-loop flows.
-3. Use `.ai-harness/skills/` for capabilities and skill packs.
-4. Use `.ai-harness/workflows/` for process templates.
-5. Use `.ai-harness/patterns/` and `.ai-harness/templates/` when planning work.
-6. Use `.ai-harness/docs/` for adoption, validation, and workflow guidance.
+2. Use `.cursor/commands/` for native project slash commands.
+3. Use `.ai-harness/commands/` for command-loop flows.
+4. Use `.ai-harness/skills/` for capabilities and skill packs.
+5. Use `.ai-harness/workflows/` for process templates.
+6. Use `.ai-harness/patterns/` and `.ai-harness/templates/` when planning work.
+7. Use `.ai-harness/docs/` for adoption, validation, and workflow guidance.
 
 If `.ai-harness/` is missing, ask the user to reinstall with project capability cache:
 

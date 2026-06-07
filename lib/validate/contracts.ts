@@ -590,6 +590,11 @@ function validateRuntimeCommandSurface(baseDir: string, failures: string[]): voi
     }
   }
 
+  const cursorPlan = path.join(baseDir, ".cursor/commands/harness-plan.md");
+  if (fs.existsSync(cursorPlan) && !fileReferencesActivation(cursorPlan)) {
+    failures.push(".cursor/commands/harness-plan.md must reference .ai-harness/activation.md");
+  }
+
   const claudePlan = path.join(baseDir, ".claude/commands/harness-plan.md");
   if (fs.existsSync(claudePlan) && !fileReferencesActivation(claudePlan)) {
     failures.push(".claude/commands/harness-plan.md must reference .ai-harness/activation.md");

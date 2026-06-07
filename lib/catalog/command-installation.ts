@@ -211,6 +211,32 @@ function installClaudeNativeCommands(
   return results;
 }
 
+function installCursorNativeCommands(
+  targetRoot: string,
+  options: Required<InstallOptions>
+): WriteResult[] {
+  const results: WriteResult[] = [];
+  for (const spec of WORKFLOW_COMMANDS) {
+    results.push(
+      writeFile(
+        targetRoot,
+        `.cursor/commands/harness-${spec.id}.md`,
+        renderRuntimeCommandFile(spec),
+        options
+      )
+    );
+  }
+  results.push(
+    mergeManifestProviders(
+      targetRoot,
+      "cursor",
+      providerCommandPathsForRuntime("cursor", "project"),
+      options
+    )
+  );
+  return results;
+}
+
 function installCursorHarnessFallback(
   targetRoot: string,
   options: Required<InstallOptions>
@@ -340,6 +366,9 @@ function installProviderNativeCommands(
   if (runtime === "claude") {
     return installClaudeNativeCommands(targetRoot, packRoot, options);
   }
+  if (runtime === "cursor") {
+    return installCursorNativeCommands(targetRoot, options);
+  }
   return [];
 }
 
@@ -407,6 +436,7 @@ export {
   installRuntimeCommandCatalog,
   mergeManifestProviders,
   installClaudeNativeCommands,
+  installCursorNativeCommands,
   installCursorHarnessFallback,
   appendAgentsCommandAliases,
   installGeminiHarnessFallback,

@@ -7,7 +7,7 @@ export const HARNESS_MARKER = "ai-engineering-harness";
 export function providerCommandPaths(provider: string): string[] {
   switch (provider) {
     case "cursor":
-      return [".cursor/rules/ai-engineering-harness-commands.mdc"];
+      return [".cursor/commands/", ".cursor/rules/"];
     case "claude":
       return [".claude/commands/"];
     case "gemini":
@@ -23,7 +23,7 @@ export function ignorePathsForProvider(provider: string, initHarness: boolean): 
   if (initHarness) out.push(".harness/");
   switch (provider) {
     case "cursor":
-      out.push(".cursor/rules/ai-engineering-harness.mdc", ...providerCommandPaths("cursor"));
+      out.push(...providerCommandPaths("cursor"));
       break;
     case "claude":
       out.push(".claude/CLAUDE.md", ".claude/settings.json", ...providerCommandPaths("claude"));
@@ -41,8 +41,8 @@ export function ignorePathsForProvider(provider: string, initHarness: boolean): 
       break;
     case "all":
       out.push(
-        ".cursor/rules/ai-engineering-harness.mdc",
-        ".cursor/rules/ai-engineering-harness-commands.mdc",
+        ".cursor/commands/",
+        ".cursor/rules/",
         ".claude/CLAUDE.md",
         ".claude/settings.json",
         ".claude/commands/",

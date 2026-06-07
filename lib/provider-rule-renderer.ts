@@ -74,16 +74,17 @@ const PROVIDER_RULE_ADAPTERS: Readonly<Record<string, ProviderRuleAdapter>> = Ob
     provider: "Cursor",
     ruleMode: "cursor-rules",
     ruleEntrypoints: [
+      ".cursor/commands/harness-*.md",
       ".cursor/rules/ai-engineering-harness.mdc",
       ".cursor/rules/ai-engineering-harness-commands.mdc",
       ".cursor/rules/ai-engineering-harness-guardrails.mdc",
     ],
-    nativeSlashCommands: false,
-    nativeInvocationExample: null,
+    nativeSlashCommands: true,
+    nativeInvocationExample: "/harness-plan",
     supportsSubagents: false,
-    fallbackInstruction: "Use harness-plan for this repository.",
+    fallbackInstruction: "Use /harness-plan for this repository.",
     notes:
-      "Route through .cursor/rules and .ai-harness/runtime-commands/. Do not claim native slash.",
+      "Cursor project install uses .cursor/commands/ for native commands and .cursor/rules/ for guardrails.",
   },
   codex: {
     provider: "Codex",
@@ -343,13 +344,12 @@ function assertProviderRuleContent(
   }
 
   if (relativePath.endsWith("ai-engineering-harness.mdc")) {
-    if (
-      !/does not provide native|does \*\*not\*\* provide native|Do not claim native|not have verified native/i.test(
-        content
-      )
-    ) {
+    if (!content.includes(".cursor/commands/")) {
+      failures.push(`${relativePath} must reference .cursor/commands/ for native project commands`);
+    }
+    if (!content.includes(".ai-harness/runtime-commands/")) {
       failures.push(
-        `${relativePath} must explicitly deny native /harness-* slash claim for Cursor`
+        `${relativePath} must reference .ai-harness/runtime-commands/ as the local catalog mirror`
       );
     }
   }
