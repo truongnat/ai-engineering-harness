@@ -299,7 +299,7 @@ test("CI smoke install uses a runner-agnostic Node invocation instead of bash", 
   assert.match(smokeInstall, /process\.env\.RUNNER_TEMP \|\| os\.tmpdir\(\)/);
   assert.match(smokeInstall, /spawnSync\(\s*process\.execPath,/);
   assert.match(smokeInstall, /"bin\/aih\.js", "install"/);
-  assert.match(smokeInstall, /"--provider", "generic"/);
+  assert.match(smokeInstall, /"--provider", "cursor"/);
   assert.match(smokeInstall, /"--dry-run"/);
 });
 
