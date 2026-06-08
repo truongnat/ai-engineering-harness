@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import type { DomainId } from "./stack-detect";
 import { DOMAIN_LABELS, normalizeDomainSelection } from "./stack-detect";
+import { renderCodexRuleSet } from "./codex-rule-generation";
 
 interface WriteOptions {
   packRoot: string;
@@ -1061,10 +1062,29 @@ Use the generated domain skill at \`.harness/skills/${definition.id}/SKILL.md\`.
 # ai-engineering-harness Codex domain rule
 # Generated from project analysis. Shell-level policy only.
 
-prefix_rule(name = "allow-readonly", prefixes = ["rg ", "git status", "git diff", "git log", "ls ", "cat "], action = "allow")
-prefix_rule(name = "prompt-on-network-and-deploy", prefixes = ["npm install ", "pnpm install ", "yarn add ", "gh pr merge", "vercel ", "npm publish"], action = "prompt", message = "Confirm before changing dependencies, merging, or deploying.")
-prefix_rule(name = "forbid-destructive-history", prefixes = ["git push --force", "git push --force-with-lease", "git reset --hard", "git clean -fdx", "rm -rf "], action = "forbid", message = "Use a safer alternative: revert, branch, or targeted cleanup.")
-`;
+${renderCodexRuleSet([
+  {
+    prefixes: ["rg", "git status", "git diff", "git log", "ls", "cat"],
+    decision: "allow",
+    justification: "Read-only inspection commands do not modify repository state.",
+  },
+  {
+    prefixes: ["npm install", "pnpm install", "yarn add", "gh pr merge", "vercel", "npm publish"],
+    decision: "prompt",
+    justification: "Confirm before changing dependencies, merging, or deploying.",
+  },
+  {
+    prefixes: [
+      "git push --force",
+      "git push --force-with-lease",
+      "git reset --hard",
+      "git clean -fdx",
+      "rm -rf",
+    ],
+    decision: "forbidden",
+    justification: "Use a safer alternative: revert, branch, or targeted cleanup.",
+  },
+])}`;
 
   if (fs.existsSync(path.join(targetAbs, ".claude"))) {
     outputs.push({

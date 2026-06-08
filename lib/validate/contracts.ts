@@ -110,6 +110,39 @@ function assertSkillContractStructure(
   }
 }
 
+function assertCodexRuleContractStructure(
+  relativePath: string,
+  content: string,
+  failures: string[]
+): void {
+  if (!/prefix_rule\(/.test(content)) {
+    failures.push(`${relativePath}: must contain at least one prefix_rule call`);
+  }
+
+  for (const field of ["prefixes =", "action =", "message ="]) {
+    if (content.includes(field)) {
+      failures.push(
+        `${relativePath}: must not use legacy Codex rule field ${field.replace(" =", "")}`
+      );
+    }
+  }
+
+  if (!/pattern\s*=\s*\[[^\]]+\]/.test(content)) {
+    failures.push(`${relativePath}: must define pattern arrays using Codex execpolicy schema`);
+  }
+  if (!/decision\s*=\s*"(allow|prompt|forbidden)"/.test(content)) {
+    failures.push(`${relativePath}: must define a valid Codex decision field`);
+  }
+  if (!/justification\s*=\s*"/.test(content)) {
+    failures.push(`${relativePath}: must define a justification field`);
+  }
+  if (/pattern\s*=\s*\[\s*"[^"]+\s+[^"]+"/.test(content)) {
+    failures.push(
+      `${relativePath}: pattern entries must be tokenized, not space-delimited strings`
+    );
+  }
+}
+
 function assertVerifyArtifactContent(
   relativePath: string,
   content: string,
@@ -500,8 +533,16 @@ function assertTargetHarnessConfig(baseDir: string, failures: string[]): void {
     }
 
     if (fs.existsSync(resolvePath(baseDir, ".codex"))) {
+      const codexDefaultRulesPath = path.join(".codex", "rules", "default.rules");
       assertExists(baseDir, path.join(".codex", "hooks.json"), failures);
-      assertExists(baseDir, path.join(".codex", "rules", "default.rules"), failures);
+      assertExists(baseDir, codexDefaultRulesPath, failures);
+      if (fs.existsSync(resolvePath(baseDir, codexDefaultRulesPath))) {
+        assertCodexRuleContractStructure(
+          codexDefaultRulesPath,
+          readFile(baseDir, codexDefaultRulesPath),
+          failures
+        );
+      }
       const codexAgentsDir = path.join(".codex", "agents");
       if (!fs.existsSync(resolvePath(baseDir, codexAgentsDir))) {
         failures.push(`Missing required path: ${codexAgentsDir}`);
@@ -542,11 +583,15 @@ function assertTargetHarnessConfig(baseDir: string, failures: string[]): void {
         );
       }
       if (fs.existsSync(resolvePath(baseDir, ".codex"))) {
-        assertExists(
-          baseDir,
-          path.join(".codex", "rules", `domain-${knownDomainId}.rules`),
-          failures
-        );
+        const domainRulePath = path.join(".codex", "rules", `domain-${knownDomainId}.rules`);
+        assertExists(baseDir, domainRulePath, failures);
+        if (fs.existsSync(resolvePath(baseDir, domainRulePath))) {
+          assertCodexRuleContractStructure(
+            domainRulePath,
+            readFile(baseDir, domainRulePath),
+            failures
+          );
+        }
         assertExists(
           baseDir,
           path.join(".codex", "agents", `domain-${knownDomainId}.toml`),

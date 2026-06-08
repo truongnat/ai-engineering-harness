@@ -86,6 +86,14 @@ test("writeDomainSkillSurface creates generated skill files and config selection
   assert.match(agents, /Generated Domain Skills/);
   assert.match(agents, /\.codex\/agents\/domain-frontend\.toml/);
 
+  const codexRules = fs.readFileSync(
+    path.join(target, ".codex", "rules", "domain-frontend.rules"),
+    "utf8"
+  );
+  assert.match(codexRules, /pattern = \["git","status"\]/);
+  assert.match(codexRules, /decision = "forbidden"/);
+  assert.doesNotMatch(codexRules, /prefixes\s*=|action\s*=|message\s*=/);
+
   const frontendSkill = fs.readFileSync(
     path.join(target, ".harness", "skills", "frontend", "SKILL.md"),
     "utf8"

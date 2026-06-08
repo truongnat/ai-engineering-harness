@@ -54,6 +54,7 @@ Creates:
 After install, trust the project `.codex/` layer in Codex and restart the app so rules and hooks load.
 
 Does **not** create native `/harness-*` slash commands in Codex.
+Does **not** emit `.codex-plugin/plugin.json` into the target repo; that manifest lives in the package root and is shipped when the plugin is published.
 
 ## Not supported
 

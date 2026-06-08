@@ -161,6 +161,7 @@ test("runInstall provisions codex native hooks, rules, and agents", () => {
   assert.equal(fs.existsSync(path.join(dir, ".codex", "hooks.json")), true);
   assert.equal(fs.existsSync(path.join(dir, ".codex", "rules", "default.rules")), true);
   assert.equal(fs.existsSync(path.join(dir, ".codex", "agents", "explorer.toml")), true);
+  assert.equal(fs.existsSync(path.join(dir, ".codex-plugin", "plugin.json")), false);
   const hooksJson = JSON.parse(fs.readFileSync(path.join(dir, ".codex", "hooks.json"), "utf8"));
   assert.equal(typeof hooksJson.hooks, "object");
   assert.ok(hooksJson.hooks.SessionStart.length > 0);
@@ -168,7 +169,15 @@ test("runInstall provisions codex native hooks, rules, and agents", () => {
   assert.match(hooksJson.hooks.PostToolUse[0].hooks[0].command, /codex-hook-router\.js/);
   assert.match(
     fs.readFileSync(path.join(dir, ".codex", "rules", "default.rules"), "utf8"),
-    /prefix_rule/
+    /pattern = \["git","status"\]/
+  );
+  assert.match(
+    fs.readFileSync(path.join(dir, ".codex", "rules", "default.rules"), "utf8"),
+    /decision = "forbidden"/
+  );
+  assert.doesNotMatch(
+    fs.readFileSync(path.join(dir, ".codex", "rules", "default.rules"), "utf8"),
+    /prefixes\s*=|action\s*=|message\s*=/
   );
   assert.ok(lines.some((line) => /Trust the project's \.codex\/ layer/i.test(line)));
   assert.ok(lines.some((line) => /restart the app/i.test(line)));

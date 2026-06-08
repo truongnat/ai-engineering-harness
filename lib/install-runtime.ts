@@ -7,6 +7,7 @@ import path from "node:path";
 import { ensureDirectory, logAction } from "./file-operations";
 import { installProviderCommandSurface } from "./runtime-command-catalog";
 import { installClaudeWorkers } from "./worker-claude-adapter";
+import { renderCodexRuleSet } from "./codex-rule-generation";
 import {
   renderClaudeProjectMd,
   renderCodexAgentsMd,
@@ -454,10 +455,36 @@ function installCodexRules(
     "# This file keeps only shell-level command policy.",
     "# Project coding conventions stay in AGENTS.md or skills.",
     "",
-    'prefix_rule(name = "allow-readonly", prefixes = ["rg ", "git status", "git diff", "git log", "ls ", "cat "], action = "allow")',
-    'prefix_rule(name = "prompt-on-network-and-deploy", prefixes = ["npm install ", "pnpm install ", "yarn add ", "gh pr merge", "vercel ", "npm publish"], action = "prompt", message = "Confirm before changing dependencies, merging, or deploying.")',
-    'prefix_rule(name = "forbid-destructive-history", prefixes = ["git push --force", "git push --force-with-lease", "git reset --hard", "git clean -fdx", "rm -rf "], action = "forbid", message = "Use a safer alternative: revert, branch, or targeted cleanup.")',
-    "",
+    renderCodexRuleSet([
+      {
+        prefixes: ["rg", "git status", "git diff", "git log", "ls", "cat"],
+        decision: "allow",
+        justification: "Read-only inspection commands do not modify repository state.",
+      },
+      {
+        prefixes: [
+          "npm install",
+          "pnpm install",
+          "yarn add",
+          "gh pr merge",
+          "vercel",
+          "npm publish",
+        ],
+        decision: "prompt",
+        justification: "Confirm before changing dependencies, merging, or deploying.",
+      },
+      {
+        prefixes: [
+          "git push --force",
+          "git push --force-with-lease",
+          "git reset --hard",
+          "git clean -fdx",
+          "rm -rf",
+        ],
+        decision: "forbidden",
+        justification: "Use a safer alternative: revert, branch, or targeted cleanup.",
+      },
+    ]),
   ].join("\n");
   writeFileAction(destRoot, "default.rules", content, options);
 }
