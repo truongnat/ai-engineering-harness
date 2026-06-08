@@ -7,6 +7,7 @@ import { runUninstallWizard } from "./cli-commands/uninstall";
 import { runStatusOrDoctor } from "./cli-commands/diagnostics";
 import { runEvalCommand } from "./cli-commands/eval";
 import { runInsightsCommand } from "./cli-commands/insights";
+import { runDomainsCommand } from "./cli-commands/domains";
 import { runInitWizard } from "./cli-commands/init";
 import ui from "./cli-ui";
 
@@ -49,6 +50,8 @@ async function main(argv: string[], moduleFilename: string): Promise<number> {
         return await runEvalCommand(packRoot, options);
       case "insights":
         return await runInsightsCommand(packRoot, options);
+      case "domains":
+        return await runDomainsCommand(packRoot, options);
       case "init":
         return await runInitWizard(packRoot, options);
       default:

@@ -4,7 +4,6 @@ import path from "node:path";
 import { modeToScopeVisibility, isNonInteractive, type ParseOptions } from "../cli-args";
 import { ACTIVE_PROVIDERS, providerPriorityLabel, isRuntimeNative } from "../cli-providers";
 import { detectRecommendedProviders, detectLegacyProviderResidue, isGitRepo } from "../cli-detect";
-import { listDomainDefinitions } from "../domain-skill-generation";
 import { normalizeDomainSelection } from "../stack-detect";
 import {
   NON_GIT_PRIVATE_WARNING,
@@ -213,20 +212,6 @@ async function runInstallWizard(packRoot: string, options: ParseOptions): Promis
     return 1;
   }
   const installCache = installCacheChoice;
-
-  if (domains.length === 0) {
-    const domainItems = listDomainDefinitions().map((definition) => ({
-      id: definition.id,
-      label: definition.title.replace(" Domain Skill", ""),
-      description: definition.summary,
-      recommended: false,
-    }));
-    const selectedDomains = await ui.selectDomains(domainItems);
-    if (selectedDomains === null) {
-      return 1;
-    }
-    domains = normalizeDomainSelection(selectedDomains);
-  }
 
   const { scope: resolvedScope, visibility } = modeToScopeVisibility(mode);
   const plan = buildInstallPlan({

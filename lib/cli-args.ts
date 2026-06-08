@@ -8,6 +8,7 @@ const COMMANDS = new Set([
   "eval",
   "insights",
   "init",
+  "domains",
 ]);
 const EVAL_COMMANDS = new Set(["list", "run", "report"]);
 
@@ -31,6 +32,7 @@ interface ParseOptions {
   anonymize: boolean;
   upload: boolean;
   forceUpload: boolean;
+  force: boolean;
   recommendEvals: boolean;
   runRecommendedEvals: boolean;
   useLlmJudge: boolean;
@@ -72,6 +74,7 @@ function parseArgv(argv: string[]): ParseOptions {
     anonymize: true,
     upload: false,
     forceUpload: false,
+    force: false,
     recommendEvals: false,
     runRecommendedEvals: false,
     useLlmJudge: true,
@@ -167,6 +170,10 @@ function parseArgv(argv: string[]): ParseOptions {
     }
     if (arg === "--force-upload") {
       options.forceUpload = true;
+      continue;
+    }
+    if (arg === "--force") {
+      options.force = true;
       continue;
     }
     if (arg === "--recommend-evals") {

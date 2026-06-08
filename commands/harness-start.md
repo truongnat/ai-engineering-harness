@@ -101,6 +101,19 @@ See `docs/session-start.md` for the full contract.
 7. Write or update active session `SESSION_START.md` using `templates/SESSION_START.md`.
 8. Return a Session Start summary with explicit next command. Do not implement code and do not produce a detailed implementation plan.
 
+### Domain Skill Bootstrap
+
+If `.harness/config.json` has an empty `domains` array and `.harness/skills/` does not
+already contain generated domain skill files, bootstrap them at the start of the
+session:
+
+1. Tell the user explicitly that you are analyzing the codebase.
+2. Surface the message visibly before analysis, for example:
+   `🔍 Analyzing the codebase to detect domains and generate matching skills…`
+3. Run the domain analysis workflow from `prompt-templates/domain-analysis.md`.
+4. Generate domain skills non-interactively with `npx ai-engineering-harness domains`.
+5. Report the generated domains and files so the user can inspect the diff.
+
 ## Required Outputs
 
 - active session `SESSION_START.md` or equivalent Session Start summary using `templates/SESSION_START.md`
@@ -141,3 +154,4 @@ Ask for approval if the previously recorded plan is invalid and a materially dif
 ## Notes
 
 Use `harness-start` to run Session Start at session boundaries. Root `.harness/` is the router; sessions own working artifacts. Other commands must not proceed with unknown session state — redirect here first.
+Domain bootstrap is automatic on the first session when no domains are configured, and it must always announce analysis to the user before running silently.

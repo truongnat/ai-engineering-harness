@@ -144,7 +144,6 @@ test("runInstallWizard interactive flow warns for non-git targets and installs s
     const originalSelectInstallMode = mod.selectInstallMode;
     const originalConfirmInitHarness = mod.confirmInitHarness;
     const originalConfirmInstallCache = mod.confirmInstallCache;
-    const originalSelectDomains = mod.selectDomains;
     const originalShowInstallPlan = mod.showInstallPlan;
     const originalShowWarning = mod.showWarning;
     const originalConfirmProceed = mod.confirmProceed;
@@ -156,7 +155,6 @@ test("runInstallWizard interactive flow warns for non-git targets and installs s
     mod.selectInstallMode = async () => "project-private";
     mod.confirmInitHarness = async () => true;
     mod.confirmInstallCache = async () => true;
-    mod.selectDomains = async () => ["debugging"];
     mod.showInstallPlan = () => {};
     mod.showWarning = (message) => warnings.push(message);
     mod.confirmProceed = async () => true;
@@ -169,7 +167,6 @@ test("runInstallWizard interactive flow warns for non-git targets and installs s
       mod.selectInstallMode = originalSelectInstallMode;
       mod.confirmInitHarness = originalConfirmInitHarness;
       mod.confirmInstallCache = originalConfirmInstallCache;
-      mod.selectDomains = originalSelectDomains;
       mod.showInstallPlan = originalShowInstallPlan;
       mod.showWarning = originalShowWarning;
       mod.confirmProceed = originalConfirmProceed;
@@ -196,7 +193,7 @@ test("runInstallWizard interactive flow warns for non-git targets and installs s
   assert.equal(calls[0].provider, "cursor");
   assert.equal(calls[0].installCache, true);
   assert.equal(calls[0].initHarness, true);
-  assert.deepEqual(calls[0].domains, ["debugging"]);
+  assert.deepEqual(calls[0].domains, []);
   assert.equal(warnings.length, 1);
   assert.match(warnings[0], /not a Git repo/);
   assert.deepEqual(successes, ["Installed"]);
@@ -710,6 +707,51 @@ test("runInitWizard defaults to cursor and skips demo eval when requested", asyn
     assert.equal(fs.existsSync(path.join(harnessDir, "GOAL.md")), true);
     assert.match(output, /Initializing harness/);
     assert.match(output, /Init complete/);
+  } finally {
+    process.stdout.write = originalWrite;
+  }
+});
+
+test("runInitWizard with no domain flags scaffolds empty domains", async () => {
+  const target = makeTempDir();
+  const harnessDir = path.join(target, ".harness");
+  const evalCalls = [];
+
+  patchModule("dist/lib/evals/index.js", (mod) => {
+    const originalRunTask = mod.runTask;
+    mod.runTask = async (...args) => {
+      evalCalls.push(args);
+      return {
+        summaryPath: path.join(target, "summary.json"),
+        comparison: null,
+        exitCode: 0,
+      };
+    };
+    return () => {
+      mod.runTask = originalRunTask;
+    };
+  });
+
+  const originalWrite = process.stdout.write;
+  process.stdout.write = () => true;
+
+  try {
+    const { runInitWizard } = fresh("dist/lib/cli-commands/init.js");
+    const status = await runInitWizard(repoRoot, {
+      providers: [],
+      target,
+      scope: "",
+      visibility: "",
+      skipDemoEval: true,
+      yes: false,
+    });
+
+    assert.equal(status, 0);
+    assert.equal(evalCalls.length, 0);
+    const config = JSON.parse(fs.readFileSync(path.join(harnessDir, "config.json"), "utf8"));
+    assert.deepEqual(config.domains, []);
+    assert.equal(fs.existsSync(path.join(harnessDir, "skills", "frontend")), false);
+    assert.equal(fs.existsSync(path.join(harnessDir, "skills", "backend")), false);
   } finally {
     process.stdout.write = originalWrite;
   }

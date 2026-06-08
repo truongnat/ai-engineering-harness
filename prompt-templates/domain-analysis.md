@@ -75,6 +75,8 @@ Return a JSON object with this shape:
 
 ## Critical Rules
 
+- Before analyzing, surface a short visible status line to the user, such as
+  `Analyzing the codebase…`. Never run the analysis silently.
 - Do not emit unknown domain ids.
 - Do not emit markdown, prose, or comments.
 - Do not guess absent fields. Use empty arrays and a short notes string if needed.

@@ -15,6 +15,10 @@ Eval:
   npx ai-engineering-harness eval report <run-id>
   npx ai-engineering-harness eval run <task-or-suite> --live-provider-command "<cmd>"
 
+Domains:
+  npx ai-engineering-harness domains --analysis-file ./domain-analysis.json
+  npx ai-engineering-harness domains --target ./repo < analysis.json
+
 Insights:
   npx ai-engineering-harness insights
   npx ai-engineering-harness insights --target <path> --json
@@ -40,6 +44,7 @@ Options:
   --provider <id>     Provider(s), comma-separated
   --domains <ids>     Domain skill ids, comma-separated
   --analysis-file <path>  JSON output from the domain analysis agent
+  --force             Overwrite generated domain skill files
   --runtime <id>      Deprecated alias for --provider
   --scope project|global
   --visibility private|shared

@@ -1,5 +1,6 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
+const cp = require("node:child_process");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
@@ -89,4 +90,109 @@ test("writeDomainSkillSurface creates generated skill files and config selection
       new RegExp(`^${heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "m")
     );
   }
+});
+
+test("runDomainsCommand generates the skill surface from an analysis file", async () => {
+  const target = makeTempDir();
+  const analysisFile = path.join(target, "domain-analysis.json");
+  fs.writeFileSync(
+    analysisFile,
+    JSON.stringify(
+      {
+        domains: [
+          { id: "frontend", confidence: 0.95, evidence: ["app router"] },
+          { id: "security", confidence: 0.85, evidence: ["auth boundary"] },
+        ],
+        languages: ["typescript"],
+        frameworks: ["nextjs"],
+        notes: "fixture",
+      },
+      null,
+      2
+    )
+  );
+
+  let output = "";
+  const originalWrite = process.stdout.write;
+  process.stdout.write = (chunk) => {
+    output += chunk;
+    return true;
+  };
+
+  try {
+    const { runDomainsCommand } = require(
+      path.join(repoRoot, "dist", "lib", "cli-commands", "domains.js")
+    );
+    const status = await runDomainsCommand(repoRoot, {
+      command: "domains",
+      evalCommand: "",
+      evalTarget: "",
+      providers: [],
+      providerAlias: "",
+      runtimeAliasUsed: false,
+      scope: "",
+      visibility: "",
+      target,
+      dryRun: false,
+      yes: false,
+      help: false,
+      all: false,
+      verbose: false,
+      json: false,
+      export: false,
+      anonymize: true,
+      upload: false,
+      forceUpload: false,
+      force: false,
+      recommendEvals: false,
+      runRecommendedEvals: false,
+      useLlmJudge: true,
+      skipDemoEval: false,
+      liveProviderCommand: "",
+      domains: [],
+      analysisFile,
+    });
+
+    assert.equal(status, 0);
+    assert.match(output, /Domain skills generated for: frontend, security/);
+    const config = JSON.parse(
+      fs.readFileSync(path.join(target, ".harness", "config.json"), "utf8")
+    );
+    assert.deepEqual(config.domains, ["frontend", "security"]);
+    assert.ok(fs.existsSync(path.join(target, ".harness", "skills", "frontend", "SKILL.md")));
+    assert.ok(fs.existsSync(path.join(target, ".harness", "skills", "security", "SKILL.md")));
+  } finally {
+    process.stdout.write = originalWrite;
+  }
+});
+
+test("domains CLI reads project analysis JSON from stdin", () => {
+  const target = makeTempDir();
+  const analysis = {
+    domains: [
+      { id: "backend", confidence: 0.88, evidence: ["api routes"] },
+      { id: "cloud", confidence: 0.7, evidence: ["deployment surface"] },
+    ],
+    languages: ["typescript"],
+    frameworks: ["express"],
+    notes: "stdin fixture",
+  };
+  fs.mkdirSync(target, { recursive: true });
+
+  const run = cp.spawnSync(
+    process.execPath,
+    [path.join(repoRoot, "bin", "aih.js"), "domains", "--target", target],
+    {
+      cwd: repoRoot,
+      input: `${JSON.stringify(analysis)}\n`,
+      encoding: "utf8",
+    }
+  );
+
+  assert.equal(run.status, 0, run.stderr);
+  assert.match(run.stdout, /Domain skills generated for: backend, cloud/);
+  const config = JSON.parse(fs.readFileSync(path.join(target, ".harness", "config.json"), "utf8"));
+  assert.deepEqual(config.domains, ["backend", "cloud"]);
+  assert.ok(fs.existsSync(path.join(target, ".harness", "skills", "backend", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(target, ".harness", "skills", "cloud", "SKILL.md")));
 });

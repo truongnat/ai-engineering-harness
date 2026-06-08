@@ -5,7 +5,6 @@ import { resolveTargetAbs } from "../cli-command-helpers";
 import { runInstallWizard } from "./install";
 import type { ParseOptions } from "../cli-args";
 import { parseProjectAnalysis, normalizeDomainSelection } from "../stack-detect";
-import * as ui from "../cli-ui";
 import { runTask } from "../evals";
 
 const INIT_DEMO_GOAL = `# Init Demo Goal
@@ -28,35 +27,18 @@ function readAnalysisFile(analysisFile: string): string {
   return fs.readFileSync(resolved, "utf8");
 }
 
-async function resolveInitDomains(
-  targetAbs: string,
-  options: ParseOptions
-): Promise<string[] | null> {
+async function resolveInitDomains(options: ParseOptions): Promise<string[]> {
   const explicitDomains = normalizeDomainSelection(options.domains || []);
   if (explicitDomains.length > 0) {
     return explicitDomains;
   }
 
-  let analysisText = "";
   if (options.analysisFile) {
-    analysisText = readAnalysisFile(options.analysisFile);
-  } else if (options.yes) {
-    throw new Error("Provide --domains or --analysis-file when using --yes for init.");
-  } else {
-    process.stdout.write(
-      "\nDomain analysis\n" +
-        `Use prompt-templates/domain-analysis.md or the explorer worker to analyze ${targetAbs}.\n` +
-        "Paste the agent JSON below.\n"
-    );
-    const pasted = await ui.requestDomainAnalysis();
-    if (pasted === null) {
-      return null;
-    }
-    analysisText = pasted;
+    const analysisText = readAnalysisFile(options.analysisFile);
+    const parsed = parseProjectAnalysis(analysisText);
+    return normalizeDomainSelection(parsed.domains);
   }
-
-  const parsed = parseProjectAnalysis(analysisText);
-  return normalizeDomainSelection(parsed.domains);
+  return [];
 }
 
 async function runInitWizard(packRoot: string, options: ParseOptions): Promise<number> {
@@ -73,10 +55,7 @@ async function runInitWizard(packRoot: string, options: ParseOptions): Promise<n
         ? [recommended[0]]
         : ["cursor"];
 
-  const selectedDomains = await resolveInitDomains(targetAbs, options);
-  if (selectedDomains === null) {
-    return 1;
-  }
+  const selectedDomains = await resolveInitDomains(options);
 
   const initOptions = {
     ...options,

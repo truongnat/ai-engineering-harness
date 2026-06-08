@@ -6,13 +6,6 @@ interface ParseOptions {
   providers: string[];
 }
 
-interface DomainItem {
-  id: string;
-  label: string;
-  recommended?: boolean;
-  description?: string;
-}
-
 interface IntroMeta {
   version: string;
   target: string;
@@ -103,53 +96,6 @@ async function selectProviders(providerItems: ProviderItem[]): Promise<string[] 
     }),
     required: true,
     initialValues: initial.length ? initial : undefined,
-  });
-  if (isCancel(value)) {
-    cancel("Install cancelled.");
-    return null;
-  }
-  return value;
-}
-
-async function selectDomains(domainItems: DomainItem[]): Promise<string[] | null> {
-  const { multiselect, cancel, isCancel } = await loadClackPrompts();
-  const initial = domainItems.filter((d) => d.recommended).map((d) => d.id);
-  const value = await multiselect({
-    message: "Select domain skill(s)",
-    options: domainItems.map((d) => {
-      const description = d.description ? `  ${d.description}` : "";
-      const label = d.recommended
-        ? `${d.label}  detected${description}`
-        : `${d.label}${description}`;
-      return { value: d.id, label };
-    }),
-    required: false,
-    initialValues: initial.length ? initial : undefined,
-  });
-  if (isCancel(value)) {
-    cancel("Install cancelled.");
-    return null;
-  }
-  return value;
-}
-
-async function requestDomainAnalysis(): Promise<string | null> {
-  const { multiline, cancel, isCancel } = await loadClackPrompts();
-  const value = await multiline({
-    message: "Paste domain analysis JSON from the explorer worker",
-    placeholder: '{ "domains": [{ "id": "backend", "confidence": 0.8, "evidence": ["..."] }] }',
-    validate(input = "") {
-      const trimmed = input.trim();
-      if (!trimmed) {
-        return "Domain analysis JSON is required.";
-      }
-      try {
-        JSON.parse(trimmed);
-      } catch (error) {
-        return error instanceof Error ? error.message : "Invalid JSON";
-      }
-      return undefined;
-    },
   });
   if (isCancel(value)) {
     cancel("Install cancelled.");
@@ -443,8 +389,6 @@ const ui = {
   useInteractiveUi,
   introBanner,
   selectProviders,
-  selectDomains,
-  requestDomainAnalysis,
   selectInstallMode,
   confirmInitHarness,
   confirmInstallCache,
@@ -467,8 +411,6 @@ export {
   useInteractiveUi,
   introBanner,
   selectProviders,
-  selectDomains,
-  requestDomainAnalysis,
   selectInstallMode,
   confirmInitHarness,
   confirmInstallCache,

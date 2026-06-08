@@ -100,6 +100,8 @@ Before doing project work, you **MUST** establish session state through Session 
 - If the current phase is wrong, redirect to the correct command
 - If user input is required, ask the minimum necessary question and **stop**
 - Do not implement, verify, or ship before session state is established
+- Domain bootstrap is automatic on first session when domains are empty, and it must
+  announce analysis to the user before running silently.
 
 See `AGENTS.md` for minimum read sets and command discipline details.
 

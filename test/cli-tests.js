@@ -45,6 +45,7 @@ describe("CLI Arguments Parser", () => {
       "eval",
       "insights",
       "init",
+      "domains",
     ]) {
       const opts = cliArgs.parseArgv(["node", "aih.js", cmd]);
       assert.equal(opts.command, cmd);
@@ -134,6 +135,11 @@ describe("CLI Arguments Parser", () => {
     assert.equal(opts.analysisFile, "./analysis.json");
   });
 
+  test("parseArgv parses --force flag", () => {
+    const opts = cliArgs.parseArgv(["node", "aih.js", "--force"]);
+    assert.equal(opts.force, true);
+  });
+
   test("parseArgv rejects --ref for the npx CLI", () => {
     assert.throws(
       () => cliArgs.parseArgv(["node", "aih.js", "install", "--ref", "v1.0.1"]),
@@ -209,6 +215,7 @@ describe("CLI Help", () => {
     assert.match(help, /--live-provider-command/);
     assert.match(help, /--domains/);
     assert.match(help, /--analysis-file/);
+    assert.match(help, /ai-engineering-harness domains --analysis-file \.\/domain-analysis\.json/);
   });
 
   test("renderHelp includes insights command", () => {
@@ -453,6 +460,37 @@ describe("CLI Main", () => {
       assert.equal(calls.length, 1);
       assert.equal(calls[0].command, "eval");
       assert.equal(calls[0].evalCommand, "list");
+    } finally {
+      Module._load = originalLoad;
+    }
+  });
+
+  test("main dispatches domains command to runDomainsCommand", async () => {
+    const originalLoad = Module._load;
+    const calls = [];
+
+    Module._load = function patchedLoader(request, parent, isMain) {
+      if (request === "./cli-commands/domains") {
+        return {
+          runDomainsCommand: async (_packRoot, options) => {
+            calls.push(options);
+            return 0;
+          },
+        };
+      }
+      return originalLoad.call(this, request, parent, isMain);
+    };
+
+    try {
+      const { main } = fresh("dist/lib/cli-main.js");
+      const status = await main(
+        ["node", "aih.js", "domains", "--analysis-file", "analysis.json"],
+        path.join(repoRoot, "bin", "aih.js")
+      );
+      assert.equal(status, 0);
+      assert.equal(calls.length, 1);
+      assert.equal(calls[0].command, "domains");
+      assert.equal(calls[0].analysisFile, "analysis.json");
     } finally {
       Module._load = originalLoad;
     }
