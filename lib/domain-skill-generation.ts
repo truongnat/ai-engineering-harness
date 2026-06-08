@@ -16,6 +16,10 @@ interface WriteResult {
   skipped: string[];
 }
 
+const GENERATED_AGENTS_BLOCK_START =
+  "<!-- ai-engineering-harness generated-domain-skills start -->";
+const GENERATED_AGENTS_BLOCK_END = "<!-- ai-engineering-harness generated-domain-skills end -->";
+
 interface DomainDefinition {
   id: DomainId;
   title: string;
@@ -699,6 +703,152 @@ ${bulletList([
 `;
 }
 
+function renderCodexDomainSkillMarkdown(definition: DomainDefinition): string {
+  return `---
+name: ${JSON.stringify(definition.title)}
+description: ${JSON.stringify(definition.summary)}
+---
+
+# ${definition.title}
+
+## Purpose
+
+${definition.summary}
+
+## When To Use
+
+${bulletList(definition.whenToUse)}
+
+## When Not To Use
+
+${bulletList(definition.whenNotToUse)}
+
+## Reasoning Procedure
+
+${bulletList(definition.reasoning)}
+
+## Action Loop
+
+${bulletList(definition.actionLoop)}
+
+## Examples
+
+${bulletList(definition.examples)}
+
+## Checklist Before Done
+
+${bulletList(definition.checklist)}
+`;
+}
+
+function renderCodexSkillOpenAiYaml(definition: DomainDefinition): string {
+  return `interface:
+  display_name: ${JSON.stringify(definition.title)}
+  short_description: ${JSON.stringify(definition.summary)}
+  default_prompt: ${JSON.stringify(
+    `Use ${definition.id} domain guidance to keep the repo aligned with ${definition.pack}.`
+  )}
+`;
+}
+
+function renderCodexDomainAgentToml(definition: DomainDefinition): string {
+  return [
+    `name = "domain-${definition.id}"`,
+    `description = ${JSON.stringify(`Harness generated ${definition.pack} domain agent`)}`,
+    `developer_instructions = """${definition.title}`,
+    "",
+    "Use this agent to route repository work toward the generated domain skill.",
+    "",
+    "Responsibilities:",
+    "- Read the selected domain skill and related harness artifacts",
+    "- Keep the output bounded and decision-oriented",
+    "- Return a concise result that points the main agent to the next command",
+    "",
+    "Forbidden actions:",
+    "- Do not modify source files unless explicitly dispatched as a fixer",
+    "- Do not dispatch other workers",
+    "- Do not claim verification without evidence",
+    '"""',
+    'model = "inherit"',
+    'sandbox_mode = "read-only"',
+    "",
+  ].join("\n");
+}
+
+function renderGeneratedAgentsBlock(selectedDomains: DomainId[]): string {
+  const lines = [
+    GENERATED_AGENTS_BLOCK_START,
+    "## Generated Domain Skills",
+    "",
+    "The following domain assets were generated from project analysis:",
+    "",
+  ];
+
+  if (selectedDomains.length === 0) {
+    lines.push("- None selected");
+  } else {
+    for (const domainId of selectedDomains) {
+      const definition = DOMAIN_DEFINITIONS[domainId];
+      lines.push(`- \`${definition.id}\`: ${definition.summary}`);
+      lines.push(`  - \`.harness/skills/${definition.id}/SKILL.md\``);
+      lines.push(`  - \`.agents/skills/${definition.id}/SKILL.md\``);
+      lines.push(`  - \`.codex/agents/domain-${definition.id}.toml\``);
+    }
+  }
+
+  lines.push("");
+  lines.push("## Codex Notes");
+  lines.push("");
+  lines.push(
+    "- Trust the project's `.codex/` layer in Codex and restart the app after generating."
+  );
+  lines.push(GENERATED_AGENTS_BLOCK_END);
+  return lines.join("\n");
+}
+
+function upsertGeneratedAgentsBlock(existing: string, block: string): string {
+  if (
+    existing.includes(GENERATED_AGENTS_BLOCK_START) &&
+    existing.includes(GENERATED_AGENTS_BLOCK_END)
+  ) {
+    const start = existing.indexOf(GENERATED_AGENTS_BLOCK_START);
+    const end = existing.indexOf(GENERATED_AGENTS_BLOCK_END) + GENERATED_AGENTS_BLOCK_END.length;
+    return `${existing.slice(0, start).trimEnd()}\n\n${block}\n${existing.slice(end).trimStart()}`.trimEnd();
+  }
+
+  const trimmed = existing.trimEnd();
+  if (!trimmed) {
+    return `${block}\n`;
+  }
+  return `${trimmed}\n\n${block}\n`;
+}
+
+function writeAugmentedAgentsMarkdown(
+  targetAbs: string,
+  selectedDomains: DomainId[],
+  options: WriteOptions
+): "created" | "overwritten" | "skipped" {
+  if (selectedDomains.length === 0) {
+    return "skipped";
+  }
+
+  const targetPath = path.join(targetAbs, "AGENTS.md");
+  const exists = fs.existsSync(targetPath);
+  const current = exists ? fs.readFileSync(targetPath, "utf8") : "";
+  const block = renderGeneratedAgentsBlock(selectedDomains);
+  const next = upsertGeneratedAgentsBlock(current, block);
+
+  if (exists && current === next) {
+    return "skipped";
+  }
+
+  if (!options.dryRun) {
+    ensureDir(path.dirname(targetPath), false);
+    fs.writeFileSync(targetPath, next, "utf8");
+  }
+  return exists ? "overwritten" : "created";
+}
+
 function renderSkillsProfileMarkdown(selectedDomains: DomainId[]): string {
   const selectedDomainRows = selectedDomains.length
     ? selectedDomains
@@ -906,13 +1056,22 @@ Use the generated domain skill at \`.harness/skills/${definition.id}/SKILL.md\`.
 - Commands: ${definition.commands.join(", ")}
 - Checks: ${definition.checks.join(", ")}
 `;
+  const codexRule = `# ${definition.title}
+
+# ai-engineering-harness Codex domain rule
+# Generated from project analysis. Shell-level policy only.
+
+prefix_rule(name = "allow-readonly", prefixes = ["rg ", "git status", "git diff", "git log", "ls ", "cat "], action = "allow")
+prefix_rule(name = "prompt-on-network-and-deploy", prefixes = ["npm install ", "pnpm install ", "yarn add ", "gh pr merge", "vercel ", "npm publish"], action = "prompt", message = "Confirm before changing dependencies, merging, or deploying.")
+prefix_rule(name = "forbid-destructive-history", prefixes = ["git push --force", "git push --force-with-lease", "git reset --hard", "git clean -fdx", "rm -rf "], action = "forbid", message = "Use a safer alternative: revert, branch, or targeted cleanup.")
+`;
 
   if (fs.existsSync(path.join(targetAbs, ".claude"))) {
     outputs.push({
       relativePath: toPosixRelativePath(
         path.join(".claude", "rules", `domain-${definition.id}.md`)
       ),
-      content: body,
+      content: `# ${definition.title}\n\nUse the generated domain skill at \`.harness/skills/${definition.id}/SKILL.md\`.\n\n- Domain: ${definition.pack}\n- Commands: ${definition.commands.join(", ")}\n- Checks: ${definition.checks.join(", ")}\n`,
     });
   }
 
@@ -925,12 +1084,12 @@ Use the generated domain skill at \`.harness/skills/${definition.id}/SKILL.md\`.
     });
   }
 
-  if (fs.existsSync(path.join(targetAbs, ".codex"))) {
-    outputs.push({
-      relativePath: toPosixRelativePath(path.join(".codex", "rules", `domain-${definition.id}.md`)),
-      content: body,
-    });
-  }
+  outputs.push({
+    relativePath: toPosixRelativePath(
+      path.join(".codex", "rules", `domain-${definition.id}.rules`)
+    ),
+    content: codexRule,
+  });
 
   if (fs.existsSync(path.join(targetAbs, ".gemini"))) {
     outputs.push({
@@ -983,6 +1142,22 @@ function writeGeneratedDomainSkill(
       ),
       content: "",
     },
+    {
+      relativePath: toPosixRelativePath(path.join(".agents", "skills", definition.id, "SKILL.md")),
+      content: renderCodexDomainSkillMarkdown(definition),
+    },
+    {
+      relativePath: toPosixRelativePath(
+        path.join(".agents", "skills", definition.id, "agents", "openai.yaml")
+      ),
+      content: renderCodexSkillOpenAiYaml(definition),
+    },
+    {
+      relativePath: toPosixRelativePath(
+        path.join(".codex", "agents", `domain-${definition.id}.toml`)
+      ),
+      content: renderCodexDomainAgentToml(definition),
+    },
   ];
 
   const created: string[] = [];
@@ -1027,6 +1202,11 @@ function writeDomainSkillSurface(
   if (workflowAction === "created") created.push(".harness/WORKFLOW.md");
   else if (workflowAction === "overwritten") overwritten.push(".harness/WORKFLOW.md");
   else skipped.push(".harness/WORKFLOW.md");
+
+  const agentsAction = writeAugmentedAgentsMarkdown(targetAbs, normalized, options);
+  if (agentsAction === "created") created.push("AGENTS.md");
+  else if (agentsAction === "overwritten") overwritten.push("AGENTS.md");
+  else skipped.push("AGENTS.md");
 
   const skillsAnchorPath = path.join(targetAbs, ".harness", "skills", ".gitkeep");
   const skillsAnchorAction = writeFile(skillsAnchorPath, "", options);

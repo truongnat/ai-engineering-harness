@@ -542,7 +542,16 @@ function assertTargetHarnessConfig(baseDir: string, failures: string[]): void {
         );
       }
       if (fs.existsSync(resolvePath(baseDir, ".codex"))) {
-        assertExists(baseDir, path.join(".codex", "rules", `domain-${knownDomainId}.md`), failures);
+        assertExists(
+          baseDir,
+          path.join(".codex", "rules", `domain-${knownDomainId}.rules`),
+          failures
+        );
+        assertExists(
+          baseDir,
+          path.join(".codex", "agents", `domain-${knownDomainId}.toml`),
+          failures
+        );
       }
       if (fs.existsSync(resolvePath(baseDir, ".gemini"))) {
         assertExists(

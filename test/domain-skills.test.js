@@ -66,7 +66,10 @@ test("writeDomainSkillSurface creates generated skill files and config selection
   assert.ok(result.created.includes(".harness/skills/security/SKILL.md"));
   assert.ok(result.created.includes(".claude/rules/domain-frontend.md"));
   assert.ok(result.created.includes(".cursor/rules/domain-security.mdc"));
-  assert.ok(result.created.includes(".codex/rules/domain-frontend.md"));
+  assert.ok(result.created.includes(".codex/rules/domain-frontend.rules"));
+  assert.ok(result.created.includes(".codex/agents/domain-frontend.toml"));
+  assert.ok(result.created.includes(".agents/skills/frontend/SKILL.md"));
+  assert.ok(result.created.includes(".agents/skills/security/SKILL.md"));
   assert.ok(
     result.created.includes(".gemini/extensions/ai-engineering-harness/rules/domain-security.md")
   );
@@ -76,9 +79,12 @@ test("writeDomainSkillSurface creates generated skill files and config selection
 
   const skills = fs.readFileSync(path.join(target, ".harness", "SKILLS.md"), "utf8");
   const workflow = fs.readFileSync(path.join(target, ".harness", "WORKFLOW.md"), "utf8");
+  const agents = fs.readFileSync(path.join(target, "AGENTS.md"), "utf8");
   assert.match(skills, /Selected Domain Skills/);
   assert.match(skills, /frontend/);
   assert.match(workflow, /Domain Selection/);
+  assert.match(agents, /Generated Domain Skills/);
+  assert.match(agents, /\.codex\/agents\/domain-frontend\.toml/);
 
   const frontendSkill = fs.readFileSync(
     path.join(target, ".harness", "skills", "frontend", "SKILL.md"),
@@ -161,6 +167,8 @@ test("runDomainsCommand generates the skill surface from an analysis file", asyn
     assert.deepEqual(config.domains, ["frontend", "security"]);
     assert.ok(fs.existsSync(path.join(target, ".harness", "skills", "frontend", "SKILL.md")));
     assert.ok(fs.existsSync(path.join(target, ".harness", "skills", "security", "SKILL.md")));
+    assert.ok(fs.existsSync(path.join(target, ".agents", "skills", "frontend", "SKILL.md")));
+    assert.ok(fs.existsSync(path.join(target, ".codex", "agents", "domain-frontend.toml")));
   } finally {
     process.stdout.write = originalWrite;
   }
@@ -195,4 +203,6 @@ test("domains CLI reads project analysis JSON from stdin", () => {
   assert.deepEqual(config.domains, ["backend", "cloud"]);
   assert.ok(fs.existsSync(path.join(target, ".harness", "skills", "backend", "SKILL.md")));
   assert.ok(fs.existsSync(path.join(target, ".harness", "skills", "cloud", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(target, ".agents", "skills", "backend", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(target, ".codex", "agents", "domain-backend.toml")));
 });
