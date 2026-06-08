@@ -29,5 +29,6 @@
   "workerMemory": {
     "enabled": false,
     "directory": ".harness/memory/workers"
-  }
+  },
+  "domains": []
 }

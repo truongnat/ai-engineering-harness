@@ -2,6 +2,7 @@
 
 import { applyPrivateIgnore } from "./git-hygiene";
 import { initHarnessProfile } from "./harness-skeleton";
+import { writeDomainSkillSurface } from "../domain-skill-generation";
 import { installCapabilityCache } from "../install-cache";
 import { installRuntime } from "../install-runtime";
 import { isRuntimeNative } from "../cli-providers";
@@ -17,6 +18,7 @@ export interface InstallContext {
   dryRun: boolean;
   initHarness: boolean;
   installCache: boolean;
+  domains: string[];
   force?: boolean;
 }
 
@@ -45,6 +47,7 @@ function resolveIgnoreStrategy(scope: string, visibility: string): string {
 export function runInstall(ctx: InstallContext, options: InstallRunOptions = {}): InstallResult {
   const messages: string[] = [];
   const force = ctx.force ?? false;
+  const domains = ctx.domains ?? [];
 
   try {
     const ignoreStrategy = resolveIgnoreStrategy(ctx.scope, ctx.visibility);
@@ -87,6 +90,16 @@ export function runInstall(ctx: InstallContext, options: InstallRunOptions = {})
         force,
       });
       messages.push("harness-skeleton: ok");
+
+      if (domains.length > 0) {
+        writeDomainSkillSurface(ctx.packRoot, ctx.target, domains, {
+          packRoot: ctx.packRoot,
+          targetAbs: ctx.target,
+          dryRun: ctx.dryRun,
+          force,
+        });
+        messages.push(`domain-skills: ${domains.join(", ")}`);
+      }
     }
 
     const verb = options.runtimeBannerVerb ?? "install";

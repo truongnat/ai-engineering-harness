@@ -22,6 +22,7 @@ import {
 } from "./utils";
 import { workers, VALID_PROVIDER_SUPPORT, WORKER_IDS } from "../../workers/registry";
 import { assertClaudeWorkerSurface } from "../worker-claude-adapter";
+import { listDomainDefinitions } from "../domain-skill-generation";
 
 const skillContractSubstanceHeadings = [
   "## When Not To Use",
@@ -428,6 +429,76 @@ function assertSessionConfigTemplate(baseDir: string, failures: string[]): void 
     if (config?.workerMemory?.directory !== ".harness/memory/workers") {
       failures.push(`${relativePath} must set workerMemory.directory to ".harness/memory/workers"`);
     }
+    if (!Array.isArray(config?.domains)) {
+      failures.push(`${relativePath} must set domains to an array`);
+    }
+  } catch (error) {
+    failures.push(`${relativePath} must contain valid JSON`);
+  }
+}
+
+function assertTargetHarnessConfig(baseDir: string, failures: string[]): void {
+  const relativePath = ".harness/config.json";
+  if (!fs.existsSync(resolvePath(baseDir, relativePath))) {
+    failures.push(`Missing required path: ${relativePath}`);
+    return;
+  }
+
+  try {
+    const config = JSON.parse(readFile(baseDir, relativePath));
+    if (config?.memory?.backend !== "files") {
+      failures.push(`${relativePath} must set memory.backend to "files"`);
+    }
+    if (config?.memory?.sourceOfTruth !== "files") {
+      failures.push(`${relativePath} must set memory.sourceOfTruth to "files"`);
+    }
+    if (config?.specs?.enabled !== false) {
+      failures.push(`${relativePath} must set specs.enabled to false`);
+    }
+    if (config?.specs?.sourceOfTruth !== "delta-specs") {
+      failures.push(`${relativePath} must set specs.sourceOfTruth to "delta-specs"`);
+    }
+    if (config?.specs?.directory !== ".harness/specs") {
+      failures.push(`${relativePath} must set specs.directory to ".harness/specs"`);
+    }
+    if (config?.workerMemory?.enabled !== false) {
+      failures.push(`${relativePath} must set workerMemory.enabled to false`);
+    }
+    if (config?.workerMemory?.directory !== ".harness/memory/workers") {
+      failures.push(`${relativePath} must set workerMemory.directory to ".harness/memory/workers"`);
+    }
+    if (!Array.isArray(config?.domains)) {
+      failures.push(`${relativePath} must set domains to an array`);
+      return;
+    }
+
+    const validDomainIds = new Set<string>(
+      listDomainDefinitions().map((definition) => definition.id)
+    );
+    for (const domainId of config.domains as unknown[]) {
+      if (typeof domainId !== "string" || !validDomainIds.has(domainId)) {
+        failures.push(`${relativePath} must only contain known domain ids`);
+        break;
+      }
+      const knownDomainId = domainId as string;
+      for (const suffix of ["SKILL.md", "prompt.md", path.join("references", ".gitkeep")]) {
+        assertExists(baseDir, path.join(".harness", "skills", knownDomainId, suffix), failures);
+      }
+      if (fs.existsSync(resolvePath(baseDir, ".claude"))) {
+        assertExists(
+          baseDir,
+          path.join(".claude", "rules", `domain-${knownDomainId}.md`),
+          failures
+        );
+      }
+      if (fs.existsSync(resolvePath(baseDir, ".cursor"))) {
+        assertExists(
+          baseDir,
+          path.join(".cursor", "rules", `domain-${knownDomainId}.mdc`),
+          failures
+        );
+      }
+    }
   } catch (error) {
     failures.push(`${relativePath} must contain valid JSON`);
   }
@@ -823,6 +894,7 @@ export {
   assertReviewTemplateContract,
   assertSessionAwareCommandRouting,
   assertSessionConfigTemplate,
+  assertTargetHarnessConfig,
   assertSessionMemoryDocContracts,
   assertSessionStartReferenceContracts,
   assertSkillContractStructure,

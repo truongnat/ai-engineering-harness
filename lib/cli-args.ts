@@ -36,6 +36,7 @@ interface ParseOptions {
   useLlmJudge: boolean;
   skipDemoEval: boolean;
   liveProviderCommand: string;
+  domains: string[];
 }
 
 function parseArgv(argv: string[]): ParseOptions {
@@ -75,6 +76,7 @@ function parseArgv(argv: string[]): ParseOptions {
     useLlmJudge: true,
     skipDemoEval: false,
     liveProviderCommand: "",
+    domains: [],
   };
 
   for (; i < args.length; i++) {
@@ -185,6 +187,19 @@ function parseArgv(argv: string[]): ParseOptions {
       options.skipDemoEval = true;
       continue;
     }
+    if (arg === "--domains") {
+      const value = args[++i];
+      if (!value) {
+        throw new Error(`Missing value for ${arg}`);
+      }
+      options.domains.push(
+        ...value
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
+      );
+      continue;
+    }
     if (arg === "--live-provider-command") {
       options.liveProviderCommand = args[++i] || "";
       if (!options.liveProviderCommand) {
@@ -197,6 +212,9 @@ function parseArgv(argv: string[]): ParseOptions {
 
   if (options.providers.length > 0) {
     options.providers = [...new Set(options.providers)];
+  }
+  if (options.domains.length > 0) {
+    options.domains = [...new Set(options.domains)];
   }
 
   return options;

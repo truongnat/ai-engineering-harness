@@ -16,6 +16,13 @@ const requiredFiles = [
   "agent-system/TONE_AND_FORMAT.md",
   "agent-system/OUTPUT_PATTERNS.md",
   "skills/PROMPT_FORMAT_STANDARD.md",
+  "skills/README.md",
+  "skills/packs/README.md",
+  "skills/packs/data-ai.md",
+  "skills/packs/security.md",
+  "skills/packs/cloud.md",
+  "lib/stack-detect.ts",
+  "lib/domain-skill-generation.ts",
   "docs/context-engineering.md",
   "docs/token-budget.md",
   "agent-system/provider-adapters/claude.md",
@@ -279,6 +286,7 @@ const selectedSkillsHeadings = [
   "## Purpose",
   "## Current Status",
   "## Selected Core Skills",
+  "## Selected Domain Skills",
   "## Selected Skill Packs",
   "## Excluded Skills Or Packs",
   "## Human Review",
@@ -288,6 +296,7 @@ const workflowHeadings = [
   "## Purpose",
   "## Current Status",
   "## Selected Workflow",
+  "## Domain Selection",
   "## Command Sequence",
   "## Execution Rules",
   "## Human Review",
@@ -332,6 +341,8 @@ const targetHarnessProfileFiles = [
   ".harness/DECISIONS.md",
   ".harness/HAZARDS.md",
   ".harness/INDEX.md",
+  ".harness/config.json",
+  ".harness/skills/.gitkeep",
 ];
 
 const targetProfileHeadingContracts: [string, string[]][] = [

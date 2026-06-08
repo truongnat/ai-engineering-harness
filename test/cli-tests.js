@@ -124,6 +124,11 @@ describe("CLI Arguments Parser", () => {
     assert.equal(opts.target, "/tmp/project");
   });
 
+  test("parseArgv parses --domains flag", () => {
+    const opts = cliArgs.parseArgv(["node", "aih.js", "--domains", "frontend,backend"]);
+    assert.deepEqual(opts.domains, ["frontend", "backend"]);
+  });
+
   test("parseArgv rejects --ref for the npx CLI", () => {
     assert.throws(
       () => cliArgs.parseArgv(["node", "aih.js", "install", "--ref", "v1.0.1"]),

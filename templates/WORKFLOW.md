@@ -1,10 +1,25 @@
 # Workflow Profile
 
-## Status: draft — review and confirm before first harness-run
+## Purpose
 
-## Selected Workflow: core-loop
+Describe the workflow stages and how selected domain skills fit into the core loop.
+
+## Current Status
+
+- Status: draft
+- Review and confirm before first harness-run
+
+## Selected Workflow
+
+core-loop
 
 Default workflow for all work types.
+
+## Domain Selection
+
+- Domain skills may be generated under `.harness/skills/` after init
+- Selected domains are recorded in `.harness/config.json`
+- Keep generated domain skills aligned with the detected repository stack
 
 ## Command Sequence
 
@@ -35,3 +50,7 @@ Default workflow for all work types.
 | `refactor` | Structural improvements that preserve behavior |
 | `incident` | Urgent failures requiring compressed action |
 | `code-review` | Reviewing changes before accepting or merging |
+
+## Human Review
+
+List repo-specific workflow exceptions that still need approval.

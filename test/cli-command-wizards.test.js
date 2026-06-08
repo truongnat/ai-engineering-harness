@@ -102,6 +102,7 @@ test("runInstallWizard non-interactive install calls backend with selected provi
       dryRun: true,
       initHarness: true,
       installCache: true,
+      domains: [],
       force: false,
     },
     {
@@ -113,6 +114,7 @@ test("runInstallWizard non-interactive install calls backend with selected provi
       dryRun: true,
       initHarness: false,
       installCache: false,
+      domains: [],
       force: false,
     },
   ]);
@@ -142,6 +144,7 @@ test("runInstallWizard interactive flow warns for non-git targets and installs s
     const originalSelectInstallMode = mod.selectInstallMode;
     const originalConfirmInitHarness = mod.confirmInitHarness;
     const originalConfirmInstallCache = mod.confirmInstallCache;
+    const originalSelectDomains = mod.selectDomains;
     const originalShowInstallPlan = mod.showInstallPlan;
     const originalShowWarning = mod.showWarning;
     const originalConfirmProceed = mod.confirmProceed;
@@ -153,6 +156,7 @@ test("runInstallWizard interactive flow warns for non-git targets and installs s
     mod.selectInstallMode = async () => "project-private";
     mod.confirmInitHarness = async () => true;
     mod.confirmInstallCache = async () => true;
+    mod.selectDomains = async () => ["debugging"];
     mod.showInstallPlan = () => {};
     mod.showWarning = (message) => warnings.push(message);
     mod.confirmProceed = async () => true;
@@ -165,6 +169,7 @@ test("runInstallWizard interactive flow warns for non-git targets and installs s
       mod.selectInstallMode = originalSelectInstallMode;
       mod.confirmInitHarness = originalConfirmInitHarness;
       mod.confirmInstallCache = originalConfirmInstallCache;
+      mod.selectDomains = originalSelectDomains;
       mod.showInstallPlan = originalShowInstallPlan;
       mod.showWarning = originalShowWarning;
       mod.confirmProceed = originalConfirmProceed;
@@ -191,6 +196,7 @@ test("runInstallWizard interactive flow warns for non-git targets and installs s
   assert.equal(calls[0].provider, "cursor");
   assert.equal(calls[0].installCache, true);
   assert.equal(calls[0].initHarness, true);
+  assert.deepEqual(calls[0].domains, ["debugging"]);
   assert.equal(warnings.length, 1);
   assert.match(warnings[0], /not a Git repo/);
   assert.deepEqual(successes, ["Installed"]);

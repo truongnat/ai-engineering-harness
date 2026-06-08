@@ -15,6 +15,8 @@ const EXPECTED = [
   "DECISIONS.md",
   "HAZARDS.md",
   "INDEX.md",
+  "config.json",
+  "skills/.gitkeep",
   "memory/workers/.gitkeep",
   "specs/.gitkeep",
   "policies.json",
@@ -127,15 +129,20 @@ test("skeleton files include concrete examples instead of empty placeholders", (
   const decisions = fs.readFileSync(path.join(dir, ".harness", "DECISIONS.md"), "utf8");
   const hazards = fs.readFileSync(path.join(dir, ".harness", "HAZARDS.md"), "utf8");
   const index = fs.readFileSync(path.join(dir, ".harness", "INDEX.md"), "utf8");
+  const config = fs.readFileSync(path.join(dir, ".harness", "config.json"), "utf8");
 
   assert.match(harness, /harness-start -> harness-discuss -> harness-plan/);
   assert.match(harness, /\.harness\/specs\//);
+  assert.match(harness, /\.harness\/memory\/workers\//);
   assert.match(skills, /using-harness/);
+  assert.match(skills, /Selected Domain Skills/);
   assert.match(workflow, /\| 1 \| `harness-start` \| always \|/);
+  assert.match(workflow, /Domain Selection/);
   assert.match(gates, /`npm test`/);
   assert.match(memory, /Verification impact:/);
   assert.match(memory, /delegated worker/i);
   assert.match(decisions, /## Example/);
   assert.match(hazards, /worktree-backed repo/);
   assert.match(index, /npm test/);
+  assert.match(config, /"domains": \[\]/);
 });

@@ -28,6 +28,7 @@ import {
   assertReviewTemplateContract,
   assertSessionAwareCommandRouting,
   assertSessionConfigTemplate,
+  assertTargetHarnessConfig,
   assertSessionMemoryDocContracts,
   assertSessionStartReferenceContracts,
   assertSkillContractStructure,
@@ -223,6 +224,7 @@ const targetProfileValidators: Validator[] = [
       for (const [relativePath, headings] of targetProfileHeadingContracts) {
         assertHeadings(context.baseDir, relativePath, headings, context.failures);
       }
+      assertTargetHarnessConfig(context.baseDir, context.failures);
       validateRuntimeCommandSurface(context.baseDir, context.failures);
     },
     weight: targetHarnessProfileFiles.length + targetProfileHeadingContracts.length * 3,

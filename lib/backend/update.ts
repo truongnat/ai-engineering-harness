@@ -48,6 +48,7 @@ export function runUpdate(ctx: UpdateContext): UpdateResult {
       dryRun: ctx.dryRun,
       initHarness: false,
       installCache: true,
+      domains: [],
       force: true,
     },
     {

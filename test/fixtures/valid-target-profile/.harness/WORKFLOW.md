@@ -7,13 +7,22 @@ Profile fixture.
 Draft
 
 ## Selected Workflow
-Map to remember
+
+core-loop
+
+## Domain Selection
+
+- Generated domain skills are written under `.harness/skills/`
 
 ## Command Sequence
-Map Start Discuss Plan Run Verify Ship Remember
+
+| # | Command | Required | Purpose | Skip when |
+| --- | --- | --- | --- | --- |
+| 1 | `harness-start` | Always | Restore context, detect session, identify next command | Never |
 
 ## Execution Rules
-Plan before code
+
+- Plan before code
 
 ## Human Review
 Required
