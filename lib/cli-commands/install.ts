@@ -5,12 +5,7 @@ import { modeToScopeVisibility, isNonInteractive, type ParseOptions } from "../c
 import { ACTIVE_PROVIDERS, providerPriorityLabel, isRuntimeNative } from "../cli-providers";
 import { detectRecommendedProviders, detectLegacyProviderResidue, isGitRepo } from "../cli-detect";
 import { listDomainDefinitions } from "../domain-skill-generation";
-import {
-  detectProjectStack,
-  listSuggestedDomainIds,
-  isKnownDomainId,
-  normalizeDomainSelection,
-} from "../stack-detect";
+import { normalizeDomainSelection } from "../stack-detect";
 import {
   NON_GIT_PRIVATE_WARNING,
   NON_GIT_PRIVATE_WARNING_FOLLOWUP,
@@ -119,12 +114,12 @@ async function runInstallWizard(packRoot: string, options: ParseOptions): Promis
   const interactive = ui.useInteractiveUi(options);
   let providers = [...options.providers];
   const explicitDomains = normalizeDomainSelection(options.domains || []);
-  const invalidDomainIds = (options.domains || []).filter((domainId) => !isKnownDomainId(domainId));
+  const invalidDomainIds = (options.domains || []).filter(
+    (domainId) => !normalizeDomainSelection([domainId]).length
+  );
   if (invalidDomainIds.length > 0) {
     throw new Error(`Unknown domain skill(s): ${invalidDomainIds.join(", ")}`);
   }
-  const stackDetection = detectProjectStack(targetAbs);
-  const suggestedDomains = listSuggestedDomainIds(targetAbs);
   let domains = [...explicitDomains];
 
   if (isNonInteractive(options)) {
@@ -144,9 +139,6 @@ async function runInstallWizard(packRoot: string, options: ParseOptions): Promis
     const initHarness = !fs.existsSync(path.join(targetAbs, ".harness"));
     const installCache =
       scopeVis.scope === "project" && providers.some((id) => isRuntimeNative(id));
-    if (initHarness && domains.length === 0) {
-      domains = suggestedDomains;
-    }
     const plan = buildInstallPlan({
       providers: toPlanProviders(providers),
       initHarness,
@@ -214,22 +206,6 @@ async function runInstallWizard(packRoot: string, options: ParseOptions): Promis
     return 1;
   }
 
-  if (initHarness && domains.length === 0) {
-    const domainItems = listDomainDefinitions().map((definition) => ({
-      id: definition.id,
-      label: definition.title.replace(" Domain Skill", ""),
-      description: definition.summary,
-      recommended: stackDetection.domains.some((suggestion) => suggestion.id === definition.id),
-    }));
-    const selectedDomains = await ui.selectDomains(domainItems);
-    if (selectedDomains === null) {
-      return 1;
-    }
-    domains = normalizeDomainSelection(
-      selectedDomains.length > 0 ? selectedDomains : suggestedDomains
-    );
-  }
-
   const { scope } = modeToScopeVisibility(mode);
   const defaultCache = scope === "project" && providers.some((id) => isRuntimeNative(id));
   const installCacheChoice = await ui.confirmInstallCache(defaultCache);
@@ -237,6 +213,20 @@ async function runInstallWizard(packRoot: string, options: ParseOptions): Promis
     return 1;
   }
   const installCache = installCacheChoice;
+
+  if (domains.length === 0) {
+    const domainItems = listDomainDefinitions().map((definition) => ({
+      id: definition.id,
+      label: definition.title.replace(" Domain Skill", ""),
+      description: definition.summary,
+      recommended: false,
+    }));
+    const selectedDomains = await ui.selectDomains(domainItems);
+    if (selectedDomains === null) {
+      return 1;
+    }
+    domains = normalizeDomainSelection(selectedDomains);
+  }
 
   const { scope: resolvedScope, visibility } = modeToScopeVisibility(mode);
   const plan = buildInstallPlan({

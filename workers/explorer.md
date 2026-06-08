@@ -62,6 +62,25 @@ Short statement of what area was mapped and why it matters.
 
 List the smallest useful set of files, directories, or artifacts that explain the area.
 
+### Domain Analysis
+
+When the task includes init-time domain routing, add a strict JSON block with:
+
+```json
+{
+  "domains": [
+    {
+      "id": "backend",
+      "confidence": 0.9,
+      "evidence": ["..."]
+    }
+  ],
+  "languages": ["python"],
+  "frameworks": ["fastapi"],
+  "notes": "..."
+}
+```
+
 ### Boundaries
 
 What is in scope, what is out of scope, and where ownership appears to change.

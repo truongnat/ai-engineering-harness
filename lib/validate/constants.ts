@@ -38,6 +38,7 @@ const requiredFiles = [
   "prompt-templates/harness-run.md",
   "prompt-templates/harness-verify.md",
   "prompt-templates/harness-ship.md",
+  "prompt-templates/domain-analysis.md",
   "prompt-templates/code-reviewer.md",
   "templates/INDEX.md",
   "templates/STATE.md",
@@ -199,6 +200,7 @@ const promptTemplateFiles = [
   "prompt-templates/harness-run.md",
   "prompt-templates/harness-verify.md",
   "prompt-templates/harness-ship.md",
+  "prompt-templates/domain-analysis.md",
   "prompt-templates/blocker-question.md",
   "prompt-templates/code-reviewer.md",
 ];

@@ -632,9 +632,27 @@ test("runStatusOrDoctor returns doctor failure status in verbose mode", () => {
 test("runInitWizard defaults to cursor and skips demo eval when requested", async () => {
   const target = makeTempDir();
   const harnessDir = path.join(target, ".harness");
+  const analysisFile = path.join(target, "domain-analysis.json");
   const installCalls = [];
   const evalCalls = [];
   let output = "";
+
+  fs.writeFileSync(
+    analysisFile,
+    JSON.stringify(
+      {
+        domains: [
+          { id: "debugging", confidence: 0.9, evidence: ["failing test"] },
+          { id: "backend", confidence: 0.8, evidence: ["api surface"] },
+        ],
+        languages: ["typescript"],
+        frameworks: ["vitest"],
+        notes: "fixture",
+      },
+      null,
+      2
+    )
+  );
 
   patchModule("dist/lib/cli-commands/install.js", (mod) => {
     const originalRunInstallWizard = mod.runInstallWizard;
@@ -677,6 +695,7 @@ test("runInitWizard defaults to cursor and skips demo eval when requested", asyn
       scope: "",
       visibility: "",
       skipDemoEval: true,
+      analysisFile,
       yes: false,
     });
 
@@ -686,6 +705,7 @@ test("runInitWizard defaults to cursor and skips demo eval when requested", asyn
     assert.equal(installCalls[0].yes, true);
     assert.equal(installCalls[0].scope, "project");
     assert.equal(installCalls[0].visibility, "private");
+    assert.deepEqual(installCalls[0].domains, ["debugging", "backend"]);
     assert.equal(evalCalls.length, 0);
     assert.equal(fs.existsSync(path.join(harnessDir, "GOAL.md")), true);
     assert.match(output, /Initializing harness/);

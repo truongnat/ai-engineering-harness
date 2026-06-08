@@ -37,6 +37,7 @@ interface ParseOptions {
   skipDemoEval: boolean;
   liveProviderCommand: string;
   domains: string[];
+  analysisFile: string;
 }
 
 function parseArgv(argv: string[]): ParseOptions {
@@ -77,6 +78,7 @@ function parseArgv(argv: string[]): ParseOptions {
     skipDemoEval: false,
     liveProviderCommand: "",
     domains: [],
+    analysisFile: "",
   };
 
   for (; i < args.length; i++) {
@@ -198,6 +200,13 @@ function parseArgv(argv: string[]): ParseOptions {
           .map((s) => s.trim())
           .filter(Boolean)
       );
+      continue;
+    }
+    if (arg === "--analysis-file") {
+      options.analysisFile = args[++i] || "";
+      if (!options.analysisFile) {
+        throw new Error(`Missing value for ${arg}`);
+      }
       continue;
     }
     if (arg === "--live-provider-command") {

@@ -133,6 +133,31 @@ async function selectDomains(domainItems: DomainItem[]): Promise<string[] | null
   return value;
 }
 
+async function requestDomainAnalysis(): Promise<string | null> {
+  const { multiline, cancel, isCancel } = await loadClackPrompts();
+  const value = await multiline({
+    message: "Paste domain analysis JSON from the explorer worker",
+    placeholder: '{ "domains": [{ "id": "backend", "confidence": 0.8, "evidence": ["..."] }] }',
+    validate(input = "") {
+      const trimmed = input.trim();
+      if (!trimmed) {
+        return "Domain analysis JSON is required.";
+      }
+      try {
+        JSON.parse(trimmed);
+      } catch (error) {
+        return error instanceof Error ? error.message : "Invalid JSON";
+      }
+      return undefined;
+    },
+  });
+  if (isCancel(value)) {
+    cancel("Install cancelled.");
+    return null;
+  }
+  return value;
+}
+
 async function selectInstallMode(): Promise<InstallMode | null> {
   const { select, cancel, isCancel } = await loadClackPrompts();
   const value = await select<InstallMode>({
@@ -419,6 +444,7 @@ const ui = {
   introBanner,
   selectProviders,
   selectDomains,
+  requestDomainAnalysis,
   selectInstallMode,
   confirmInitHarness,
   confirmInstallCache,
@@ -442,6 +468,7 @@ export {
   introBanner,
   selectProviders,
   selectDomains,
+  requestDomainAnalysis,
   selectInstallMode,
   confirmInitHarness,
   confirmInstallCache,

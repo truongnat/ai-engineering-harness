@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { DomainId, DomainSuggestion } from "./stack-detect";
+import type { DomainId } from "./stack-detect";
 import { DOMAIN_LABELS, normalizeDomainSelection } from "./stack-detect";
 
 interface WriteOptions {

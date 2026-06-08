@@ -27,6 +27,7 @@ Init (quickstart):
   npx ai-engineering-harness init
   npx ai-engineering-harness init --provider cursor --yes
   npx ai-engineering-harness init --skip-demo-eval
+  npx ai-engineering-harness init --analysis-file ./domain-analysis.json
 
 Non-interactive:
   npx ai-engineering-harness install --provider cursor --yes
@@ -37,6 +38,8 @@ Non-interactive:
 
 Options:
   --provider <id>     Provider(s), comma-separated
+  --domains <ids>     Domain skill ids, comma-separated
+  --analysis-file <path>  JSON output from the domain analysis agent
   --runtime <id>      Deprecated alias for --provider
   --scope project|global
   --visibility private|shared

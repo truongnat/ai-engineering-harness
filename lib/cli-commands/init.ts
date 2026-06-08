@@ -4,6 +4,8 @@ import { detectRecommendedProviders } from "../cli-detect";
 import { resolveTargetAbs } from "../cli-command-helpers";
 import { runInstallWizard } from "./install";
 import type { ParseOptions } from "../cli-args";
+import { parseProjectAnalysis, normalizeDomainSelection } from "../stack-detect";
+import * as ui from "../cli-ui";
 import { runTask } from "../evals";
 
 const INIT_DEMO_GOAL = `# Init Demo Goal
@@ -15,6 +17,48 @@ Complete the harness quickstart by confirming install and running one determinis
 2. Review eval output from the init demo run.
 3. Use \`aih insights\` to inspect local telemetry after your next session.
 `;
+
+function readAnalysisFile(analysisFile: string): string {
+  const resolved = path.isAbsolute(analysisFile)
+    ? analysisFile
+    : path.resolve(process.cwd(), analysisFile);
+  if (!fs.existsSync(resolved)) {
+    throw new Error(`Domain analysis file does not exist: ${resolved}`);
+  }
+  return fs.readFileSync(resolved, "utf8");
+}
+
+async function resolveInitDomains(
+  packRoot: string,
+  targetAbs: string,
+  options: ParseOptions
+): Promise<string[] | null> {
+  const explicitDomains = normalizeDomainSelection(options.domains || []);
+  if (explicitDomains.length > 0) {
+    return explicitDomains;
+  }
+
+  let analysisText = "";
+  if (options.analysisFile) {
+    analysisText = readAnalysisFile(options.analysisFile);
+  } else if (options.yes) {
+    throw new Error("Provide --domains or --analysis-file when using --yes for init.");
+  } else {
+    process.stdout.write(
+      "\nDomain analysis\n" +
+        `Use prompt-templates/domain-analysis.md or the explorer worker to analyze ${targetAbs}.\n` +
+        "Paste the agent JSON below.\n"
+    );
+    const pasted = await ui.requestDomainAnalysis();
+    if (pasted === null) {
+      return null;
+    }
+    analysisText = pasted;
+  }
+
+  const parsed = parseProjectAnalysis(analysisText);
+  return normalizeDomainSelection(parsed.domains);
+}
 
 async function runInitWizard(packRoot: string, options: ParseOptions): Promise<number> {
   const targetAbs = resolveTargetAbs(options.target);
@@ -30,10 +74,16 @@ async function runInitWizard(packRoot: string, options: ParseOptions): Promise<n
         ? [recommended[0]]
         : ["cursor"];
 
+  const selectedDomains = await resolveInitDomains(packRoot, targetAbs, options);
+  if (selectedDomains === null) {
+    return 1;
+  }
+
   const initOptions = {
     ...options,
     command: "install",
     providers,
+    domains: selectedDomains,
     yes: true,
     scope: options.scope || "project",
     visibility: options.visibility || "private",

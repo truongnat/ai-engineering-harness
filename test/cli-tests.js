@@ -129,6 +129,11 @@ describe("CLI Arguments Parser", () => {
     assert.deepEqual(opts.domains, ["frontend", "backend"]);
   });
 
+  test("parseArgv parses --analysis-file flag", () => {
+    const opts = cliArgs.parseArgv(["node", "aih.js", "--analysis-file", "./analysis.json"]);
+    assert.equal(opts.analysisFile, "./analysis.json");
+  });
+
   test("parseArgv rejects --ref for the npx CLI", () => {
     assert.throws(
       () => cliArgs.parseArgv(["node", "aih.js", "install", "--ref", "v1.0.1"]),
@@ -202,6 +207,8 @@ describe("CLI Help", () => {
     assert.match(help, /ai-engineering-harness eval run <task-or-suite>/);
     assert.match(help, /ai-engineering-harness eval report <run-id>/);
     assert.match(help, /--live-provider-command/);
+    assert.match(help, /--domains/);
+    assert.match(help, /--analysis-file/);
   });
 
   test("renderHelp includes insights command", () => {

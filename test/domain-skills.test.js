@@ -12,42 +12,34 @@ function makeTempDir() {
   return fs.mkdtempSync(path.join(os.tmpdir(), "aih-domain-test-"));
 }
 
-test("detectProjectStack suggests domain skills from repo signals", () => {
-  const dir = makeTempDir();
-  fs.writeFileSync(
-    path.join(dir, "package.json"),
-    JSON.stringify(
-      {
-        name: "sample",
-        dependencies: {
-          react: "^18.0.0",
-          express: "^4.0.0",
-          "@aws-sdk/client-s3": "^3.0.0",
-          passport: "^0.7.0",
-        },
-        devDependencies: {
-          jest: "^29.0.0",
-        },
-        scripts: {
-          test: "jest",
-        },
-      },
-      null,
-      2
-    )
+test("parseProjectAnalysis validates and normalizes agent JSON", () => {
+  const analysis = stackDetect.parseProjectAnalysis(
+    JSON.stringify({
+      domains: [
+        { id: "backend", confidence: 0.9, evidence: ["fastapi in pyproject.toml"] },
+        { id: "frontend", confidence: 2, evidence: ["nextjs"] },
+        { id: "unknown-domain", confidence: 0.8, evidence: ["ignored"] },
+      ],
+      languages: ["python", "typescript"],
+      frameworks: ["fastapi", "nextjs"],
+      notes: "monorepo with web + service",
+    })
   );
-  fs.writeFileSync(path.join(dir, "Dockerfile"), "FROM node:20\n");
 
-  const detection = stackDetect.detectProjectStack(dir);
-  const ids = detection.domains.map((domain) => domain.id);
+  assert.deepEqual(analysis.domains, ["frontend", "backend"]);
+  assert.deepEqual(analysis.meta.languages, ["python", "typescript"]);
+  assert.deepEqual(analysis.meta.frameworks, ["fastapi", "nextjs"]);
+  assert.equal(analysis.meta.notes, "monorepo with web + service");
+  assert.equal(analysis.meta.domains.length, 2);
+  assert.equal(analysis.meta.domains[0].confidence, 1);
+  assert.equal(analysis.meta.domains[1].confidence, 0.9);
+});
 
-  assert.ok(ids.includes("frontend"));
-  assert.ok(ids.includes("backend"));
-  assert.ok(ids.includes("cloud"));
-  assert.ok(ids.includes("security"));
-  assert.ok(ids.includes("devops"));
-  assert.ok(ids.includes("debugging"));
-  assert.equal(stackDetect.listSuggestedDomainIds(dir).includes("frontend"), true);
+test("parseProjectAnalysis rejects invalid JSON", () => {
+  assert.throws(
+    () => stackDetect.parseProjectAnalysis("{ not valid json"),
+    /Project analysis must be valid JSON/
+  );
 });
 
 test("writeDomainSkillSurface creates generated skill files and config selection", () => {

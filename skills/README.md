@@ -38,6 +38,7 @@ Skill packs are routing aids that help agents choose a relevant domain starting 
 - Packs should remain small.
 - Domain-specific deep skills can be added later only when justified.
 - Project-local generated domain skills may be written into `.harness/skills/` after init.
+- `prompt-templates/domain-analysis.md` defines the strict JSON analysis contract for init-time domain selection.
 
 Packs:
 

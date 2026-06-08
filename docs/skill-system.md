@@ -38,7 +38,10 @@ Initial harness setup should select the smallest sufficient set of core skills a
 It should:
 
 - start from core skills
+- ask the agent to produce domain analysis JSON when a repo has domain signals
+- validate that JSON against the domain-analysis gate before generating anything
 - add one or more skill packs when domain routing is needed
+- materialize selected domain skills into `.harness/skills/` when they are justified
 - avoid inventing a new skill unless the gap is recurring and distinct
 - record the reason for each selected skill or pack in `.harness/SKILLS.md`
 
