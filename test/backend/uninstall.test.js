@@ -12,11 +12,95 @@ function tmpRepo() {
   return d;
 }
 
-test("claude uninstall removes always-owned files, keeps settings.json", () => {
+function withTempHome(fn) {
+  const originalHome = process.env.HOME;
+  const originalUserProfile = process.env.USERPROFILE;
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), "aih-home-"));
+  process.env.HOME = home;
+  process.env.USERPROFILE = home;
+  try {
+    return fn(home);
+  } finally {
+    if (originalHome === undefined) {
+      delete process.env.HOME;
+    } else {
+      process.env.HOME = originalHome;
+    }
+    if (originalUserProfile === undefined) {
+      delete process.env.USERPROFILE;
+    } else {
+      process.env.USERPROFILE = originalUserProfile;
+    }
+  }
+}
+
+test("claude uninstall removes always-owned files and harness-owned settings.json", () => {
   const dir = tmpRepo();
   fs.mkdirSync(path.join(dir, ".claude", "commands"), { recursive: true });
+  fs.mkdirSync(path.join(dir, ".claude", "agents"), { recursive: true });
+  fs.mkdirSync(path.join(dir, ".claude", "skills"), { recursive: true });
   fs.writeFileSync(path.join(dir, ".claude", "CLAUDE.md"), "anything\n"); // ownership always -> removed regardless of content
-  fs.writeFileSync(path.join(dir, ".claude", "settings.json"), "{}\n"); // claude-settings -> kept
+  fs.writeFileSync(
+    path.join(dir, ".claude", "settings.json"),
+    JSON.stringify(
+      {
+        hooks: {
+          PreToolUse: [
+            {
+              matcher: "Bash",
+              hooks: [
+                {
+                  type: "command",
+                  command: "node .ai-harness/hooks/core/guard-phase.js",
+                },
+              ],
+            },
+          ],
+          PostToolUse: [
+            {
+              matcher: "Bash",
+              hooks: [
+                {
+                  type: "command",
+                  command: "node .ai-harness/hooks/core/record-tool-output.js",
+                },
+              ],
+            },
+          ],
+          SubagentStop: [
+            {
+              hooks: [
+                {
+                  type: "command",
+                  command: "node .ai-harness/hooks/core/record-subagent-result.js",
+                },
+              ],
+            },
+          ],
+          Stop: [
+            {
+              hooks: [
+                {
+                  type: "command",
+                  command: "node .ai-harness/hooks/core/compact-session-memory.js",
+                },
+              ],
+            },
+          ],
+        },
+        extraKnownMarketplaces: {
+          "ai-engineering-harness": {
+            source: {
+              source: "github",
+              repo: "truongnat/ai-engineering-harness",
+            },
+          },
+        },
+      },
+      null,
+      2
+    ) + "\n"
+  );
   fs.writeFileSync(path.join(dir, ".claude", "commands", "harness-plan.md"), "x\n");
   runUninstall({
     targetAbs: dir,
@@ -34,14 +118,16 @@ test("claude uninstall removes always-owned files, keeps settings.json", () => {
   );
   assert.equal(
     fs.existsSync(path.join(dir, ".claude", "settings.json")),
-    true,
-    "settings.json kept"
+    false,
+    "settings.json removed when harness-owned"
   );
   assert.equal(
     fs.existsSync(path.join(dir, ".claude", "commands")),
     false,
     "commands dir removed (always)"
   );
+  assert.equal(fs.existsSync(path.join(dir, ".claude", "agents")), false, "agents dir removed");
+  assert.equal(fs.existsSync(path.join(dir, ".claude", "skills")), false, "skills dir removed");
 });
 
 test("AGENTS.md removed only when it contains the harness marker (codex provider)", () => {
@@ -136,4 +222,101 @@ test("uninstall strips the git exclude harness block", () => {
     fs.readFileSync(path.join(dir, ".git", "info", "exclude"), "utf8"),
     /ai-engineering-harness/
   );
+});
+
+test("global uninstall removes Claude home-directory surface", () => {
+  withTempHome((home) => {
+    fs.mkdirSync(path.join(home, ".claude", "agents"), { recursive: true });
+    fs.mkdirSync(path.join(home, ".claude", "skills"), { recursive: true });
+    fs.mkdirSync(path.join(home, ".claude", "commands"), { recursive: true });
+    fs.writeFileSync(path.join(home, ".claude", "CLAUDE.md"), "# ai-engineering-harness\n");
+    fs.writeFileSync(
+      path.join(home, ".claude", "settings.json"),
+      JSON.stringify(
+        {
+          hooks: {
+            PreToolUse: [
+              {
+                matcher: "Bash",
+                hooks: [{ type: "command", command: "node .ai-harness/hooks/core/guard-phase.js" }],
+              },
+            ],
+            PostToolUse: [
+              {
+                matcher: "Bash",
+                hooks: [
+                  {
+                    type: "command",
+                    command: "node .ai-harness/hooks/core/record-tool-output.js",
+                  },
+                ],
+              },
+            ],
+            SubagentStop: [
+              {
+                hooks: [
+                  {
+                    type: "command",
+                    command: "node .ai-harness/hooks/core/record-subagent-result.js",
+                  },
+                ],
+              },
+            ],
+            Stop: [
+              {
+                hooks: [
+                  {
+                    type: "command",
+                    command: "node .ai-harness/hooks/core/compact-session-memory.js",
+                  },
+                ],
+              },
+            ],
+          },
+        },
+        null,
+        2
+      ) + "\n"
+    );
+
+    const result = runUninstall({
+      targetAbs: tmpRepo(),
+      provider: "claude",
+      scope: "global",
+      dryRun: false,
+      removeCache: false,
+      removeState: false,
+      all: false,
+    });
+
+    assert.equal(result.ok, true);
+    assert.equal(fs.existsSync(path.join(home, ".claude", "CLAUDE.md")), false);
+    assert.equal(fs.existsSync(path.join(home, ".claude", "settings.json")), false);
+    assert.equal(fs.existsSync(path.join(home, ".claude", "agents")), false);
+    assert.equal(fs.existsSync(path.join(home, ".claude", "skills")), false);
+    assert.equal(fs.existsSync(path.join(home, ".claude", "commands")), false);
+  });
+});
+
+test("global uninstall removes Codex home-directory skills surface", () => {
+  withTempHome((home) => {
+    fs.mkdirSync(path.join(home, ".agents", "skills", "verification"), { recursive: true });
+    fs.writeFileSync(path.join(home, ".agents", "skills", "verification", "SKILL.md"), "# x\n");
+    fs.mkdirSync(path.join(home, ".codex"), { recursive: true });
+    fs.writeFileSync(path.join(home, ".codex", "AGENTS.md"), "# ai-engineering-harness\n");
+
+    const result = runUninstall({
+      targetAbs: tmpRepo(),
+      provider: "codex",
+      scope: "global",
+      dryRun: false,
+      removeCache: false,
+      removeState: false,
+      all: false,
+    });
+
+    assert.equal(result.ok, true);
+    assert.equal(fs.existsSync(path.join(home, ".agents", "skills")), false);
+    assert.equal(fs.existsSync(path.join(home, ".codex", "AGENTS.md")), false);
+  });
 });

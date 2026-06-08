@@ -29,7 +29,7 @@ const ACTIVE_PROVIDERS: readonly ProviderDescriptor[] = Object.freeze([
   {
     id: "codex",
     label: "Codex",
-    description: "Experimental - plugin packaging + AGENTS.md fallback",
+    description: "Experimental - plugin packaging + AGENTS.md + .agents/skills fallback",
     implemented: true,
     priority: "experimental",
     installMode: "plugin-packaging-plus-project-fallback",

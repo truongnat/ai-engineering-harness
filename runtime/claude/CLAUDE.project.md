@@ -10,6 +10,7 @@ Plan before implementing. Verify before shipping. Preserve only durable lessons.
 Read `.ai-harness/AGENTS.md` first. Then use:
 - `.ai-harness/commands/` for phase contracts
 - `.ai-harness/skills/` for reusable capabilities
+- `.claude/skills/` for native Claude skill invocation in this repository
 - `.ai-harness/workflows/` for process guidance
 - `.ai-harness/patterns/` and `.ai-harness/templates/` for output structure
 - `.ai-harness/agent-system/SYSTEM_PROMPT.md` for the full operating contract
@@ -39,6 +40,7 @@ Do not skip planning or verification because a task looks small.
 | --- | --- |
 | `/harness-*` project commands | native |
 | delegated workers in `.claude/agents/` | native |
+| native skills in `.claude/skills/` | native |
 | lifecycle hooks via `.claude/settings.json` | native |
 | path-scoped rules | native |
 

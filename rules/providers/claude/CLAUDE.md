@@ -18,11 +18,14 @@ Act as a senior engineering operator:
 4. active session under `.harness/sessions/`
 5. matching command contract under `.ai-harness/commands/`
 6. matching prompt template under `.ai-harness/prompt-templates/`
-7. `.claude/rules/` path-scoped rules when the active files match their path selectors
+7. native skill files under `.claude/skills/` when a task is better served by a reusable skill
+8. `.claude/rules/` path-scoped rules when the active files match their path selectors
 
 ## Provider capabilities
 
 Claude is the only provider where this install claims project-native `/harness-*` command files under `.claude/commands/`.
+It also writes project-native reusable skills under `.claude/skills/`.
+This install also writes native skill files under `.claude/skills/` so Claude can use the same reusable capabilities without falling back to the pack cache.
 
 Use canonical command IDs:
 - harness-start

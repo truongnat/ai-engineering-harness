@@ -30,6 +30,18 @@ test("getProviderManifest returns claude native slash support", () => {
   const claude = getProviderManifest(repoRoot, "claude");
   assert.equal(claude.nativeSlashCommands, true);
   assert.equal(claude.supportsSubagents, true);
+  assert.ok(claude.ruleEntrypoints.includes(".claude/skills/"));
+  assert.ok(claude.installPaths.includes(".claude/agents/"));
+  assert.ok(claude.installPaths.includes(".claude/skills/"));
+});
+
+test("getProviderManifest returns codex plugin-packaged skills support", () => {
+  const codex = getProviderManifest(repoRoot, "codex");
+  assert.equal(codex.nativeSlashCommands, false);
+  assert.ok(codex.ruleEntrypoints.includes(".codex/"));
+  assert.ok(codex.ruleEntrypoints.includes(".agents/skills/"));
+  assert.ok(codex.installPaths.includes(".codex/"));
+  assert.ok(codex.installPaths.includes(".agents/skills/"));
 });
 
 test("getProviderManifest returns cursor native slash support", () => {

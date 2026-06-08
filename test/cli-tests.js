@@ -296,6 +296,20 @@ describe("CLI Provider Detection", () => {
     assert.ok(providers.includes("codex"));
   });
 
+  test("detectRecommendedProviders detects Codex from .codex directory", () => {
+    const tmpDir = makeTempDir();
+    createMockFileStructure(tmpDir, [".codex/hooks.json"]);
+    const providers = cliDetect.detectRecommendedProviders(tmpDir);
+    assert.ok(providers.includes("codex"));
+  });
+
+  test("detectRecommendedProviders detects Codex from .agents/skills", () => {
+    const tmpDir = makeTempDir();
+    createMockFileStructure(tmpDir, [".agents/skills/verification/SKILL.md"]);
+    const providers = cliDetect.detectRecommendedProviders(tmpDir);
+    assert.ok(providers.includes("codex"));
+  });
+
   test("detectRecommendedProviders detects Gemini from .gemini directory", () => {
     const tmpDir = makeTempDir();
     createMockFileStructure(tmpDir, [".gemini/placeholder"]);
@@ -333,6 +347,20 @@ describe("CLI Provider Detection", () => {
   test("detectInstalledProviders detects Codex from .codex-plugin/plugin.json", () => {
     const tmpDir = makeTempDir();
     createMockFileStructure(tmpDir, [".codex-plugin/plugin.json"]);
+    const providers = cliDetect.detectInstalledProviders(tmpDir);
+    assert.ok(providers.includes("codex"));
+  });
+
+  test("detectInstalledProviders detects Codex from .codex directory", () => {
+    const tmpDir = makeTempDir();
+    createMockFileStructure(tmpDir, [".codex/hooks.json"]);
+    const providers = cliDetect.detectInstalledProviders(tmpDir);
+    assert.ok(providers.includes("codex"));
+  });
+
+  test("detectInstalledProviders detects Codex from .agents/skills", () => {
+    const tmpDir = makeTempDir();
+    createMockFileStructure(tmpDir, [".agents/skills/verification/SKILL.md"]);
     const providers = cliDetect.detectInstalledProviders(tmpDir);
     assert.ok(providers.includes("codex"));
   });

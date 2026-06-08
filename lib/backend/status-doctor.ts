@@ -70,6 +70,24 @@ function runtimeReferencesCache(targetAbs: string, rt: string): boolean {
   }
 }
 
+function claudeSettingsReferenceHookCache(targetAbs: string): boolean {
+  const settingsPath = path.join(targetAbs, ".claude/settings.json");
+  if (!fs.existsSync(settingsPath)) {
+    return false;
+  }
+  try {
+    const content = fs.readFileSync(settingsPath, "utf8");
+    return [
+      ".ai-harness/hooks/core/guard-phase.js",
+      ".ai-harness/hooks/core/record-tool-output.js",
+      ".ai-harness/hooks/core/record-subagent-result.js",
+      ".ai-harness/hooks/core/compact-session-memory.js",
+    ].every((hookPath) => content.includes(hookPath));
+  } catch {
+    return false;
+  }
+}
+
 function doctorPlanStatus(targetAbs: string): string {
   const planFile = path.join(targetAbs, ".harness/PLAN.md");
   if (!fs.existsSync(planFile)) {
@@ -428,6 +446,72 @@ export function runDoctor(ctx: ReportContext): DoctorResult {
         lines.push(`FAIL ${rt} entrypoint does not reference .ai-harness/`);
         failCount++;
       }
+    }
+  }
+
+  if (fs.existsSync(path.join(targetAbs, ".claude"))) {
+    if (fs.existsSync(path.join(targetAbs, ".claude", "agents"))) {
+      lines.push("PASS .claude/agents exists");
+    } else {
+      lines.push("FAIL .claude/agents missing");
+      failCount++;
+    }
+    if (fs.existsSync(path.join(targetAbs, ".claude", "skills"))) {
+      lines.push("PASS .claude/skills exists");
+    } else {
+      lines.push("FAIL .claude/skills missing");
+      failCount++;
+    }
+
+    if (claudeSettingsReferenceHookCache(targetAbs)) {
+      lines.push("PASS .claude/settings.json references .ai-harness/hooks/core");
+    } else {
+      lines.push("FAIL .claude/settings.json does not reference cached hook scripts");
+      failCount++;
+    }
+  }
+
+  if (fs.existsSync(path.join(targetAbs, ".codex"))) {
+    if (fs.existsSync(path.join(targetAbs, ".codex", "hooks.json"))) {
+      lines.push("PASS .codex/hooks.json exists");
+    } else {
+      lines.push("FAIL .codex/hooks.json missing");
+      failCount++;
+    }
+    if (fs.existsSync(path.join(targetAbs, ".codex", "rules", "default.rules"))) {
+      lines.push("PASS .codex/rules/default.rules exists");
+    } else {
+      lines.push("FAIL .codex/rules/default.rules missing");
+      failCount++;
+    }
+    if (fs.existsSync(path.join(targetAbs, ".codex", "agents"))) {
+      const agentsDir = path.join(targetAbs, ".codex", "agents");
+      const agents = fs.readdirSync(agentsDir).filter((name) => name.endsWith(".toml"));
+      if (agents.length > 0) {
+        lines.push(`PASS .codex/agents exists (${agents.length} agents)`);
+      } else {
+        lines.push("FAIL .codex/agents exists but contains no .toml files");
+        failCount++;
+      }
+    } else {
+      lines.push("FAIL .codex/agents missing");
+      failCount++;
+    }
+  }
+
+  if (fs.existsSync(path.join(targetAbs, ".agents", "skills"))) {
+    const skillsDir = path.join(targetAbs, ".agents", "skills");
+    const entries = fs
+      .readdirSync(skillsDir, { withFileTypes: true })
+      .filter(
+        (entry) =>
+          entry.isDirectory() && fs.existsSync(path.join(skillsDir, entry.name, "SKILL.md"))
+      );
+    if (entries.length > 0) {
+      lines.push(`PASS .agents/skills exists (${entries.length} skills)`);
+    } else {
+      lines.push("FAIL .agents/skills exists but contains no SKILL.md files");
+      failCount++;
     }
   }
 

@@ -69,7 +69,12 @@ const PROVIDER_COMMAND_SUPPORT: Readonly<Record<ProviderId, ProviderCommandSuppo
       packagingPath: ".claude-plugin/plugin.json",
       installMethod:
         "/plugin install ai-engineering-harness (marketplace) or project .claude/commands/harness-<id>.md",
-      installedPaths: [".claude/commands/", ".claude-plugin/ (npm package root)"],
+      installedPaths: [
+        ".claude/commands/",
+        ".claude/agents/",
+        ".claude/skills/",
+        ".claude-plugin/ (npm package root)",
+      ],
       workflowInvocation: "/harness-plan (project command file)",
       pluginSkillNamespace: "/ai-engineering-harness:<skill> when plugin installed",
       fallbackInstruction:
@@ -110,14 +115,15 @@ const PROVIDER_COMMAND_SUPPORT: Readonly<Record<ProviderId, ProviderCommandSuppo
       fallbackActivation: true,
       packagingPath: ".codex-plugin/plugin.json",
       pluginManifest: ".codex-plugin/plugin.json",
-      installMethod: "Codex /plugins marketplace (install plugin when published) — skills surface",
-      installedPaths: ["AGENTS.md (project fallback)"],
+      installMethod:
+        "Codex /plugins marketplace (install plugin when published) — skills, hooks, agents, and rules surfaces",
+      installedPaths: ["AGENTS.md (project fallback)", ".codex/", ".agents/skills/"],
       workflowInvocation: null,
       pluginSkillNamespace: "/plugins marketplace skill surface",
       fallbackInstruction:
         "Native: open Codex /plugins, install ai-engineering-harness plugin (marketplace pending). Use plugin skills. Project npx install: AGENTS.md + .ai-harness/ fallback only — no /harness-* slash.",
       notes:
-        "Codex is not a project-local slash-command provider. Package ships .codex-plugin/plugin.json + skills/ per openai/plugins layout.",
+        "Codex is not a project-local slash-command provider. Package ships .codex-plugin/plugin.json + skills/ per openai/plugins layout; project fallback may also install .codex/ and .agents/skills/.",
       invocations: {},
     },
     generic: {

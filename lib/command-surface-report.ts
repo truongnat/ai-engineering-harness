@@ -71,7 +71,7 @@ function formatDoctorCommandLines(targetRoot: string, detectedRuntimes: string[]
     const spec = providerCommandSupport(rt);
     if (spec.status === "plugin-packaging" && rt === "codex") {
       lines.push(
-        `WARN ${spec.provider}: plugin-packaging — no project-local /harness-* slash; use /plugins plugin skills or AGENTS.md fallback`
+        `WARN ${spec.provider}: plugin-packaging — no project-local /harness-* slash; use /plugins plugin skills or project .codex/ + .agents/skills/ fallback`
       );
       const packManifest = path.join(__dirname, "..", ".codex-plugin/plugin.json");
       if (fs.existsSync(packManifest)) {

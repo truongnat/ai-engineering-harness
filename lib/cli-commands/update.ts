@@ -17,8 +17,28 @@ async function runUpdateWizard(packRoot: string, options: ParseOptions): Promise
   const installedSurface = readInstalledCommandSurface(targetAbs);
   const installed = installedSurface?.installedProviders || [];
 
+  if (options.scope === "global") {
+    if (providers.length === 0) {
+      if (isNonInteractive(options)) {
+        throw new Error("Global update requires --provider or --provider list.");
+      }
+      const items = ACTIVE_PROVIDERS.map((p) => ({
+        id: p.id,
+        label: p.label,
+        implemented: true,
+        installed: true,
+        hint: "global update target",
+      }));
+      const selectedProviders = await ui.selectProviders(items);
+      if (!selectedProviders) {
+        return 1;
+      }
+      providers = selectedProviders;
+    }
+  }
+
   if (isNonInteractive(options)) {
-    if (installed.length === 0 && providers.length === 0) {
+    if (options.scope !== "global" && installed.length === 0 && providers.length === 0) {
       throw new Error(
         "No installed providers detected in .ai-harness/manifest.json. Reinstall first."
       );
@@ -32,12 +52,12 @@ async function runUpdateWizard(packRoot: string, options: ParseOptions): Promise
       target: targetAbs,
       gitRepo: isGitRepo(targetAbs),
     });
-    if (installed.length === 0) {
+    if (options.scope !== "global" && installed.length === 0) {
       throw new Error(
         "No installed providers detected in .ai-harness/manifest.json. Reinstall first."
       );
     }
-    if (providers.length === 0) {
+    if (providers.length === 0 && options.scope !== "global") {
       const items = [...ACTIVE_PROVIDERS, ...FALLBACK_TARGETS]
         .filter((p) => installed.includes(p.id))
         .map((p) => ({
@@ -61,11 +81,13 @@ async function runUpdateWizard(packRoot: string, options: ParseOptions): Promise
   }
 
   validateProviderSelection(providers);
-  const invalidProviders = providers.filter((providerId) => !installed.includes(providerId));
-  if (invalidProviders.length > 0) {
-    throw new Error(
-      `Update can only refresh providers recorded in .ai-harness/manifest.json: ${invalidProviders.join(", ")}`
-    );
+  if (options.scope !== "global") {
+    const invalidProviders = providers.filter((providerId) => !installed.includes(providerId));
+    if (invalidProviders.length > 0) {
+      throw new Error(
+        `Update can only refresh providers recorded in .ai-harness/manifest.json: ${invalidProviders.join(", ")}`
+      );
+    }
   }
   if (isNonInteractive(options)) {
     ui.showUpdatePlan(providers, { compact: true });

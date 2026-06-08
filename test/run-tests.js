@@ -648,6 +648,7 @@ describe("Provider Command Support", () => {
     assert.equal(claude.nativeSlashCommands, true);
     assert.ok(Array.isArray(claude.ruleEntrypoints));
     assert.match(claude.ruleEntrypoints.join(" "), /\.claude\/agents/);
+    assert.match(claude.ruleEntrypoints.join(" "), /\.claude\/skills/);
     assert.equal(cursor.nativeSlashCommands, true);
     assert.match(cursor.ruleEntrypoints.join(" "), /\.cursor\/commands/);
     assert.match(cursor.ruleEntrypoints.join(" "), /guardrails/);

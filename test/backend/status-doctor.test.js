@@ -71,6 +71,17 @@ test("runStatus prefers manifest providers over generic AGENTS fallback", () => 
   assert.doesNotMatch(text, /detected runtimes:.*generic/);
 });
 
+test("runDoctor reports Codex skills surface when installed", () => {
+  const dir = tmpRepo();
+  installCodex(dir);
+  const { text, ok } = runDoctor({ targetAbs: dir });
+  assert.equal(ok, true);
+  assert.match(text, /PASS \.codex\/hooks\.json exists/);
+  assert.match(text, /PASS \.codex\/rules\/default\.rules exists/);
+  assert.match(text, /PASS \.codex\/agents exists \(\d+ agents\)/);
+  assert.match(text, /PASS \.agents\/skills exists \(\d+ skills\)/);
+});
+
 test("runDoctor flags failures on an empty (non-installed) repo", () => {
   const dir = tmpRepo();
   const { text, ok } = runDoctor({ targetAbs: dir });

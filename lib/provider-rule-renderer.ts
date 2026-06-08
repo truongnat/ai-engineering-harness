@@ -62,6 +62,7 @@ const PROVIDER_RULE_ADAPTERS: Readonly<Record<string, ProviderRuleAdapter>> = Ob
       ".claude/CLAUDE.md",
       ".claude/commands/harness-*.md",
       ".claude/agents/harness-*.md",
+      ".claude/skills/",
     ],
     nativeSlashCommands: true,
     nativeInvocationExample: "/harness-plan",
@@ -89,12 +90,13 @@ const PROVIDER_RULE_ADAPTERS: Readonly<Record<string, ProviderRuleAdapter>> = Ob
   codex: {
     provider: "Codex",
     ruleMode: "agents-md",
-    ruleEntrypoints: ["AGENTS.md"],
+    ruleEntrypoints: ["AGENTS.md", ".codex/", ".agents/skills/"],
     nativeSlashCommands: false,
     nativeInvocationExample: null,
     supportsSubagents: false,
     fallbackInstruction: "Use harness-plan for this repository.",
-    notes: "AGENTS.md fallback plus .ai-harness/ catalog. No /harness-* slash claim.",
+    notes:
+      "AGENTS.md plus .codex/ and .agents/skills/ project fallback. No /harness-* slash claim.",
   },
   gemini: {
     provider: "Gemini",

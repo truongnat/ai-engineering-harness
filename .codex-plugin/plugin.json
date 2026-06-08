@@ -19,6 +19,9 @@
     "harness"
   ],
   "skills": "./skills/",
+  "commands": "./commands/",
+  "agents": "./agents/",
+  "hooks": "./hooks.json",
   "interface": {
     "displayName": "AI Engineering Harness",
     "shortDescription": "Planning, verification, and shipping workflows for coding agents",

@@ -34,6 +34,9 @@ function detectRecommendedProviders(targetRoot: string): string[] {
   if (pathExists(targetRoot, ".codex") || pathExists(targetRoot, ".codex-plugin/plugin.json")) {
     recommended.push("codex");
   }
+  if (pathExists(targetRoot, ".agents/skills")) {
+    recommended.push("codex");
+  }
   if (pathExists(targetRoot, ".gemini")) {
     recommended.push("gemini");
   }
@@ -57,7 +60,14 @@ function detectInstalledProviders(
   if (pathExists(targetRoot, ".claude/CLAUDE.md")) {
     installed.push("claude");
   }
-  if (pathExists(targetRoot, ".codex-plugin/plugin.json")) {
+  if (
+    pathExists(targetRoot, ".codex") ||
+    pathExists(targetRoot, ".codex/hooks.json") ||
+    pathExists(targetRoot, ".codex-plugin/plugin.json")
+  ) {
+    installed.push("codex");
+  }
+  if (pathExists(targetRoot, ".agents/skills")) {
     installed.push("codex");
   }
   if (pathExists(targetRoot, ".gemini/extensions/ai-engineering-harness/GEMINI.md")) {

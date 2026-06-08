@@ -7,6 +7,7 @@ import {
   sessionAwareCommandFiles,
   toolFileHeadings,
   packRequiredHeadings,
+  skillFiles,
   TOOL_DISCOVERY_KEYS,
 } from "./constants";
 import {
@@ -470,6 +471,48 @@ function assertTargetHarnessConfig(baseDir: string, failures: string[]): void {
     if (!Array.isArray(config?.domains)) {
       failures.push(`${relativePath} must set domains to an array`);
       return;
+    }
+
+    if (fs.existsSync(resolvePath(baseDir, ".claude/settings.json"))) {
+      try {
+        const settings = JSON.parse(readFile(baseDir, ".claude/settings.json"));
+        const commands = JSON.stringify(settings);
+        for (const hookPath of [
+          ".ai-harness/hooks/core/guard-phase.js",
+          ".ai-harness/hooks/core/record-tool-output.js",
+          ".ai-harness/hooks/core/record-subagent-result.js",
+          ".ai-harness/hooks/core/compact-session-memory.js",
+        ]) {
+          if (!commands.includes(hookPath)) {
+            failures.push(`${relativePath} must reference ${hookPath} in Claude hook settings`);
+          }
+        }
+      } catch {
+        failures.push(`${relativePath} must keep Claude hook settings valid JSON`);
+      }
+    }
+
+    if (fs.existsSync(resolvePath(baseDir, ".claude"))) {
+      const claudeSkillIds = [...new Set(skillFiles.map((file) => file.split("/")[1]))];
+      for (const skillId of claudeSkillIds) {
+        assertExists(baseDir, path.join(".claude", "skills", skillId, "SKILL.md"), failures);
+      }
+    }
+
+    if (fs.existsSync(resolvePath(baseDir, ".codex"))) {
+      assertExists(baseDir, path.join(".codex", "hooks.json"), failures);
+      assertExists(baseDir, path.join(".codex", "rules", "default.rules"), failures);
+      const codexAgentsDir = path.join(".codex", "agents");
+      if (!fs.existsSync(resolvePath(baseDir, codexAgentsDir))) {
+        failures.push(`Missing required path: ${codexAgentsDir}`);
+      } else {
+        const agentFiles = fs
+          .readdirSync(resolvePath(baseDir, codexAgentsDir))
+          .filter((name) => name.endsWith(".toml"));
+        if (agentFiles.length === 0) {
+          failures.push(`${codexAgentsDir} must include at least one .toml agent`);
+        }
+      }
     }
 
     const validDomainIds = new Set<string>(

@@ -251,7 +251,19 @@ async function runInstallWizard(packRoot: string, options: ParseOptions): Promis
   validateProviderSelection(providers);
   validateManualMix(providers);
 
-  const mode = resolveInstallMode(options);
+  let mode = resolveInstallMode(options);
+  if (!options.scope && interactive) {
+    const selectedScope = await ui.selectInstallScope();
+    if (!selectedScope) {
+      return 1;
+    }
+    mode =
+      selectedScope === "global"
+        ? "global"
+        : options.visibility === "shared"
+          ? "project-shared"
+          : "project-private";
+  }
 
   const { scope } = modeToScopeVisibility(mode);
   const defaultCache = scope === "project" && providers.some((id) => isRuntimeNative(id));

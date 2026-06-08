@@ -16,6 +16,7 @@ import {
   renderGeminiMd,
 } from "./provider-rule-renderer";
 import { RUNTIME_NATIVE_PROVIDER_IDS } from "./cli-providers";
+import { workers } from "../workers/registry";
 
 const HARNESS_REPO = "truongnat/ai-engineering-harness";
 const HARNESS_GIT_URL = `https://github.com/${HARNESS_REPO}`;
@@ -132,6 +133,434 @@ function readPackBootstrap(packRoot: string, name: string): string {
   return fs.readFileSync(filePath, "utf8");
 }
 
+function installTextTree(
+  sourceRoot: string,
+  destRoot: string,
+  options: InstallRuntimeOptions,
+  relativeBase = "",
+  transform?: (relativePath: string, sourcePath: string, content: string) => string
+): void {
+  for (const entry of fs.readdirSync(sourceRoot, { withFileTypes: true })) {
+    const sourcePath = path.join(sourceRoot, entry.name);
+    const relativePath = relativeBase ? `${relativeBase}/${entry.name}` : entry.name;
+
+    if (entry.isDirectory()) {
+      installTextTree(sourcePath, destRoot, options, relativePath, transform);
+      continue;
+    }
+
+    const content = fs.readFileSync(sourcePath, "utf8");
+    const rendered = transform ? transform(relativePath, sourcePath, content) : content;
+    writeFileAction(destRoot, relativePath, rendered, options);
+  }
+}
+
+function parseSimpleFrontmatter(content: string): {
+  frontmatter: Record<string, string>;
+  body: string;
+} {
+  const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+  if (!frontmatterMatch) {
+    return { frontmatter: {}, body: content };
+  }
+
+  const frontmatter: Record<string, string> = {};
+  const block = frontmatterMatch[1];
+  for (const line of block.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) {
+      continue;
+    }
+    const match = trimmed.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
+    if (!match) {
+      continue;
+    }
+    const key = match[1];
+    const rawValue = match[2].trim();
+    frontmatter[key] = rawValue.replace(/^"(.*)"$/, "$1").replace(/^'(.*)'$/, "$1");
+  }
+
+  return {
+    frontmatter,
+    body: content.slice(frontmatterMatch[0].length),
+  };
+}
+
+function clampText(value: string, maxLength: number): string {
+  const compact = value.replace(/\s+/g, " ").trim();
+  if (compact.length <= maxLength) {
+    return compact;
+  }
+  return `${compact.slice(0, Math.max(0, maxLength - 1)).trimEnd()}…`;
+}
+
+function titleCaseSlug(value: string): string {
+  return value
+    .replace(/[-_]+/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase())
+    .trim();
+}
+
+function readSkillMetadata(
+  sourceContent: string,
+  fallbackName: string
+): {
+  name: string;
+  description: string;
+  body: string;
+} {
+  const parsed = parseSimpleFrontmatter(sourceContent);
+  const body = stripFrontmatter(sourceContent).trimStart();
+  const name =
+    parsed.frontmatter.name || parsed.frontmatter.id || extractFirstHeading(body) || fallbackName;
+  const description =
+    parsed.frontmatter.description || extractPurposeSummary(body) || `Harness skill: ${name}`;
+  return { name, description, body };
+}
+
+function stripFrontmatter(content: string): string {
+  const parsed = parseSimpleFrontmatter(content);
+  return parsed.body;
+}
+
+function extractFirstHeading(content: string): string | null {
+  const match = content.match(/^#\s+(.+)$/m);
+  return match ? match[1].trim() : null;
+}
+
+function extractPurposeSummary(content: string): string {
+  const lines = content.split(/\r?\n/);
+  const purposeIndex = lines.findIndex((line) => /^## Purpose\s*$/.test(line));
+  if (purposeIndex === -1) {
+    return "";
+  }
+
+  const summaryLines: string[] = [];
+  for (let index = purposeIndex + 1; index < lines.length; index++) {
+    const line = lines[index].trim();
+    if (!line) {
+      if (summaryLines.length > 0) {
+        break;
+      }
+      continue;
+    }
+    if (/^##\s+/.test(line)) {
+      break;
+    }
+    summaryLines.push(line.replace(/^[-*]\s+/, ""));
+    if (summaryLines.join(" ").length >= 140) {
+      break;
+    }
+  }
+  return summaryLines.join(" ").trim();
+}
+
+function renderCodexSkillMarkdown(sourceContent: string, fallbackName: string): string {
+  const { name, description, body } = readSkillMetadata(sourceContent, fallbackName);
+  const frontmatter = [
+    "---",
+    `name: ${JSON.stringify(name)}`,
+    `description: ${JSON.stringify(description)}`,
+    "---",
+    "",
+  ].join("\n");
+
+  return `${frontmatter}${body}\n`;
+}
+
+function renderOpenAiSkillYaml(sourceContent: string, fallbackName: string): string {
+  const { name, description } = readSkillMetadata(sourceContent, fallbackName);
+  const displayName = titleCaseSlug(name);
+  const shortDescription = clampText(description, 64);
+  const defaultPrompt = clampText(
+    `Use $${name} to help with ${description.replace(/\.$/, "")}.`,
+    120
+  );
+
+  return [
+    "interface:",
+    `  display_name: ${JSON.stringify(displayName)}`,
+    `  short_description: ${JSON.stringify(shortDescription)}`,
+    `  default_prompt: ${JSON.stringify(defaultPrompt)}`,
+    "",
+  ].join("\n");
+}
+
+function escapeTomlMultiline(value: string): string {
+  return value.replace(/"""/g, '\\"""');
+}
+
+function renderCodexAgentToml(workerId: string, sourceContent: string): string {
+  const worker = workers.find((entry) => entry.id === workerId);
+  if (!worker) {
+    throw new Error(`Unknown worker: ${workerId}`);
+  }
+
+  const body = stripFrontmatter(sourceContent).trim();
+  const sandboxMode = worker.writeAccess === "write" ? "workspace-write" : "read-only";
+  return [
+    `name = "harness-${worker.id}"`,
+    `description = "Harness delegated ${worker.role} worker (${worker.mode}, writeAccess=${worker.writeAccess})"`,
+    `developer_instructions = """${escapeTomlMultiline(body)}"""`,
+    `model = "inherit"`,
+    `sandbox_mode = "${sandboxMode}"`,
+    "",
+  ].join("\n");
+}
+
+function installClaudeSkills(
+  scope: InstallScope,
+  targetRoot: string,
+  packRoot: string,
+  options: InstallRuntimeOptions
+): void {
+  const sourceRoot = path.join(packRoot, "skills");
+  if (!fs.existsSync(sourceRoot)) {
+    return;
+  }
+
+  const destRoot =
+    scope === "global"
+      ? path.join(os.homedir(), ".claude", "skills")
+      : path.join(targetRoot, ".claude", "skills");
+
+  ensureDirectory(destRoot, options.dryRun);
+
+  for (const entry of fs.readdirSync(sourceRoot, { withFileTypes: true })) {
+    if (!entry.isDirectory()) {
+      continue;
+    }
+    const skillRoot = path.join(sourceRoot, entry.name);
+    if (!fs.existsSync(path.join(skillRoot, "SKILL.md"))) {
+      continue;
+    }
+    installTextTree(skillRoot, path.join(destRoot, entry.name), options);
+  }
+}
+
+function installCodexHooks(
+  scope: InstallScope,
+  targetRoot: string,
+  packRoot: string,
+  options: InstallRuntimeOptions
+): void {
+  const codexRoot =
+    scope === "global" ? path.join(os.homedir(), ".codex") : path.join(targetRoot, ".codex");
+  const sourceRoot = path.join(packRoot, "hooks", "core");
+  if (!fs.existsSync(sourceRoot)) {
+    return;
+  }
+
+  const destRoot = path.join(codexRoot, "hooks", "core");
+  ensureDirectory(destRoot, options.dryRun);
+  installTextTree(sourceRoot, destRoot, options, "", (relativePath, sourcePath, content) => {
+    void sourcePath;
+    return content;
+  });
+  writeFileAction(codexRoot, "hooks.json", renderCodexHooksConfig(), options);
+}
+
+function renderCodexHooksConfig(): string {
+  return `${JSON.stringify(
+    {
+      version: 1,
+      hooks: {
+        SessionStart: [
+          {
+            matcher: "startup|resume",
+            hooks: [
+              {
+                type: "command",
+                command: "node .codex/hooks/core/codex-hook-router.js",
+              },
+            ],
+          },
+        ],
+        PreToolUse: [
+          {
+            matcher: ".*",
+            hooks: [
+              {
+                type: "command",
+                command: "node .codex/hooks/core/codex-hook-router.js",
+              },
+            ],
+          },
+        ],
+        PermissionRequest: [
+          {
+            matcher: ".*",
+            hooks: [
+              {
+                type: "command",
+                command: "node .codex/hooks/core/codex-hook-router.js",
+              },
+            ],
+          },
+        ],
+        PostToolUse: [
+          {
+            matcher: ".*",
+            hooks: [
+              {
+                type: "command",
+                command: "node .codex/hooks/core/codex-hook-router.js",
+              },
+            ],
+          },
+        ],
+        UserPromptSubmit: [
+          {
+            matcher: ".*",
+            hooks: [
+              {
+                type: "command",
+                command: "node .codex/hooks/core/codex-hook-router.js",
+              },
+            ],
+          },
+        ],
+        Stop: [
+          {
+            matcher: ".*",
+            hooks: [
+              {
+                type: "command",
+                command: "node .codex/hooks/core/codex-hook-router.js",
+              },
+            ],
+          },
+        ],
+      },
+    },
+    null,
+    2
+  )}\n`;
+}
+
+function installCodexRules(
+  scope: InstallScope,
+  targetRoot: string,
+  options: InstallRuntimeOptions
+): void {
+  const destRoot =
+    scope === "global"
+      ? path.join(os.homedir(), ".codex", "rules")
+      : path.join(targetRoot, ".codex", "rules");
+  ensureDirectory(destRoot, options.dryRun);
+  const content = [
+    "# ai-engineering-harness Codex rules",
+    "",
+    "# This file keeps only shell-level command policy.",
+    "# Project coding conventions stay in AGENTS.md or skills.",
+    "",
+    'prefix_rule(name = "allow-readonly", prefixes = ["rg ", "git status", "git diff", "git log", "ls ", "cat "], action = "allow")',
+    'prefix_rule(name = "prompt-on-network-and-deploy", prefixes = ["npm install ", "pnpm install ", "yarn add ", "gh pr merge", "vercel ", "npm publish"], action = "prompt", message = "Confirm before changing dependencies, merging, or deploying.")',
+    'prefix_rule(name = "forbid-destructive-history", prefixes = ["git push --force", "git push --force-with-lease", "git reset --hard", "git clean -fdx", "rm -rf "], action = "forbid", message = "Use a safer alternative: revert, branch, or targeted cleanup.")',
+    "",
+  ].join("\n");
+  writeFileAction(destRoot, "default.rules", content, options);
+}
+
+function installCodexAgents(
+  scope: InstallScope,
+  targetRoot: string,
+  packRoot: string,
+  options: InstallRuntimeOptions
+): void {
+  const sourceRoot = path.join(packRoot, "workers");
+  if (!fs.existsSync(sourceRoot)) {
+    return;
+  }
+
+  const destRoot =
+    scope === "global"
+      ? path.join(os.homedir(), ".codex", "agents")
+      : path.join(targetRoot, ".codex", "agents");
+  ensureDirectory(destRoot, options.dryRun);
+
+  for (const worker of workers) {
+    const sourcePath = path.join(sourceRoot, path.basename(worker.definitionPath));
+    if (!fs.existsSync(sourcePath)) {
+      continue;
+    }
+    const destRel = `${worker.id}.toml`;
+    const destPath = path.join(destRoot, destRel);
+    const existed = fs.existsSync(destPath);
+    const content = renderCodexAgentToml(worker.id, fs.readFileSync(sourcePath, "utf8"));
+
+    if (existed && !options.force) {
+      logAction(
+        options.dryRun ? "WOULD SKIP" : "SKIP",
+        path.join(".codex", "agents", destRel).replace(/\\/g, "/")
+      );
+      continue;
+    }
+
+    if (existed && options.force) {
+      logAction(
+        options.dryRun ? "WOULD OVERWRITE" : "OVERWRITE",
+        path.join(".codex", "agents", destRel).replace(/\\/g, "/")
+      );
+    } else {
+      logAction(
+        options.dryRun ? "WOULD CREATE" : "CREATE",
+        path.join(".codex", "agents", destRel).replace(/\\/g, "/")
+      );
+    }
+
+    if (!options.dryRun) {
+      ensureDirectory(path.dirname(destPath), false);
+      fs.writeFileSync(destPath, `${content}\n`, "utf8");
+    }
+  }
+}
+
+function installCodexSkills(
+  scope: InstallScope,
+  targetRoot: string,
+  packRoot: string,
+  options: InstallRuntimeOptions
+): void {
+  const sourceRoot = path.join(packRoot, "skills");
+  if (!fs.existsSync(sourceRoot)) {
+    return;
+  }
+
+  const destRoot =
+    scope === "global"
+      ? path.join(os.homedir(), ".agents", "skills")
+      : path.join(targetRoot, ".agents", "skills");
+
+  ensureDirectory(destRoot, options.dryRun);
+
+  for (const entry of fs.readdirSync(sourceRoot, { withFileTypes: true })) {
+    if (!entry.isDirectory()) {
+      continue;
+    }
+    const skillRoot = path.join(sourceRoot, entry.name);
+    const sourceSkillFile = path.join(skillRoot, "SKILL.md");
+    if (!fs.existsSync(sourceSkillFile)) {
+      continue;
+    }
+    const destSkillRoot = path.join(destRoot, entry.name);
+    ensureDirectory(destSkillRoot, options.dryRun);
+    installTextTree(skillRoot, destSkillRoot, options, "", (relativePath, sourcePath, content) => {
+      if (relativePath === "SKILL.md") {
+        return renderCodexSkillMarkdown(content, entry.name);
+      }
+      void sourcePath;
+      return content;
+    });
+    writeFileAction(
+      destSkillRoot,
+      path.join("agents", "openai.yaml"),
+      renderOpenAiSkillYaml(fs.readFileSync(sourceSkillFile, "utf8"), entry.name),
+      options
+    );
+  }
+}
+
 function installCursor(
   scope: InstallScope,
   targetRoot: string,
@@ -169,14 +598,22 @@ function installCodex(
       readPackBootstrap(packRoot, "AGENTS.global.codex.md"),
       options
     );
+    installCodexRules(scope, targetRoot, options);
+    installCodexHooks(scope, targetRoot, packRoot, options);
+    installCodexAgents(scope, targetRoot, packRoot, options);
+    installCodexSkills(scope, targetRoot, packRoot, options);
     console.log(
-      "NEXT: Codex native support — install plugin via /plugins (marketplace pending). Package: .codex-plugin/plugin.json + skills/"
+      "NEXT: Codex native support — install plugin via /plugins (marketplace pending). Package: .codex-plugin/plugin.json + skills/ + hooks/ + agents/"
     );
     return;
   }
   writeFileAction(targetRoot, "AGENTS.md", renderCodexAgentsMd(), options);
+  installCodexRules(scope, targetRoot, options);
+  installCodexHooks(scope, targetRoot, packRoot, options);
+  installCodexAgents(scope, targetRoot, packRoot, options);
+  installCodexSkills(scope, targetRoot, packRoot, options);
   console.log(
-    "NEXT: Codex — project install is AGENTS.md + .ai-harness/ fallback only. Native: /plugins → ai-engineering-harness plugin (not /harness-* slash)."
+    "NEXT: Codex — project install is AGENTS.md + .codex/ + .agents/skills/ fallback. Native: /plugins → ai-engineering-harness plugin (not /harness-* slash)."
   );
 }
 
@@ -217,6 +654,12 @@ function installClaude(
       },
       options
     );
+    for (const entry of installClaudeWorkers(os.homedir(), packRoot, options)) {
+      if (entry && entry.action && entry.relativePath) {
+        logAction(entry.action, entry.relativePath);
+      }
+    }
+    installClaudeSkills(scope, os.homedir(), packRoot, options);
     console.log(
       `NEXT: In Claude Code run: /plugin install ai-engineering-harness@ai-engineering-harness (marketplace from ${HARNESS_GIT_URL})`
     );
@@ -238,6 +681,7 @@ function installClaude(
       logAction(entry.action, entry.relativePath);
     }
   }
+  installClaudeSkills(scope, targetRoot, packRoot, options);
   console.log(
     "NEXT: In Claude Code run: /plugin install ai-engineering-harness@ai-engineering-harness"
   );

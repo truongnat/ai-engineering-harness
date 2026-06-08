@@ -5,6 +5,6 @@
   "supportsSubagents": false,
   "status": "plugin-packaging",
   "pluginPath": ".codex-plugin/plugin.json",
-  "ruleEntrypoints": ["AGENTS.md"],
-  "installPaths": ["AGENTS.md"]
+  "ruleEntrypoints": ["AGENTS.md", ".codex/", ".agents/skills/"],
+  "installPaths": ["AGENTS.md", ".codex/", ".agents/skills/"]
 }

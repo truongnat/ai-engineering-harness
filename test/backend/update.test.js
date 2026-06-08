@@ -31,6 +31,28 @@ function writeManifest(dir, providers) {
   );
 }
 
+function withTempHome(fn) {
+  const originalHome = process.env.HOME;
+  const originalUserProfile = process.env.USERPROFILE;
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), "aih-home-"));
+  process.env.HOME = home;
+  process.env.USERPROFILE = home;
+  try {
+    return fn(home);
+  } finally {
+    if (originalHome === undefined) {
+      delete process.env.HOME;
+    } else {
+      process.env.HOME = originalHome;
+    }
+    if (originalUserProfile === undefined) {
+      delete process.env.USERPROFILE;
+    } else {
+      process.env.USERPROFILE = originalUserProfile;
+    }
+  }
+}
+
 test("update refreshes provider files with force (overwrites modified file)", () => {
   const dir = tmpRepo();
   // first install to create the surface
@@ -93,31 +115,35 @@ test("update rejects the manual provider", () => {
   assert.match(r.messages.join(" "), /manual/i);
 });
 
-test("update global scope dryRun returns ok with notice; real returns not-ok", () => {
-  const dir = tmpRepo();
-  writeManifest(dir, ["claude"]);
-  assert.equal(
-    runUpdate({
+test("update global scope refreshes the home-directory Claude surface", () => {
+  withTempHome((home) => {
+    const result = runUpdate({
       packRoot: PACK_ROOT,
-      target: dir,
-      provider: "claude",
-      scope: "global",
-      visibility: "shared",
-      dryRun: true,
-    }).ok,
-    true
-  );
-  assert.equal(
-    runUpdate({
-      packRoot: PACK_ROOT,
-      target: dir,
+      target: tmpRepo(),
       provider: "claude",
       scope: "global",
       visibility: "shared",
       dryRun: false,
-    }).ok,
-    false
-  );
+    });
+    assert.equal(result.ok, true);
+    assert.equal(fs.existsSync(path.join(home, ".claude", "CLAUDE.md")), true);
+    assert.equal(fs.existsSync(path.join(home, ".claude", "settings.json")), true);
+  });
+});
+
+test("update global scope dryRun stays ok without touching home files", () => {
+  withTempHome((home) => {
+    const result = runUpdate({
+      packRoot: PACK_ROOT,
+      target: tmpRepo(),
+      provider: "claude",
+      scope: "global",
+      visibility: "shared",
+      dryRun: true,
+    });
+    assert.equal(result.ok, true);
+    assert.equal(fs.existsSync(path.join(home, ".claude", "CLAUDE.md")), false);
+  });
 });
 
 test("update prints update banner from caller-owned label", () => {

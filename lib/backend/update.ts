@@ -1,5 +1,6 @@
 /** In-process update orchestrator. */
 
+import os from "node:os";
 import { runInstall } from "./install-orchestrator";
 import { readInstalledCommandSurface } from "../runtime-command-catalog";
 
@@ -21,7 +22,8 @@ export interface UpdateResult {
 
 export function runUpdate(ctx: UpdateContext): UpdateResult {
   const messages: string[] = [];
-  const installedProviders = readInstalledCommandSurface(ctx.target)?.installedProviders || [];
+  const targetAbs = ctx.scope === "global" ? os.homedir() : ctx.target;
+  const installedProviders = readInstalledCommandSurface(targetAbs)?.installedProviders || [];
 
   if (ctx.provider === "manual") {
     messages.push("error: Manual fallback update is not supported. Re-run install instead.");
@@ -43,22 +45,10 @@ export function runUpdate(ctx: UpdateContext): UpdateResult {
     }
   }
 
-  if (ctx.scope === "global") {
-    const notice = "Global update is planned but not implemented in this step.";
-    if (ctx.dryRun) {
-      process.stdout.write("\n--- Update ---\n");
-      process.stdout.write(`${notice}\n`);
-      messages.push(`notice: ${notice}`);
-      return { ok: true, messages };
-    }
-    messages.push(`error: ${notice}`);
-    return { ok: false, messages };
-  }
-
   return runInstall(
     {
       packRoot: ctx.packRoot,
-      target: ctx.target,
+      target: targetAbs,
       provider: ctx.provider,
       scope: ctx.scope,
       visibility: ctx.visibility,

@@ -25,7 +25,13 @@ export function ignorePathsForProvider(provider: string, initHarness: boolean): 
       out.push(...providerCommandPaths("cursor"));
       break;
     case "claude":
-      out.push(".claude/CLAUDE.md", ".claude/settings.json", ...providerCommandPaths("claude"));
+      out.push(
+        ".claude/CLAUDE.md",
+        ".claude/settings.json",
+        ".claude/agents/",
+        ".claude/skills/",
+        ...providerCommandPaths("claude")
+      );
       break;
     case "gemini":
       out.push(".gemini/extensions/ai-engineering-harness/", ...providerCommandPaths("gemini"));
@@ -37,6 +43,10 @@ export function ignorePathsForProvider(provider: string, initHarness: boolean): 
     case "generic":
     case "manual":
       out.push("AGENTS.md");
+      if (provider === "codex") {
+        out.push(".codex/");
+        out.push(".agents/skills/");
+      }
       break;
     case "all":
       out.push(
@@ -44,10 +54,14 @@ export function ignorePathsForProvider(provider: string, initHarness: boolean): 
         ".cursor/rules/",
         ".claude/CLAUDE.md",
         ".claude/settings.json",
+        ".claude/agents/",
+        ".claude/skills/",
         ".claude/commands/",
+        ".codex/",
         ".gemini/extensions/ai-engineering-harness/",
         ".opencode/plugins/ai-engineering-harness.js",
-        "AGENTS.md"
+        "AGENTS.md",
+        ".agents/skills/"
       );
       break;
   }

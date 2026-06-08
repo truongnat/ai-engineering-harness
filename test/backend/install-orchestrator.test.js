@@ -37,6 +37,8 @@ test("runInstall provisions a claude provider surface in-process (bug-fix regres
     "CLAUDE.md must be written"
   );
   assert.equal(fs.existsSync(path.join(dir, ".claude", "settings.json")), true);
+  assert.equal(fs.existsSync(path.join(dir, ".claude", "agents")), true);
+  assert.equal(fs.existsSync(path.join(dir, ".claude", "skills")), true);
   assert.equal(
     fs.existsSync(path.join(dir, ".harness", "HARNESS.md")),
     true,
@@ -44,20 +46,95 @@ test("runInstall provisions a claude provider surface in-process (bug-fix regres
   );
   assert.equal(fs.existsSync(path.join(dir, ".harness", "policies.json")), true);
   const settings = JSON.parse(fs.readFileSync(path.join(dir, ".claude", "settings.json"), "utf8"));
-  assert.match(settings.hooks.PreToolUse[0].hooks[0].command, /hooks\/core\/guard-phase\.js/);
+  assert.match(
+    settings.hooks.PreToolUse[0].hooks[0].command,
+    /\.ai-harness\/hooks\/core\/guard-phase\.js/
+  );
   assert.match(
     settings.hooks.PostToolUse[0].hooks[0].command,
-    /hooks\/core\/record-tool-output\.js/
+    /\.ai-harness\/hooks\/core\/record-tool-output\.js/
   );
   assert.match(
     settings.hooks.SubagentStop[0].hooks[0].command,
-    /hooks\/core\/record-subagent-result\.js/
+    /\.ai-harness\/hooks\/core\/record-subagent-result\.js/
   );
-  assert.match(settings.hooks.Stop[0].hooks[0].command, /compact-session-memory\.js/);
+  assert.match(
+    settings.hooks.Stop[0].hooks[0].command,
+    /\.ai-harness\/hooks\/core\/compact-session-memory\.js/
+  );
+  assert.equal(
+    fs.existsSync(path.join(dir, ".claude", "skills", "using-harness", "SKILL.md")),
+    true
+  );
+  assert.equal(
+    fs.existsSync(path.join(dir, ".claude", "skills", "verification", "SKILL.md")),
+    true
+  );
   // private+project => git exclude block present
   assert.match(
     fs.readFileSync(path.join(dir, ".git", "info", "exclude"), "utf8"),
     /# ai-engineering-harness start/
+  );
+});
+
+test("runInstall provisions codex skills in .agents/skills", () => {
+  const dir = tmpRepo();
+  const r = runInstall({
+    packRoot: PACK_ROOT,
+    target: dir,
+    provider: "codex",
+    scope: "project",
+    visibility: "private",
+    dryRun: false,
+    initHarness: false,
+    installCache: false,
+    force: false,
+  });
+  assert.equal(r.ok, true);
+  const skillsRoot = path.join(dir, ".agents", "skills");
+  assert.equal(fs.existsSync(skillsRoot), true);
+  const skillDirs = fs
+    .readdirSync(skillsRoot)
+    .filter((entry) => fs.statSync(path.join(skillsRoot, entry)).isDirectory());
+  assert.ok(skillDirs.length > 0, "at least one Codex skill directory should be written");
+  const verificationSkill = path.join(skillsRoot, "verification", "SKILL.md");
+  assert.equal(fs.existsSync(verificationSkill), true);
+  const content = fs.readFileSync(verificationSkill, "utf8");
+  assert.match(content, /^---\n/m);
+  assert.match(content, /name:\s*"?verification"?/i);
+  assert.match(content, /description:/i);
+  assert.equal(fs.existsSync(path.join(skillsRoot, "verification", "agents", "openai.yaml")), true);
+  assert.match(
+    fs.readFileSync(path.join(skillsRoot, "verification", "agents", "openai.yaml"), "utf8"),
+    /display_name:/i
+  );
+});
+
+test("runInstall provisions codex native hooks, rules, and agents", () => {
+  const dir = tmpRepo();
+  const r = runInstall({
+    packRoot: PACK_ROOT,
+    target: dir,
+    provider: "codex",
+    scope: "project",
+    visibility: "private",
+    dryRun: false,
+    initHarness: false,
+    installCache: false,
+    force: false,
+  });
+  assert.equal(r.ok, true);
+  assert.equal(fs.existsSync(path.join(dir, ".codex", "hooks.json")), true);
+  assert.equal(fs.existsSync(path.join(dir, ".codex", "rules", "default.rules")), true);
+  assert.equal(fs.existsSync(path.join(dir, ".codex", "agents", "explorer.toml")), true);
+  const hooksJson = JSON.parse(fs.readFileSync(path.join(dir, ".codex", "hooks.json"), "utf8"));
+  assert.equal(typeof hooksJson.hooks, "object");
+  assert.ok(hooksJson.hooks.SessionStart.length > 0);
+  assert.ok(hooksJson.hooks.PermissionRequest.length > 0);
+  assert.match(hooksJson.hooks.PostToolUse[0].hooks[0].command, /codex-hook-router\.js/);
+  assert.match(
+    fs.readFileSync(path.join(dir, ".codex", "rules", "default.rules"), "utf8"),
+    /prefix_rule/
   );
 });
 

@@ -1,6 +1,7 @@
 import { isNonInteractive, type ParseOptions } from "../cli-args";
 import { ACTIVE_PROVIDERS, FALLBACK_TARGETS } from "../cli-providers";
 import { detectInstalledProviders, isGitRepo } from "../cli-detect";
+import os from "node:os";
 import * as ui from "../cli-ui";
 import { runUninstall } from "../backend/uninstall";
 import { readInstalledCommandSurface } from "../runtime-command-catalog";
@@ -25,8 +26,28 @@ async function runUninstallWizard(packRoot: string, options: ParseOptions): Prom
   let removeState = false;
   let fullCleanup = options.all;
 
+  if (options.scope === "global") {
+    if (providers.length === 0) {
+      if (isNonInteractive(options)) {
+        throw new Error("Global uninstall requires --provider or --provider list.");
+      }
+      const items = ACTIVE_PROVIDERS.map((p) => ({
+        id: p.id,
+        label: p.label,
+        implemented: true,
+        installed: true,
+        hint: "global uninstall target",
+      }));
+      const selectedProviders = await ui.selectProviders(items);
+      if (!selectedProviders) {
+        return 1;
+      }
+      providers = selectedProviders;
+    }
+  }
+
   if (isNonInteractive(options)) {
-    if (installed.length === 0 && providers.length === 0) {
+    if (options.scope !== "global" && installed.length === 0 && providers.length === 0) {
       throw new Error("No installed providers detected. Pass --provider or install first.");
     }
     if (providers.length === 0 && !options.all) {
@@ -44,10 +65,10 @@ async function runUninstallWizard(packRoot: string, options: ParseOptions): Prom
       target: targetAbs,
       gitRepo: isGitRepo(targetAbs),
     });
-    if (installed.length === 0) {
+    if (options.scope !== "global" && installed.length === 0) {
       throw new Error("No installed providers detected.");
     }
-    if (providers.length === 0) {
+    if (providers.length === 0 && options.scope !== "global") {
       const items = [...ACTIVE_PROVIDERS, ...FALLBACK_TARGETS]
         .filter((p) => installed.includes(p.id))
         .map((p) => ({
@@ -88,7 +109,7 @@ async function runUninstallWizard(packRoot: string, options: ParseOptions): Prom
   }
 
   validateProviderSelection(providers);
-  if (installed.length > 0) {
+  if (options.scope !== "global" && installed.length > 0) {
     const unknown = providers.filter((providerId) => !installed.includes(providerId));
     if (unknown.length > 0 && !options.all) {
       throw new Error(
@@ -102,7 +123,7 @@ async function runUninstallWizard(packRoot: string, options: ParseOptions): Prom
   );
 
   const ctx = {
-    targetAbs,
+    targetAbs: options.scope === "global" ? os.homedir() : targetAbs,
     scope: options.scope || "project",
     dryRun: options.dryRun,
     removeCache,

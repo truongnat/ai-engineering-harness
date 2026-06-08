@@ -48,6 +48,8 @@ function buildClaudePluginManifest(version: string): Record<string, unknown> {
     repository: "https://github.com/truongnat/ai-engineering-harness",
     license: "MIT",
     keywords: ["harness", "skills", "workflows", "agents", "engineering"],
+    skills: "./skills/",
+    commands: "./commands/",
   };
 }
 
@@ -64,6 +66,9 @@ function buildCodexPluginManifest(version: string): Record<string, unknown> {
     license: base.license,
     keywords: ["engineering", "planning", "verification", "workflow", "skills", "codex", "harness"],
     skills: "./skills/",
+    commands: "./commands/",
+    agents: "./agents/",
+    hooks: "./hooks.json",
     interface: {
       displayName: "AI Engineering Harness",
       shortDescription: "Planning, verification, and shipping workflows for coding agents",

@@ -25,8 +25,13 @@ Official example [build-web-apps](https://github.com/openai/plugins/tree/main/pl
 | Artifact | Purpose |
 |----------|---------|
 | `.codex-plugin/plugin.json` | Codex marketplace/plugin manifest |
-| `skills/` | Plugin skill surface (repo root) |
-| `commands/` | Used by Cursor/Claude pack; **not** Codex native slash registration |
+| `skills/` | Plugin skill surface in the published package |
+| `commands/` | Optional plugin command surface |
+| `agents/` | Optional plugin subagent surface |
+| `hooks.json` | Optional plugin hook surface |
+| `agents/openai.yaml` | Optional per-skill metadata for Codex skill discovery |
+| `.codex/` | Project install Codex surface for rules, hooks, and agents |
+| `.agents/skills/` | Project install skill surface for Codex-native repository usage |
 
 ## Install flows
 
@@ -42,6 +47,7 @@ Creates:
 
 - `.ai-harness/` local command catalog
 - `.harness/` project state (if selected)
+- `.agents/skills/` Codex skill surface
 - `AGENTS.md` bootstrap pointing at harness workflows
 
 Does **not** create native `/harness-*` slash commands in Codex.

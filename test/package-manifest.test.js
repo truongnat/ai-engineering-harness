@@ -39,6 +39,18 @@ test("package includes evals and documents eval command surface", () => {
   assert.match(docs, /without-harness/);
 });
 
+test("Codex plugin manifest exposes skills, commands, agents, and hooks", () => {
+  const manifest = JSON.parse(
+    fs.readFileSync(path.join(repoRoot, ".codex-plugin", "plugin.json"), "utf8")
+  );
+
+  assert.equal(manifest.skills, "./skills/");
+  assert.equal(manifest.commands, "./commands/");
+  assert.equal(manifest.agents, "./agents/");
+  assert.equal(manifest.hooks, "./hooks.json");
+  assert.match(manifest.interface.longDescription, /Codex \/plugins/);
+});
+
 test("package exposes an incremental TypeScript typecheck for lib", () => {
   const pkg = JSON.parse(fs.readFileSync(path.join(repoRoot, "package.json"), "utf8"));
   const tsconfigPath = path.join(repoRoot, "tsconfig.lib.json");

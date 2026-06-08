@@ -3,6 +3,7 @@
  */
 
 import * as fs from "node:fs";
+import os from "node:os";
 import * as path from "node:path";
 import { uninstallPathsForProvider, HARNESS_MARKER } from "./constants";
 import { removeIgnoreBlock } from "./git-hygiene";
@@ -33,6 +34,33 @@ function fileContainsHarnessMarker(filePath: string): boolean {
   }
 }
 
+function claudeSettingsIsHarnessOwned(filePath: string): boolean {
+  if (!fs.existsSync(filePath)) {
+    return false;
+  }
+
+  try {
+    const content = fs.readFileSync(filePath, "utf8");
+    const parsed = JSON.parse(content) as Record<string, unknown>;
+    const keys = Object.keys(parsed);
+    const allowedKeys = new Set(["hooks", "extraKnownMarketplaces"]);
+    if (keys.some((key) => !allowedKeys.has(key))) {
+      return false;
+    }
+    if (
+      !content.includes(".ai-harness/hooks/core/guard-phase.js") ||
+      !content.includes(".ai-harness/hooks/core/record-tool-output.js") ||
+      !content.includes(".ai-harness/hooks/core/record-subagent-result.js") ||
+      !content.includes(".ai-harness/hooks/core/compact-session-memory.js")
+    ) {
+      return false;
+    }
+    return Boolean(parsed && typeof parsed === "object");
+  } catch {
+    return false;
+  }
+}
+
 /** Remove a file only when its ownership policy allows it. */
 function removeFileIfHarnessOwned(
   rel: string,
@@ -53,8 +81,10 @@ function removeFileIfHarnessOwned(
   }
 
   if (ownership === "claude-settings") {
-    process.stdout.write(`SKIP ${rel} (not clearly harness-owned)\n`);
-    return;
+    if (!claudeSettingsIsHarnessOwned(absPath)) {
+      process.stdout.write(`SKIP ${rel} (not clearly harness-owned)\n`);
+      return;
+    }
   }
 
   if (dryRun) {
@@ -101,23 +131,57 @@ function removeDirIfRequested(
   process.stdout.write(`REMOVE ${rel}\n`);
 }
 
+function removeGlobalPathIfExists(targetAbs: string, rel: string, dryRun: boolean): void {
+  const absPath = path.join(targetAbs, rel);
+  if (!fs.existsSync(absPath)) {
+    process.stdout.write(`SKIP ${rel}\n`);
+    return;
+  }
+  if (dryRun) {
+    process.stdout.write(`WOULD REMOVE ${rel}\n`);
+    return;
+  }
+  fs.rmSync(absPath, { recursive: true, force: true });
+  process.stdout.write(`REMOVE ${rel}\n`);
+}
+
+function runGlobalUninstall(provider: string, dryRun: boolean): void {
+  const home = os.homedir();
+  switch (provider) {
+    case "claude":
+      removeFileIfHarnessOwned(".claude/CLAUDE.md", "always", home, dryRun);
+      removeFileIfHarnessOwned(".claude/settings.json", "claude-settings", home, dryRun);
+      removeGlobalPathIfExists(home, ".claude/agents", dryRun);
+      removeGlobalPathIfExists(home, ".claude/skills", dryRun);
+      removeGlobalPathIfExists(home, ".claude/commands", dryRun);
+      break;
+    case "cursor":
+      removeGlobalPathIfExists(home, ".cursor/rules/ai-engineering-harness.mdc", dryRun);
+      removeGlobalPathIfExists(home, ".cursor/rules/ai-engineering-harness-commands.mdc", dryRun);
+      removeGlobalPathIfExists(home, ".cursor/rules/ai-engineering-harness-guardrails.mdc", dryRun);
+      break;
+    case "codex":
+      removeGlobalPathIfExists(home, ".codex", dryRun);
+      removeGlobalPathIfExists(home, ".agents/skills", dryRun);
+      break;
+    case "gemini":
+      removeGlobalPathIfExists(home, ".gemini/extensions/ai-engineering-harness", dryRun);
+      break;
+    default:
+      break;
+  }
+}
+
 /** Remove provider-owned files plus optional cache/state directories. */
 export function runUninstall(ctx: UninstallContext): UninstallResult {
   const messages: string[] = [];
 
   if (ctx.scope === "global") {
-    if (ctx.dryRun) {
-      process.stdout.write("\n--- Uninstall ---\n");
-      process.stdout.write("Global uninstall is planned but not implemented in this step.\n");
-      return {
-        ok: true,
-        messages: ["Global uninstall is planned but not implemented in this step."],
-      };
-    }
-    return {
-      ok: false,
-      messages: ["Global uninstall is planned but not implemented in this step."],
-    };
+    process.stdout.write("\n--- Uninstall ---\n");
+    runGlobalUninstall(ctx.provider, ctx.dryRun);
+    process.stdout.write("--- Uninstall complete ---\n");
+    messages.push("uninstall: ok");
+    return { ok: true, messages };
   }
 
   const removeCache = ctx.all || ctx.removeCache;

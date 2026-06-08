@@ -185,6 +185,7 @@ test("runInstallWizard interactive flow installs selected provider from binary-g
   const calls = [];
   const warnings = [];
   const successes = [];
+  let scopePrompted = false;
   const target = makeTempDir();
   initGitRepo(target);
   mockProviderBinaries(["cursor", "claude"]);
@@ -204,6 +205,7 @@ test("runInstallWizard interactive flow installs selected provider from binary-g
     const originalUseInteractiveUi = mod.useInteractiveUi;
     const originalIntroBanner = mod.introBanner;
     const originalSelectProviders = mod.selectProviders;
+    const originalSelectInstallScope = mod.selectInstallScope;
     const originalShowInstallPlan = mod.showInstallPlan;
     const originalShowWarning = mod.showWarning;
     const originalRunWithSpinner = mod.runWithSpinner;
@@ -211,6 +213,10 @@ test("runInstallWizard interactive flow installs selected provider from binary-g
     mod.useInteractiveUi = () => true;
     mod.introBanner = () => {};
     mod.selectProviders = async () => ["cursor"];
+    mod.selectInstallScope = async () => {
+      scopePrompted = true;
+      return "project";
+    };
     mod.showInstallPlan = () => {};
     mod.showWarning = (message) => warnings.push(message);
     mod.runWithSpinner = async (_label, fn) => fn();
@@ -219,6 +225,7 @@ test("runInstallWizard interactive flow installs selected provider from binary-g
       mod.useInteractiveUi = originalUseInteractiveUi;
       mod.introBanner = originalIntroBanner;
       mod.selectProviders = originalSelectProviders;
+      mod.selectInstallScope = originalSelectInstallScope;
       mod.showInstallPlan = originalShowInstallPlan;
       mod.showWarning = originalShowWarning;
       mod.runWithSpinner = originalRunWithSpinner;
@@ -242,6 +249,7 @@ test("runInstallWizard interactive flow installs selected provider from binary-g
   assert.equal(status, 0);
   assert.equal(calls.length, 1);
   assert.equal(calls[0].provider, "cursor");
+  assert.equal(scopePrompted, true);
   assert.equal(calls[0].installCache, true);
   assert.equal(calls[0].initHarness, true);
   assert.deepEqual(calls[0].domains, []);
@@ -297,6 +305,7 @@ test("runInstallWizard interactive cancel exits before backend calls", async () 
     const originalUseInteractiveUi = mod.useInteractiveUi;
     const originalIntroBanner = mod.introBanner;
     const originalSelectProviders = mod.selectProviders;
+    const originalSelectInstallScope = mod.selectInstallScope;
     mod.useInteractiveUi = () => true;
     mod.introBanner = () => {};
     mod.selectProviders = async () => null;
@@ -304,6 +313,7 @@ test("runInstallWizard interactive cancel exits before backend calls", async () 
       mod.useInteractiveUi = originalUseInteractiveUi;
       mod.introBanner = originalIntroBanner;
       mod.selectProviders = originalSelectProviders;
+      mod.selectInstallScope = originalSelectInstallScope;
     };
   });
 
@@ -332,15 +342,18 @@ test("runInstallWizard refuses non-git targets before backend writes", async () 
     const originalUseInteractiveUi = mod.useInteractiveUi;
     const originalIntroBanner = mod.introBanner;
     const originalSelectProviders = mod.selectProviders;
+    const originalSelectInstallScope = mod.selectInstallScope;
     const originalShowInstallPlan = mod.showInstallPlan;
     mod.useInteractiveUi = () => true;
     mod.introBanner = () => {};
     mod.selectProviders = async () => ["cursor"];
+    mod.selectInstallScope = async () => "project";
     mod.showInstallPlan = () => {};
     return () => {
       mod.useInteractiveUi = originalUseInteractiveUi;
       mod.introBanner = originalIntroBanner;
       mod.selectProviders = originalSelectProviders;
+      mod.selectInstallScope = originalSelectInstallScope;
       mod.showInstallPlan = originalShowInstallPlan;
     };
   });
@@ -372,11 +385,13 @@ test("runInstallWizard stops when no provider CLI is installed", async () => {
   patchModule("dist/lib/cli-ui.js", (mod) => {
     const originalUseInteractiveUi = mod.useInteractiveUi;
     const originalIntroBanner = mod.introBanner;
+    const originalSelectInstallScope = mod.selectInstallScope;
     mod.useInteractiveUi = () => true;
     mod.introBanner = () => {};
     return () => {
       mod.useInteractiveUi = originalUseInteractiveUi;
       mod.introBanner = originalIntroBanner;
+      mod.selectInstallScope = originalSelectInstallScope;
     };
   });
 
@@ -542,6 +557,74 @@ test("runUpdateWizard interactive cancel after plan does not call backend", asyn
 
   assert.equal(status, 1);
   assert.equal(backendCalled, false);
+});
+
+test("runUpdateWizard global interactive flow can select active providers without a manifest", async () => {
+  const calls = [];
+  const target = makeTempDir();
+  initGitRepo(target);
+
+  patchModule("dist/lib/backend/update.js", (mod) => {
+    const originalRunUpdate = mod.runUpdate;
+    mod.runUpdate = (ctx) => {
+      calls.push(ctx);
+      return { ok: true, messages: [] };
+    };
+    return () => {
+      mod.runUpdate = originalRunUpdate;
+    };
+  });
+
+  patchModule("dist/lib/cli-ui.js", (mod) => {
+    const originalUseInteractiveUi = mod.useInteractiveUi;
+    const originalIntroBanner = mod.introBanner;
+    const originalSelectProviders = mod.selectProviders;
+    const originalShowUpdatePlan = mod.showUpdatePlan;
+    const originalConfirmProceed = mod.confirmProceed;
+    const originalRunWithSpinner = mod.runWithSpinner;
+    const originalShowSuccess = mod.showSuccess;
+    mod.useInteractiveUi = () => true;
+    mod.introBanner = () => {};
+    mod.selectProviders = async () => ["claude"];
+    mod.showUpdatePlan = () => {};
+    mod.confirmProceed = async () => true;
+    mod.runWithSpinner = async (_label, fn) => fn();
+    mod.showSuccess = () => {};
+    return () => {
+      mod.useInteractiveUi = originalUseInteractiveUi;
+      mod.introBanner = originalIntroBanner;
+      mod.selectProviders = originalSelectProviders;
+      mod.showUpdatePlan = originalShowUpdatePlan;
+      mod.confirmProceed = originalConfirmProceed;
+      mod.runWithSpinner = originalRunWithSpinner;
+      mod.showSuccess = originalShowSuccess;
+    };
+  });
+
+  const { runUpdateWizard } = fresh("dist/lib/cli-commands/update.js");
+  const status = await withInteractiveTty(() =>
+    runUpdateWizard(repoRoot, {
+      providers: [],
+      target,
+      scope: "global",
+      visibility: "shared",
+      dryRun: false,
+      yes: false,
+      verbose: false,
+    })
+  );
+
+  assert.equal(status, 0);
+  assert.deepEqual(calls, [
+    {
+      packRoot: repoRoot,
+      target: path.resolve(target),
+      provider: "claude",
+      scope: "global",
+      visibility: "shared",
+      dryRun: false,
+    },
+  ]);
 });
 
 test("runUninstallWizard non-interactive uninstall calls backend with full cleanup", async () => {

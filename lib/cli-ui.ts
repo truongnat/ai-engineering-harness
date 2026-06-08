@@ -22,6 +22,8 @@ interface ProviderItem {
   priorityLabel?: string;
 }
 
+type InstallScopeChoice = "project" | "global";
+
 interface InstallPlan {
   willInstall: string[];
   willNotModify: string[];
@@ -103,6 +105,31 @@ async function selectProviders(providerItems: ProviderItem[]): Promise<string[] 
     return null;
   }
   return value;
+}
+
+async function selectInstallScope(): Promise<InstallScopeChoice | null> {
+  const { select, cancel, isCancel } = await loadClackPrompts();
+  const value = await select({
+    message: "Install scope",
+    options: [
+      {
+        value: "project",
+        label: "Project install",
+        hint: "Writes repo-local commands, rules, skills, and project state.",
+      },
+      {
+        value: "global",
+        label: "Global install",
+        hint: "Writes provider settings in your home directory.",
+      },
+    ],
+    initialValue: "project",
+  });
+  if (isCancel(value)) {
+    cancel("Install cancelled.");
+    return null;
+  }
+  return value as InstallScopeChoice;
 }
 
 async function confirmInstallCache(defaultYes: boolean): Promise<boolean | null> {
@@ -347,6 +374,7 @@ const ui = {
   useInteractiveUi,
   introBanner,
   selectProviders,
+  selectInstallScope,
   confirmInstallCache,
   confirmRemoveState,
   confirmFullCleanup,
@@ -367,6 +395,7 @@ export {
   useInteractiveUi,
   introBanner,
   selectProviders,
+  selectInstallScope,
   confirmInstallCache,
   confirmRemoveState,
   confirmFullCleanup,
