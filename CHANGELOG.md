@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.1.0] - 2026-06-08
+
+### Added
+
+- agent-driven domain skill generation: `init` analysis gate (`prompt-templates/domain-analysis.md`, `lib/stack-detect.ts`) plus deterministic generation into `.harness/skills/`, `.harness/SKILLS.md`, `.harness/WORKFLOW.md`, and path-scoped domain rules for Claude, Cursor, Codex, and Gemini
+- spec-driven layer (opt-in): `templates/CHANGE_SPEC.md` delta specs and optional `.harness/specs/`
+- delegated-worker memory (opt-in): `.harness/memory/workers/` with bounded notes
+- explorer worker and `docs/context-engineering.md` doctrine; `docs/token-budget.md`
+- prompt-quality standard (`skills/PROMPT_FORMAT_STANDARD.md`) with modular Few-shot/CoT/ReAct format enforced across skills and dispatch prompts, plus a conformance eval
+- eval harness maturity (A/B runner, LLM judge, telemetry insights) and policy engine G0–G3
+- `v1.1.0` release notes — [v1.1.0-release-notes.md](docs/v1.1.0-release-notes.md)
+
+### Changed
+
+- backend lifecycle (install, uninstall, update, doctor, skeleton, git-hygiene) ported to in-process TypeScript
+- generated domain skills conform to the full core skill heading contract
+
+### Notes
+
+- `v1.1.0` is a minor release: new capabilities are backward-compatible and opt-in.
+- The core workflow loop and provider support posture are unchanged.
+
 ## [1.0.1] - 2026-06-05
 
 ### Added
