@@ -42,6 +42,8 @@ Welcome! User-facing documentation for **ai-engineering-harness**, organized wit
 - **[Tool Discovery & Routing](tool-discovery-and-routing.md)** — How the harness discovers and routes to available tools
 - **[Provider Rule Configuration](provider-rule-configuration.md)** — Customizing rules per provider
 - **[Hooks & Skills Layer](hooks-and-skills-layer.md)** — Extensibility and automation
+- **[Context Engineering](context-engineering.md)** — Compaction, just-in-time retrieval, and delta-spec discipline
+- **[Token Budget](token-budget.md)** — Why the harness stays lightweight by design
 - **[Quality Gates Matrix](quality-gates-matrix.md)** — Entry/exit criteria per phase
 - **[Delegated Workers](delegated-workers.md)** — Claude-native subagent framework
 

@@ -45,6 +45,7 @@ Describe the repository-specific harness operating model, the artifacts it owns,
 - This harness owns \`.harness/\` profile artifacts, session state, and verification records.
 - This harness does not own production architecture decisions; document those in \`DECISIONS.md\` and source code.
 - Primary artifacts: session goal, plan, verify, blocked, ship, and remember files under \`.harness/sessions/\`
+- Optional durable behavior specs live under \`.harness/specs/\` when the spec layer is enabled.
 
 ## Operating Model
 
@@ -301,6 +302,7 @@ Describe what long-lived memory this repository should retain.
 - Verification recipes that saved time
 - Project-level decisions that affect future plans
 - Hazards that should change planning or verification next time
+- Approved delta specs that should be promoted into \`.harness/specs/\` when enabled
 
 ## Memory Types
 
@@ -309,6 +311,7 @@ Describe what long-lived memory this repository should retain.
 | \`DECISIONS.md\` | durable project decisions | after approval |
 | \`HAZARDS.md\` | recurring failure modes | after confirmed incident or review |
 | \`INDEX.md\` | reusable commands and references | after a repeatable workflow is proven |
+| \`.harness/specs/\` | optional durable behavior specs | after approved delta-spec changes |
 | \`REMEMBER.md\` | goal-level lessons | after shipping verified work |
 
 ## Forbidden Content
@@ -450,6 +453,9 @@ function skeletonIndexMd(): string {
 | --- | --- | --- |
 | Workflow rules | \`docs/phase-discipline.md\` | defines hard phase stops |
 | Session start | \`docs/session-start.md\` | explains state restoration contract |
+| Context engineering | \`docs/context-engineering.md\` | explains compaction, retrieval, and spec discipline |
+| Token budget | \`docs/token-budget.md\` | explains why the harness stays lightweight |
+| Delta specs | \`templates/CHANGE_SPEC.md\` | captures behavior-changing deltas before folding them into durable memory |
 `;
 }
 
@@ -536,6 +542,7 @@ const SKELETON_FILES: Array<{ rel: string; content: () => string }> = [
   { rel: ".harness/HAZARDS.md", content: skeletonHazardsMd },
   { rel: ".harness/INDEX.md", content: skeletonIndexMd },
   { rel: ".harness/policies.json", content: skeletonPoliciesJson },
+  { rel: ".harness/specs/.gitkeep", content: () => "" },
   { rel: ".harness/goals/.gitkeep", content: () => "" },
 ];
 

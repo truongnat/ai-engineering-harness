@@ -61,6 +61,14 @@ a free-form essay:
 - Examples
 - Output Format
 
+## Context Engineering
+
+Follow [`../docs/context-engineering.md`](../docs/context-engineering.md) when selecting or retrieving context.
+
+- Use `.harness/INDEX.md` as the on-demand registry for reusable paths and commands
+- Prefer path references, condensed maps, and bounded worker outputs over pasted file bodies
+- When a behavior change needs durable spec capture, use `templates/CHANGE_SPEC.md`
+
 ## Reasoning Protocol
 
 Before producing the final answer, reason step by step in a short `### Reasoning`

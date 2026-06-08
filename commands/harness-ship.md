@@ -16,6 +16,7 @@ Read:
 
 - `.harness/STATE.md`
 - active session current `PLAN-*.md`
+- active session `CHANGE_SPEC.md` if present
 - active session `VERIFY.md`
 - `.harness/REVIEW.md` if present
 
@@ -104,10 +105,11 @@ If git diff cannot be inspected, stop with Blocked instead of guessing file list
 1. Confirm that the active session `VERIFY.md` supports the current status.
 2. Run `node scripts/generate-report-context.js --json` or inspect git status and diff.
 3. Summarize what changed, why it changed, and what was actually verified.
-4. Write `REPORT.md`, `PR_MESSAGE.md`, and `CHANGE_SUMMARY.md`.
-5. Record follow-ups, deferred work, and residual risk honestly.
-6. Write the handoff summary into the active session `SHIP.md`.
-7. Transition to `harness-remember` for durable lessons.
+4. If the change included `templates/CHANGE_SPEC.md`, note whether the approved delta is ready to be folded into `.harness/specs/` when the spec layer is enabled.
+5. Write `REPORT.md`, `PR_MESSAGE.md`, and `CHANGE_SUMMARY.md`.
+6. Record follow-ups, deferred work, and residual risk honestly.
+7. Write the handoff summary into the active session `SHIP.md`.
+8. Transition to `harness-remember` for durable lessons.
 
 ## Required Outputs
 

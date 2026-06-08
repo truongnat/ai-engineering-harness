@@ -4,6 +4,8 @@
 
 Understand the repository structure, active artifacts, boundaries, and likely impact area before discussion or planning.
 
+Treat this as the Explore phase of the harness workflow. When a delegated explorer worker is available, use it for broad reads and keep the returned map bounded and decision-oriented.
+
 ## When To Use
 
 - in unfamiliar codebases
@@ -29,6 +31,7 @@ Understand the repository structure, active artifacts, boundaries, and likely im
 3. Separate facts from inferences.
 4. Record impact zones, dependencies, and unknowns.
 5. Summarize only what later planning or execution needs.
+6. Prefer condensed maps and explicit file paths over pasted file dumps.
 
 ## Operating Principles
 

@@ -36,6 +36,7 @@ Use canonical command IDs:
 ## Subagents
 
 For gated review, verification, or ship gates, prefer delegated workers under `.claude/agents/`:
+- harness-explorer
 - harness-reviewer
 - harness-verifier
 - harness-gatekeeper

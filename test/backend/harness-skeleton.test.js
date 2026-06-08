@@ -15,6 +15,7 @@ const EXPECTED = [
   "DECISIONS.md",
   "HAZARDS.md",
   "INDEX.md",
+  "specs/.gitkeep",
   "policies.json",
   "goals/.gitkeep",
 ];
@@ -127,6 +128,7 @@ test("skeleton files include concrete examples instead of empty placeholders", (
   const index = fs.readFileSync(path.join(dir, ".harness", "INDEX.md"), "utf8");
 
   assert.match(harness, /harness-start -> harness-discuss -> harness-plan/);
+  assert.match(harness, /\.harness\/specs\//);
   assert.match(skills, /using-harness/);
   assert.match(workflow, /\| 1 \| `harness-start` \| always \|/);
   assert.match(gates, /`npm test`/);

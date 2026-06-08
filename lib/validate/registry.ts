@@ -17,6 +17,7 @@ import {
 import {
   assertAgentsContent,
   assertBlockedTemplateContract,
+  assertChangeSpecTemplateContract,
   assertCommandContractStructure,
   assertDogfoodDemoContract,
   assertHyphenCommandNamingInActiveDocs,
@@ -169,6 +170,7 @@ const harnessRepositoryValidators: Validator[] = [
     run(context: ValidationContext) {
       assertVerifyTemplateContract(context.baseDir, context.failures);
       assertPlanTemplateContract(context.baseDir, context.failures);
+      assertChangeSpecTemplateContract(context.baseDir, context.failures);
       assertBlockedTemplateContract(context.baseDir, context.failures);
       assertReviewTemplateContract(context.baseDir, context.failures);
       assertSessionConfigTemplate(context.baseDir, context.failures);
@@ -181,7 +183,7 @@ const harnessRepositoryValidators: Validator[] = [
       assertSessionStartLayer(context.baseDir, context.failures);
       assertAgentSystemLayer(context.baseDir, context.failures);
     },
-    weight: 24,
+    weight: 25,
   },
   {
     run(context: ValidationContext) {

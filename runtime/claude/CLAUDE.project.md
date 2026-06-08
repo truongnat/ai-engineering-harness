@@ -42,6 +42,8 @@ Do not skip planning or verification because a task looks small.
 | lifecycle hooks via `.claude/settings.json` | native |
 | path-scoped rules | native |
 
+Native delegated workers include `harness-explorer`, `harness-reviewer`, `harness-verifier`, `harness-gatekeeper`, and `harness-fixer`.
+
 ## Evidence standard
 
 Accept only:

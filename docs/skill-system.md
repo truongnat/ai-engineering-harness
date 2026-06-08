@@ -72,6 +72,14 @@ modules in [`../skills/PROMPT_FORMAT_STANDARD.md`](../skills/PROMPT_FORMAT_STAND
 
 Keep the format additive and compatible with the existing harness layers.
 
+## Context Engineering Doctrine
+
+Use [`context-engineering.md`](context-engineering.md) as the shared doctrine for compaction, just-in-time retrieval, structured notes, subagent isolation, and token discipline.
+
+- `.harness/INDEX.md` is the on-demand lookup layer
+- `.harness/specs/` is the optional durable behavior-spec layer when enabled
+- `templates/CHANGE_SPEC.md` captures delta specs for behavior-changing work
+
 ## Add A New Skill Or Update An Existing One
 
 Update an existing skill when:

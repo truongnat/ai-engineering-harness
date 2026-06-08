@@ -15,6 +15,8 @@ Refresh repository/current context manually when Session Start context is stale,
 
 `harness-map` is a backward-compatible, advanced/manual context refresh command. It is not required in the normal workflow because `harness-start` already performs context mapping. Use it when you need to regenerate or manually inspect the same context-mapping behavior outside Session Start. It should not plan or implement code.
 
+Treat this as the Explore phase of the plan/explore/execute pipeline. When the repository has delegated workers available, prefer an `explorer` run that returns a condensed map instead of raw file dumps.
+
 ## System Prompt Requirement
 
 This command MUST be executed under the ai-engineering-harness system prompt.

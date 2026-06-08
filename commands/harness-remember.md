@@ -26,6 +26,7 @@ Read:
 - active session `VERIFY.md`
 - active session `SHIP.md` if present
 - active session current `PLAN-*.md` if present
+- active session `CHANGE_SPEC.md` if present
 - `.harness/DECISIONS.md` if present
 - `.harness/HAZARDS.md` if present
 - `.harness/INDEX.md` if present
@@ -58,7 +59,8 @@ If active session is unknown or `.harness/STATE.md` has not been established for
 2. Extract the durable lesson, decision, root cause, or hazard.
 3. Remove transient details and anything sensitive.
 4. Write the lesson into the right memory artifact: `DECISIONS.md`, `HAZARDS.md`, `INDEX.md`, or goal-level `REMEMBER.md`.
-5. Confirm the note is safe, durable, and reusable.
+5. If the change produced an approved delta spec, note whether it should be folded into `.harness/specs/` when the spec layer is enabled.
+6. Confirm the note is safe, durable, and reusable.
 
 ## Required Outputs
 

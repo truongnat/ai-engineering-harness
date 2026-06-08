@@ -28,7 +28,8 @@ Capture durable lessons, constraints, and decisions that will improve later sess
 2. Identify the durable fact, decision, root cause, or hazard worth keeping.
 3. Exclude temporary details, secrets, and private business data.
 4. Write concise memory tied to affected areas.
-5. Confirm the note would help a future session start faster.
+5. If the work produced an approved delta spec, record that the durable spec layer should absorb it when enabled.
+6. Confirm the note would help a future session start faster.
 
 ## Operating Principles
 

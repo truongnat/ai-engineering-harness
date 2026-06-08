@@ -22,6 +22,7 @@ Read:
 
 - `.harness/STATE.md`
 - active session current `PLAN-*.md`
+- active session `CHANGE_SPEC.md` if present
 - active session `GOAL.md`
 - active session `TASKS.md` if present
 - `.harness/HAZARDS.md` if present

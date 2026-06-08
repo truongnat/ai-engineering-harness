@@ -176,6 +176,28 @@ function assertPlanTemplateContract(baseDir: string, failures: string[]): void {
   }
 }
 
+function assertChangeSpecTemplateContract(baseDir: string, failures: string[]): void {
+  const relativePath = "templates/CHANGE_SPEC.md";
+  if (!fs.existsSync(resolvePath(baseDir, relativePath))) {
+    failures.push(`Missing required path: ${relativePath}`);
+    return;
+  }
+  const content = readFile(baseDir, relativePath);
+  for (const heading of [
+    "## Current Behavior",
+    "## ADDED Requirements",
+    "## MODIFIED Requirements",
+    "## REMOVED Requirements",
+    "## Validation",
+    "## Approval Status",
+    "## Human Approval",
+  ]) {
+    if (!content.includes(heading)) {
+      failures.push(`${relativePath} is missing heading: ${heading}`);
+    }
+  }
+}
+
 function assertReviewTemplateContract(baseDir: string, failures: string[]): void {
   const relativePath = "templates/REVIEW.md";
   if (!fs.existsSync(resolvePath(baseDir, relativePath))) {
@@ -390,6 +412,15 @@ function assertSessionConfigTemplate(baseDir: string, failures: string[]): void 
     }
     if (config?.memory?.sourceOfTruth !== "files") {
       failures.push(`${relativePath} must set memory.sourceOfTruth to "files"`);
+    }
+    if (config?.specs?.enabled !== false) {
+      failures.push(`${relativePath} must set specs.enabled to false`);
+    }
+    if (config?.specs?.sourceOfTruth !== "delta-specs") {
+      failures.push(`${relativePath} must set specs.sourceOfTruth to "delta-specs"`);
+    }
+    if (config?.specs?.directory !== ".harness/specs") {
+      failures.push(`${relativePath} must set specs.directory to ".harness/specs"`);
     }
   } catch (error) {
     failures.push(`${relativePath} must contain valid JSON`);
@@ -718,6 +749,7 @@ function assertWorkerDefinitionContract(baseDir: string, failures: string[]): vo
 
 function assertWorkerAwareCommandDocs(baseDir: string, failures: string[]): void {
   for (const [relativePath, workersExpected] of [
+    ["commands/harness-map.md", ["explorer"]] as const,
     ["commands/harness-verify.md", ["reviewer", "verifier"]] as const,
     ["commands/harness-ship.md", ["gatekeeper"]] as const,
     ["commands/harness-run.md", ["fixer"]] as const,
@@ -779,6 +811,7 @@ export {
   assertHyphenCommandNamingInActiveDocs,
   assertPackContract,
   assertPlanTemplateContract,
+  assertChangeSpecTemplateContract,
   assertPromptTemplateContract,
   assertPublicDemoPolish,
   assertReviewTemplateContract,

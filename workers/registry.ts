@@ -1,6 +1,6 @@
 type ProviderSupportMode = "native" | "adapter" | "fallback" | "unsupported";
 type WorkerProvider = "claude" | "cursor" | "codex" | "generic";
-type WorkerId = "reviewer" | "verifier" | "gatekeeper" | "fixer";
+type WorkerId = "explorer" | "reviewer" | "verifier" | "gatekeeper" | "fixer";
 
 interface WorkerDefinition {
   id: WorkerId;
@@ -21,9 +21,27 @@ const VALID_PROVIDER_SUPPORT = Object.freeze([
   "unsupported"
 ] as const);
 
-const WORKER_IDS = Object.freeze(["reviewer", "verifier", "gatekeeper", "fixer"] as const);
+const WORKER_IDS = Object.freeze(
+  ["explorer", "reviewer", "verifier", "gatekeeper", "fixer"] as const
+);
 
 const workers: readonly WorkerDefinition[] = Object.freeze([
+  {
+    id: "explorer",
+    role: "explore",
+    mode: "one-shot",
+    writeAccess: "none",
+    canDispatch: false,
+    requiredInputs: ["goal", "scope", "entrypoints", "context_budget"],
+    resultSchema: "agent-result-v1",
+    providerSupport: {
+      claude: "native",
+      cursor: "adapter",
+      codex: "adapter",
+      generic: "fallback"
+    },
+    definitionPath: "workers/explorer.md"
+  },
   {
     id: "reviewer",
     role: "review",

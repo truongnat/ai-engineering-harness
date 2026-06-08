@@ -20,5 +20,10 @@
       "userEnv": "NEO4J_USER",
       "passwordEnv": "NEO4J_PASSWORD"
     }
+  },
+  "specs": {
+    "enabled": false,
+    "sourceOfTruth": "delta-specs",
+    "directory": ".harness/specs"
   }
 }

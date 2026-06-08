@@ -28,7 +28,8 @@ Produce a concrete implementation plan before changes begin.
 2. List the affected files, systems, and artifacts.
 3. Break work into ordered, small, verifiable tasks.
 4. Define verification, not-run cases, and rollback considerations.
-5. Save the plan in a durable artifact and stop before implementation.
+5. If the work changes behavior, add a delta spec artifact using `templates/CHANGE_SPEC.md`.
+6. Save the plan in a durable artifact and stop before implementation.
 
 ## Operating Principles
 
@@ -36,6 +37,7 @@ Produce a concrete implementation plan before changes begin.
 - Small steps are easier to verify and recover.
 - Verification belongs in the plan, not just at the end.
 - Plans should minimize room for interpretation and scope drift.
+- Behavior changes should name the delta spec artifact early.
 
 ## Reasoning Procedure
 

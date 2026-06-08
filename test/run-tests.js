@@ -203,6 +203,7 @@ describe("Session Memory & Documentation", () => {
       "templates/GOAL.md",
       "templates/DISCUSSION.md",
       "templates/PLAN.md",
+      "templates/CHANGE_SPEC.md",
       "templates/TASKS.md",
       "templates/VERIFY.md",
       "templates/SHIP.md",
@@ -218,9 +219,22 @@ describe("Session Memory & Documentation", () => {
   });
 
   test("session memory docs exist", () => {
-    for (const relativePath of ["docs/session-memory.md", "docs/memory-migration.md"]) {
+    for (const relativePath of [
+      "docs/session-memory.md",
+      "docs/memory-migration.md",
+      "docs/context-engineering.md",
+      "docs/token-budget.md",
+    ]) {
       assert.ok(fs.existsSync(path.join(repoRoot, relativePath)), `${relativePath} must exist`);
     }
+  });
+
+  test("context engineering doc names the retrieval and spec discipline", () => {
+    const body = fs.readFileSync(path.join(repoRoot, "docs", "context-engineering.md"), "utf8");
+    assert.match(body, /just-in-time retrieval/i);
+    assert.match(body, /INDEX\.md/i);
+    assert.match(body, /CHANGE_SPEC\.md/);
+    assert.match(body, /\.harness\/specs\//);
   });
 
   test("validate repository fails when session-memory source-of-truth language is removed", () => {
@@ -245,6 +259,33 @@ describe("Session Memory & Documentation", () => {
     assertRepositoryFailure(
       tempRepo,
       /templates\/harness-config\.json must set memory\.backend to "files"/
+    );
+  });
+
+  test("validate repository fails when harness config no longer exposes the spec layer opt-in", () => {
+    const tempRepo = makeTempRepoCopy();
+    writeRepoFile(tempRepo, "templates/harness-config.json", (content) => {
+      const config = JSON.parse(content);
+      config.specs.enabled = true;
+      return JSON.stringify(config, null, 2);
+    });
+    assertRepositoryFailure(
+      tempRepo,
+      /templates\/harness-config\.json must set specs\.enabled to false/
+    );
+  });
+
+  test("validate repository fails when change specs lose delta headings", () => {
+    const tempRepo = makeTempRepoCopy();
+    writeRepoFile(tempRepo, "templates/CHANGE_SPEC.md", (content) =>
+      content.replace(
+        /## ADDED Requirements[\s\S]*?## MODIFIED Requirements/,
+        "## MODIFIED Requirements"
+      )
+    );
+    assertRepositoryFailure(
+      tempRepo,
+      /templates\/CHANGE_SPEC\.md is missing heading: ## ADDED Requirements/
     );
   });
 
@@ -417,6 +458,7 @@ describe("Delegated Workers", () => {
   test("delegated worker repository surface exists", () => {
     for (const relativePath of [
       "dist/workers/registry.js",
+      "workers/explorer.md",
       "workers/reviewer.md",
       "workers/verifier.md",
       "workers/gatekeeper.md",
@@ -430,12 +472,17 @@ describe("Delegated Workers", () => {
 
   test("worker registry exports canonical v1 workers", () => {
     const registry = require(path.join(repoRoot, "dist", "workers", "registry.js"));
-    assert.deepEqual([...registry.WORKER_IDS], ["reviewer", "verifier", "gatekeeper", "fixer"]);
-    assert.equal(registry.workers.length, 4);
+    assert.deepEqual(
+      [...registry.WORKER_IDS],
+      ["explorer", "reviewer", "verifier", "gatekeeper", "fixer"]
+    );
+    assert.equal(registry.workers.length, 5);
     for (const worker of registry.workers) {
       assert.equal(worker.canDispatch, false);
       assert.equal(worker.resultSchema, "agent-result-v1");
     }
+    const explorer = registry.getWorkerById("explorer");
+    assert.equal(explorer.writeAccess, "none");
     const fixer = registry.getWorkerById("fixer");
     assert.equal(fixer.writeAccess, "write");
     for (const id of ["reviewer", "verifier", "gatekeeper"]) {
@@ -447,7 +494,7 @@ describe("Delegated Workers", () => {
     const { parseFrontmatter } = require(
       path.join(repoRoot, "dist", "lib", "validate", "utils.js")
     );
-    for (const workerId of ["reviewer", "verifier", "gatekeeper", "fixer"]) {
+    for (const workerId of ["explorer", "reviewer", "verifier", "gatekeeper", "fixer"]) {
       const text = fs.readFileSync(path.join(repoRoot, "workers", `${workerId}.md`), "utf8");
       const frontmatter = parseFrontmatter(text);
       assert.ok(frontmatter, `${workerId}.md must include frontmatter`);
