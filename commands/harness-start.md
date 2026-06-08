@@ -46,9 +46,10 @@ Protocol steps:
 4. Load durable memory.
 5. Check blocked and unfinished work.
 6. Map repository/current context.
-7. Detect tool context.
-8. Recommend next command.
-9. Ask the user only if routing is ambiguous.
+7. If `.harness/config.json` has an empty `domains` array and `.harness/skills/` has no generated domain skill files, surface a visible status line, run domain analysis, and bootstrap matching domain skills with `npx ai-engineering-harness domains`.
+8. Detect tool context.
+9. Recommend next command.
+10. Ask the user only if routing is ambiguous.
 
 See `docs/session-start.md` for the full contract.
 

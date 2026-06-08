@@ -20,8 +20,6 @@ interface ProviderItem {
   priorityLabel?: string;
 }
 
-type InstallMode = "project-private" | "project-shared" | "global";
-
 interface InstallPlan {
   willInstall: string[];
   willNotModify: string[];
@@ -96,49 +94,6 @@ async function selectProviders(providerItems: ProviderItem[]): Promise<string[] 
     }),
     required: true,
     initialValues: initial.length ? initial : undefined,
-  });
-  if (isCancel(value)) {
-    cancel("Install cancelled.");
-    return null;
-  }
-  return value;
-}
-
-async function selectInstallMode(): Promise<InstallMode | null> {
-  const { select, cancel, isCancel } = await loadClackPrompts();
-  const value = await select<InstallMode>({
-    message: "Install mode",
-    options: [
-      {
-        value: "project-private",
-        label: "Project private",
-        hint: "local to this checkout, ignored via .git/info/exclude",
-      },
-      {
-        value: "project-shared",
-        label: "Project shared",
-        hint: "visible in git status, intended for team commit",
-      },
-      {
-        value: "global",
-        label: "Global",
-        hint: "runtime-level install where supported",
-      },
-    ],
-    initialValue: "project-private",
-  });
-  if (isCancel(value)) {
-    cancel("Install cancelled.");
-    return null;
-  }
-  return value;
-}
-
-async function confirmInitHarness(defaultYes: boolean): Promise<boolean | null> {
-  const { confirm, cancel, isCancel } = await loadClackPrompts();
-  const value = await confirm({
-    message: "Initialize .harness project state?",
-    initialValue: defaultYes,
   });
   if (isCancel(value)) {
     cancel("Install cancelled.");
@@ -389,8 +344,6 @@ const ui = {
   useInteractiveUi,
   introBanner,
   selectProviders,
-  selectInstallMode,
-  confirmInitHarness,
   confirmInstallCache,
   confirmRemoveState,
   confirmFullCleanup,
@@ -411,8 +364,6 @@ export {
   useInteractiveUi,
   introBanner,
   selectProviders,
-  selectInstallMode,
-  confirmInitHarness,
   confirmInstallCache,
   confirmRemoveState,
   confirmFullCleanup,
@@ -430,4 +381,4 @@ export {
   isCancel,
 };
 export default ui;
-export type { IntroMeta, ProviderItem, InstallMode, InstallPlan, UninstallContext, SpinnerResult };
+export type { IntroMeta, ProviderItem, InstallPlan, UninstallContext, SpinnerResult };

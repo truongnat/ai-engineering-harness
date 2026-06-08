@@ -92,6 +92,7 @@ test("runInstall with shared visibility writes no git exclude block", () => {
     fs.existsSync(path.join(dir, ".cursor", "rules", "ai-engineering-harness.mdc")),
     true
   );
+  assert.equal(fs.existsSync(path.join(dir, "rules")), false);
   const excl = path.join(dir, ".git", "info", "exclude");
   if (fs.existsSync(excl)) {
     assert.doesNotMatch(fs.readFileSync(excl, "utf8"), /ai-engineering-harness/);

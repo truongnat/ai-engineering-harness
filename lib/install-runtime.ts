@@ -138,8 +138,10 @@ function installCursor(
   packRoot: string,
   options: InstallRuntimeOptions
 ): void {
-  void packRoot;
-  const destRoot = scope === "global" ? path.join(os.homedir(), ".cursor") : targetRoot;
+  if (scope !== "global") {
+    return;
+  }
+  const destRoot = path.join(os.homedir(), ".cursor");
   const rules: [string, string][] = [
     ["rules/ai-engineering-harness.mdc", renderCursorActivationMdc()],
     ["rules/ai-engineering-harness-commands.mdc", renderCursorCommandsMdc()],
@@ -148,6 +150,9 @@ function installCursor(
   for (const [relativePath, content] of rules) {
     writeFileAction(destRoot, relativePath, content, options);
   }
+  void targetRoot;
+  void packRoot;
+  void options;
 }
 
 function installCodex(

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.2
+
+### Patch Changes
+
+- Refine domain bootstrap UX by removing interactive domain prompts from `init` and `install`, adding the headless `domains` command, tightening the session-start bootstrap guidance, and fixing duplicate Cursor rule output during project installs.
+
 ## 1.1.1
 
 ### Patch Changes

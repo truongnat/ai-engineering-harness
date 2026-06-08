@@ -43,6 +43,21 @@ function toPlanProviders(providers: string[]): PlanProviderId[] {
   return providers as PlanProviderId[];
 }
 
+function resolveInstallMode(
+  options: ParseOptions
+): "project-private" | "project-shared" | "global" {
+  if (options.scope === "global") {
+    return "global";
+  }
+  if (options.scope === "project" && options.visibility === "shared") {
+    return "project-shared";
+  }
+  if (!options.scope && options.visibility === "shared") {
+    return "project-shared";
+  }
+  return "project-private";
+}
+
 async function runInstallBackend(
   packRoot: string,
   ctx: InstallContextExtended,
@@ -128,21 +143,23 @@ async function runInstallWizard(packRoot: string, options: ParseOptions): Promis
     validateProviderSelection(providers);
     validateManualMix(providers);
 
-    const scopeVis = options.scope
-      ? { scope: options.scope, visibility: options.visibility || "private" }
-      : modeToScopeVisibility("project-private");
-    if (options.scope && !options.visibility && scopeVis.scope === "project") {
-      scopeVis.visibility = "private";
-    }
+    const mode = resolveInstallMode(options);
+    const scopeVis = modeToScopeVisibility(mode);
 
-    const initHarness = !fs.existsSync(path.join(targetAbs, ".harness"));
+    const initHarness =
+      scopeVis.scope === "project" && !fs.existsSync(path.join(targetAbs, ".harness"));
     const installCache =
       scopeVis.scope === "project" && providers.some((id) => isRuntimeNative(id));
     const plan = buildInstallPlan({
       providers: toPlanProviders(providers),
       initHarness,
       installCache,
-      mode: scopeVis.visibility === "shared" ? "project-shared" : "project-private",
+      mode:
+        scopeVis.scope === "global"
+          ? "global"
+          : scopeVis.visibility === "shared"
+            ? "project-shared"
+            : "project-private",
       isGit: isGitRepo(targetAbs),
     });
     ui.showInstallPlan(plan, { compact: true });
@@ -186,32 +203,26 @@ async function runInstallWizard(packRoot: string, options: ParseOptions): Promis
     priorityLabel: providerPriorityLabel(p),
   }));
 
-  const selectedProviders = await ui.selectProviders(providerItems);
-  if (!selectedProviders) {
-    return 1;
+  if (recommended.length === 1) {
+    providers = [recommended[0]];
+    process.stdout.write(`Detected provider: ${providers[0]}\n`);
+  } else {
+    const selectedProviders = await ui.selectProviders(providerItems);
+    if (!selectedProviders) {
+      return 1;
+    }
+    providers = selectedProviders;
   }
-  providers = selectedProviders;
   validateProviderSelection(providers);
   validateManualMix(providers);
 
-  const mode = await ui.selectInstallMode();
-  if (!mode) {
-    return 1;
-  }
-
-  const harnessExists = fs.existsSync(path.join(targetAbs, ".harness"));
-  const initHarness = await ui.confirmInitHarness(!harnessExists);
-  if (initHarness === null) {
-    return 1;
-  }
+  const mode = resolveInstallMode(options);
 
   const { scope } = modeToScopeVisibility(mode);
   const defaultCache = scope === "project" && providers.some((id) => isRuntimeNative(id));
-  const installCacheChoice = await ui.confirmInstallCache(defaultCache);
-  if (installCacheChoice === null) {
-    return 1;
-  }
-  const installCache = installCacheChoice;
+  const installCache = defaultCache;
+  const harnessExists = fs.existsSync(path.join(targetAbs, ".harness"));
+  const initHarness = scope === "project" && !harnessExists;
 
   const { scope: resolvedScope, visibility } = modeToScopeVisibility(mode);
   const plan = buildInstallPlan({
@@ -224,11 +235,6 @@ async function runInstallWizard(packRoot: string, options: ParseOptions): Promis
   ui.showInstallPlan(plan);
   if (plan.mode === "project-private" && !plan.isGit) {
     ui.showWarning(`${NON_GIT_PRIVATE_WARNING}\n${NON_GIT_PRIVATE_WARNING_FOLLOWUP}`);
-  }
-
-  const proceed = await ui.confirmProceed("Proceed with install?");
-  if (!proceed) {
-    return 1;
   }
 
   const status = await runInstallBackend(

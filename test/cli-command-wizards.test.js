@@ -141,35 +141,23 @@ test("runInstallWizard interactive flow warns for non-git targets and installs s
     const originalUseInteractiveUi = mod.useInteractiveUi;
     const originalIntroBanner = mod.introBanner;
     const originalSelectProviders = mod.selectProviders;
-    const originalSelectInstallMode = mod.selectInstallMode;
-    const originalConfirmInitHarness = mod.confirmInitHarness;
-    const originalConfirmInstallCache = mod.confirmInstallCache;
     const originalShowInstallPlan = mod.showInstallPlan;
     const originalShowWarning = mod.showWarning;
-    const originalConfirmProceed = mod.confirmProceed;
     const originalRunWithSpinner = mod.runWithSpinner;
     const originalShowSuccess = mod.showSuccess;
     mod.useInteractiveUi = () => true;
     mod.introBanner = () => {};
     mod.selectProviders = async () => ["cursor"];
-    mod.selectInstallMode = async () => "project-private";
-    mod.confirmInitHarness = async () => true;
-    mod.confirmInstallCache = async () => true;
     mod.showInstallPlan = () => {};
     mod.showWarning = (message) => warnings.push(message);
-    mod.confirmProceed = async () => true;
     mod.runWithSpinner = async (_label, fn) => fn();
     mod.showSuccess = (message) => successes.push(message);
     return () => {
       mod.useInteractiveUi = originalUseInteractiveUi;
       mod.introBanner = originalIntroBanner;
       mod.selectProviders = originalSelectProviders;
-      mod.selectInstallMode = originalSelectInstallMode;
-      mod.confirmInitHarness = originalConfirmInitHarness;
-      mod.confirmInstallCache = originalConfirmInstallCache;
       mod.showInstallPlan = originalShowInstallPlan;
       mod.showWarning = originalShowWarning;
-      mod.confirmProceed = originalConfirmProceed;
       mod.runWithSpinner = originalRunWithSpinner;
       mod.showSuccess = originalShowSuccess;
     };
@@ -197,6 +185,31 @@ test("runInstallWizard interactive flow warns for non-git targets and installs s
   assert.equal(warnings.length, 1);
   assert.match(warnings[0], /not a Git repo/);
   assert.deepEqual(successes, ["Installed"]);
+});
+
+test("runInitWizard with no domain flags scaffolds empty domain config and no generated skills", async () => {
+  const target = makeTempDir();
+  fs.mkdirSync(target, { recursive: true });
+
+  const { runInitWizard } = fresh("dist/lib/cli-commands/init.js");
+  const status = await runInitWizard(repoRoot, {
+    providers: [],
+    target,
+    scope: "",
+    visibility: "",
+    dryRun: false,
+    yes: false,
+    verbose: false,
+    skipDemoEval: true,
+  });
+
+  assert.equal(status, 0);
+  const config = JSON.parse(fs.readFileSync(path.join(target, ".harness", "config.json"), "utf8"));
+  assert.deepEqual(config.domains, []);
+  assert.ok(fs.existsSync(path.join(target, ".harness", "skills")));
+  assert.deepEqual(fs.readdirSync(path.join(target, ".harness", "skills")), [".gitkeep"]);
+  assert.equal(fs.existsSync(path.join(target, ".harness", "skills", "frontend")), false);
+  assert.equal(fs.existsSync(path.join(target, ".harness", "skills", "backend")), false);
 });
 
 test("runInstallWizard interactive cancel exits before backend calls", async () => {
