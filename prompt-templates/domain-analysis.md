@@ -44,21 +44,21 @@ Return a JSON object with this shape:
 }
 ```
 
-### Reasoning Procedure
+## Reasoning Procedure
 
 1. Inspect the repository surface broadly enough to identify domain signals.
 2. Prefer evidence from manifests, entrypoints, and routing boundaries.
 3. Choose only the smallest set of domains that explain the stack.
 4. Return strict JSON with known domain ids only.
 
-### Action Loop
+## Action Loop
 
 1. Read the repo signals.
 2. Map them to known domain ids.
 3. Clamp confidence to the 0 to 1 range.
 4. Return the JSON object and nothing else.
 
-### Examples
+## Examples
 
 - React app with API routes -> `frontend` and `backend`
 - Flask service with Docker and Terraform -> `backend`, `devops`, and `cloud`
