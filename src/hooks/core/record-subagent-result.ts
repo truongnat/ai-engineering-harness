@@ -107,8 +107,7 @@ function updateWorkerMemory(
       ? workerMemoryConfig.directory
       : DEFAULT_WORKER_MEMORY_DIR;
   const maxEntries =
-    Number.isInteger(workerMemoryConfig.maxEntries) &&
-    (workerMemoryConfig.maxEntries ?? 0) > 0
+    Number.isInteger(workerMemoryConfig.maxEntries) && (workerMemoryConfig.maxEntries ?? 0) > 0
       ? workerMemoryConfig.maxEntries!
       : DEFAULT_WORKER_MEMORY_LIMIT;
   const memoryPath = path.join(repoRoot, memoryDir, `${sanitizeSlug(options.agent)}.md`);
@@ -176,7 +175,9 @@ function main(): void {
       return;
     }
     const sessionDir = resolveSessionDir(options.session as string);
-    const result = recordSubagentResult(options as unknown as Parameters<typeof recordSubagentResult>[0]);
+    const result = recordSubagentResult(
+      options as unknown as Parameters<typeof recordSubagentResult>[0]
+    );
     try {
       appendHarnessEvent(findHarnessRoot(sessionDir), {
         type: "subagent-run",
@@ -191,10 +192,7 @@ function main(): void {
     emitResult(result, options.json as boolean);
     exitFromResult({ ok: true });
   } catch (error) {
-    emitResult(
-      { ok: false, reason: (error as Error).message },
-      process.argv.includes("--json")
-    );
+    emitResult({ ok: false, reason: (error as Error).message }, process.argv.includes("--json"));
     process.exit(1);
   }
 }

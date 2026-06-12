@@ -21,9 +21,10 @@ interface WorkerDefinition {
   definitionPath: string;
 }
 
-export const legacyRuntimeCommandCatalog = require("../../install/infrastructure/runtime-command-catalog.js") as {
-  fileReferencesActivation: (content: string) => boolean;
-};
+export const legacyRuntimeCommandCatalog =
+  require("../../install/infrastructure/runtime-command-catalog.js") as {
+    fileReferencesActivation: (content: string) => boolean;
+  };
 
 export const legacyWorkerRegistry = require("../../../workers/registry.js") as {
   workers: readonly WorkerDefinition[];
@@ -39,6 +40,7 @@ export const legacyDomainSkillGeneration = require("../../../features/domains/in
   listDomainDefinitions: () => DomainDefinition[];
 };
 
-export const legacyProviderRuleRenderer = require("../../install/infrastructure/provider-rule-renderer.js") as {
-  assertRepositoryProviderRules: (baseDir: string, failures: string[]) => void;
-};
+export const legacyProviderRuleRenderer =
+  require("../../install/infrastructure/provider-rule-renderer.js") as {
+    assertRepositoryProviderRules: (baseDir: string, failures: string[]) => void;
+  };

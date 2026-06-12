@@ -9,7 +9,10 @@
 import * as fs from "node:fs";
 import os from "node:os";
 import * as path from "node:path";
-import { uninstallPathsForProvider, HARNESS_MARKER } from "../../../shared/install-kernel/constants";
+import {
+  uninstallPathsForProvider,
+  HARNESS_MARKER,
+} from "../../../shared/install-kernel/constants";
 import { removeIgnoreBlock } from "../../../shared/install-kernel/git-hygiene";
 import { legacyProviderDetection } from "../../install/infrastructure/legacy-deps";
 const { isGitRepo } = legacyProviderDetection;

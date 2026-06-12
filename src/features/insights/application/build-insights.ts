@@ -3,7 +3,11 @@
 // Depends on: domain, infrastructure, presentation
 
 import path from "node:path";
-import { buildAnonymizedExport, type ExportOptions, type ExportPayload } from "../domain/export-payload";
+import {
+  buildAnonymizedExport,
+  type ExportOptions,
+  type ExportPayload,
+} from "../domain/export-payload";
 import { summarizeEvents, type Summary } from "../domain/summary";
 import type { Event } from "../domain/event";
 import { readEvents, resolveEventsPath } from "../infrastructure/event-reader";

@@ -40,10 +40,12 @@ function extractLessons(sessionDir: string): string[] {
   return lessons.filter(Boolean);
 }
 
-export function compactSessionMemory(options: {
-  session: string;
-  apply?: boolean | string;
-}): { ok: boolean; status: string; suggestion: string; lessonCount: number } {
+export function compactSessionMemory(options: { session: string; apply?: boolean | string }): {
+  ok: boolean;
+  status: string;
+  suggestion: string;
+  lessonCount: number;
+} {
   const sessionDir = resolveSessionDir(options.session);
   const repoRoot = findHarnessRoot(sessionDir);
   const memoryPath = path.join(repoRoot, ".harness", "MEMORY.md");
@@ -104,14 +106,13 @@ function main(): void {
       ]);
       return;
     }
-    const result = compactSessionMemory(options as unknown as Parameters<typeof compactSessionMemory>[0]);
+    const result = compactSessionMemory(
+      options as unknown as Parameters<typeof compactSessionMemory>[0]
+    );
     emitResult(result, options.json as boolean);
     exitFromResult({ ok: true });
   } catch (error) {
-    emitResult(
-      { ok: false, reason: (error as Error).message },
-      process.argv.includes("--json")
-    );
+    emitResult({ ok: false, reason: (error as Error).message }, process.argv.includes("--json"));
     process.exit(1);
   }
 }

@@ -18,12 +18,16 @@ const VALID_PROVIDER_SUPPORT = Object.freeze([
   "native",
   "adapter",
   "fallback",
-  "unsupported"
+  "unsupported",
 ] as const);
 
-const WORKER_IDS = Object.freeze(
-  ["explorer", "reviewer", "verifier", "gatekeeper", "fixer"] as const
-);
+const WORKER_IDS = Object.freeze([
+  "explorer",
+  "reviewer",
+  "verifier",
+  "gatekeeper",
+  "fixer",
+] as const);
 
 const workers: readonly WorkerDefinition[] = Object.freeze([
   {
@@ -38,9 +42,9 @@ const workers: readonly WorkerDefinition[] = Object.freeze([
       claude: "native",
       cursor: "adapter",
       codex: "adapter",
-      generic: "fallback"
+      generic: "fallback",
     },
-    definitionPath: "workers/explorer.md"
+    definitionPath: "workers/explorer.md",
   },
   {
     id: "reviewer",
@@ -54,9 +58,9 @@ const workers: readonly WorkerDefinition[] = Object.freeze([
       claude: "native",
       cursor: "adapter",
       codex: "adapter",
-      generic: "fallback"
+      generic: "fallback",
     },
-    definitionPath: "workers/reviewer.md"
+    definitionPath: "workers/reviewer.md",
   },
   {
     id: "verifier",
@@ -70,9 +74,9 @@ const workers: readonly WorkerDefinition[] = Object.freeze([
       claude: "native",
       cursor: "adapter",
       codex: "adapter",
-      generic: "fallback"
+      generic: "fallback",
     },
-    definitionPath: "workers/verifier.md"
+    definitionPath: "workers/verifier.md",
   },
   {
     id: "gatekeeper",
@@ -86,9 +90,9 @@ const workers: readonly WorkerDefinition[] = Object.freeze([
       claude: "native",
       cursor: "adapter",
       codex: "adapter",
-      generic: "fallback"
+      generic: "fallback",
     },
-    definitionPath: "workers/gatekeeper.md"
+    definitionPath: "workers/gatekeeper.md",
   },
   {
     id: "fixer",
@@ -102,10 +106,10 @@ const workers: readonly WorkerDefinition[] = Object.freeze([
       claude: "native",
       cursor: "adapter",
       codex: "adapter",
-      generic: "fallback"
+      generic: "fallback",
     },
-    definitionPath: "workers/fixer.md"
-  }
+    definitionPath: "workers/fixer.md",
+  },
 ]);
 
 function getWorkerById(id: WorkerId): WorkerDefinition | null {
@@ -116,11 +120,5 @@ function getNativeWorkersForProvider(provider: WorkerProvider): WorkerDefinition
   return workers.filter((worker) => worker.providerSupport[provider] === "native");
 }
 
-export {
-  VALID_PROVIDER_SUPPORT,
-  WORKER_IDS,
-  workers,
-  getWorkerById,
-  getNativeWorkersForProvider
-};
+export { VALID_PROVIDER_SUPPORT, WORKER_IDS, workers, getWorkerById, getNativeWorkersForProvider };
 export type { ProviderSupportMode, WorkerProvider, WorkerId, WorkerDefinition };

@@ -27,7 +27,7 @@ const steps = [
     args: [
       prettierCli,
       "--check",
-      "lib/",
+      "src/",
       "bin/",
       "test/",
       "*.js",

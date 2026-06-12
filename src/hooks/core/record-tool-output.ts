@@ -92,10 +92,7 @@ function main(): void {
     emitResult(result, options.json as boolean);
     exitFromResult({ ok: true });
   } catch (error) {
-    emitResult(
-      { ok: false, reason: (error as Error).message },
-      process.argv.includes("--json")
-    );
+    emitResult({ ok: false, reason: (error as Error).message }, process.argv.includes("--json"));
     process.exit(1);
   }
 }

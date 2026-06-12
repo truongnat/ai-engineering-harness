@@ -12,13 +12,7 @@ import type {
 } from "./cli-types";
 import type { ParseOptions } from "../../../cli/args";
 
-export type {
-  ParseOptions,
-  PlanProviderId,
-  InstallPlan,
-  ProviderDescriptor,
-  ProviderBinaryMap,
-};
+export type { ParseOptions, PlanProviderId, InstallPlan, ProviderDescriptor, ProviderBinaryMap };
 
 /* eslint-disable @typescript-eslint/no-require-imports */
 export const ui = require("../../../cli/ui/index.js").default as UiFacade;

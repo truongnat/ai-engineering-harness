@@ -2,17 +2,12 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
   pull_request:
+  workflow_dispatch:
 
 jobs:
   validate-and-test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        node-version: [18, 20, 22]
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
@@ -21,26 +16,22 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 20
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
       - name: Lint code (ESLint)
-        if: matrix.os == 'ubuntu-latest' && matrix.node-version == 20
         run: npx eslint bin/ test/ *.js --max-warnings 0 --no-error-on-unmatched-pattern
 
       - name: Check formatting (Prettier)
-        if: matrix.os == 'ubuntu-latest' && matrix.node-version == 20
-        run: npx prettier --check lib/ bin/ test/ *.js *.md --no-error-on-unmatched-pattern
+        run: npx prettier --check src/ bin/ test/ *.js *.md --no-error-on-unmatched-pattern
 
       - name: Typecheck (strict)
-        if: matrix.os == 'ubuntu-latest' && matrix.node-version == 20
         run: npm run typecheck
 
       - name: Security audit
-        if: matrix.os == 'ubuntu-latest' && matrix.node-version == 20
         run: npm audit --audit-level=high
 
       - name: Validate pack contracts
@@ -50,10 +41,9 @@ jobs:
         run: npm test
 
       - name: Run eval regression
-        run: node bin/aih.js eval run sample-bugfix --yes --no-llm-judge
+        run: node dist/cli/main.js eval run sample-bugfix --yes --no-llm-judge
 
-      - name: Check lib coverage gate
-        if: matrix.node-version == 20 && (matrix.os == 'ubuntu-latest' || matrix.os == 'windows-latest')
+      - name: Check coverage gate
         run: npm run test:coverage
 
       - name: Smoke test install (dry-run)

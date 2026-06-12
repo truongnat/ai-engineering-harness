@@ -143,7 +143,10 @@ function recordEvent(repoRoot: string, event: Record<string, unknown>): void {
   }
 }
 
-function hookOutput(eventName: string, payload: Omit<HookSpecificOutput, "hookEventName">): HookOutput {
+function hookOutput(
+  eventName: string,
+  payload: Omit<HookSpecificOutput, "hookEventName">
+): HookOutput {
   return {
     hookSpecificOutput: {
       hookEventName: eventName,

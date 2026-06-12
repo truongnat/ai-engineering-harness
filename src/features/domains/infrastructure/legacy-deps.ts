@@ -3,6 +3,7 @@
 
 /* eslint-disable @typescript-eslint/no-require-imports */
 
-export const legacyCodexRuleGeneration = require("../../install/infrastructure/codex-rule-generation.js") as {
-  renderCodexRuleSet: (...args: unknown[]) => string;
-};
+export const legacyCodexRuleGeneration =
+  require("../../install/infrastructure/codex-rule-generation.js") as {
+    renderCodexRuleSet: (...args: unknown[]) => string;
+  };

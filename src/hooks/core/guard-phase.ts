@@ -108,9 +108,12 @@ function hasImplementationEvidence(sessionDir: string): boolean {
   return false;
 }
 
-function verifyReady(
-  sessionDir: string
-): { ok: boolean; reason?: string; nextCommand?: string; questions?: string[] } {
+function verifyReady(sessionDir: string): {
+  ok: boolean;
+  reason?: string;
+  nextCommand?: string;
+  questions?: string[];
+} {
   const verifyPath = path.join(sessionDir, "VERIFY.md");
   if (!fs.existsSync(verifyPath)) {
     return {
@@ -214,7 +217,8 @@ export function guardPhase(options: { command: string; session: string }): Guard
   const policyPath = path.join(repoRoot, ".harness", "policies.json");
   if (fs.existsSync(policyPath)) {
     try {
-      const { PolicyEngine } = require("../../features/validate/infrastructure/policy/engine.js") as PolicyEngineModule;
+      const { PolicyEngine } =
+        require("../../features/validate/infrastructure/policy/engine.js") as PolicyEngineModule;
       const engine = new PolicyEngine(policyPath);
       const context = buildExecutionContext(sessionDir, repoRoot, command);
       const { blocked, reason, actions } = engine.shouldBlock(context);
@@ -236,21 +240,37 @@ export function guardPhase(options: { command: string; session: string }): Guard
         return readyResult;
       }
     } catch (error) {
-      console.error(`Policy engine error: ${(error as Error).message}. Falling back to legacy logic.`);
+      console.error(
+        `Policy engine error: ${(error as Error).message}. Falling back to legacy logic.`
+      );
     }
   }
 
   if (command === "harness-run") {
     const plan = planApproved(sessionDir, stateContent);
     if (!plan.ok) {
-      return { ok: false, status: "blocked", command, reason: plan.reason, nextCommand: plan.nextCommand, questions: plan.questions };
+      return {
+        ok: false,
+        status: "blocked",
+        command,
+        reason: plan.reason,
+        nextCommand: plan.nextCommand,
+        questions: plan.questions,
+      };
     }
   }
 
   if (command === "harness-verify") {
     const plan = planApproved(sessionDir, stateContent);
     if (!plan.ok) {
-      return { ok: false, status: "blocked", command, reason: plan.reason, nextCommand: plan.nextCommand, questions: plan.questions };
+      return {
+        ok: false,
+        status: "blocked",
+        command,
+        reason: plan.reason,
+        nextCommand: plan.nextCommand,
+        questions: plan.questions,
+      };
     }
     if (!hasImplementationEvidence(sessionDir)) {
       return {
@@ -267,7 +287,14 @@ export function guardPhase(options: { command: string; session: string }): Guard
   if (command === "harness-ship") {
     const verify = verifyReady(sessionDir);
     if (!verify.ok) {
-      return { ok: false, status: "blocked", command, reason: verify.reason, nextCommand: verify.nextCommand, questions: verify.questions };
+      return {
+        ok: false,
+        status: "blocked",
+        command,
+        reason: verify.reason,
+        nextCommand: verify.nextCommand,
+        questions: verify.questions,
+      };
     }
   }
 

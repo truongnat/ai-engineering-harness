@@ -1,5 +1,5 @@
 {
-  "lib/**/*.{ts,md}": ["prettier --write"],
+  "src/**/*.{ts,md}": ["prettier --write"],
   "bin/**/*.js": ["prettier --write", "eslint --max-warnings 0"],
   "test/**/*.js": ["prettier --write", "eslint --max-warnings 0"],
   "*.{js,md}": ["prettier --write"]

@@ -13,6 +13,10 @@ export {
   validateDomainIds,
   writeDomainSkillSurface,
 } from "./application/domain-skill-generation";
-export type { DomainDefinition, WriteOptions, WriteResult } from "./application/domain-skill-generation";
+export type {
+  DomainDefinition,
+  WriteOptions,
+  WriteResult,
+} from "./application/domain-skill-generation";
 
 export { runDomainsCommand } from "./presentation/domains-command";

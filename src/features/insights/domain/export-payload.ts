@@ -30,7 +30,10 @@ function mapToObject(rows: [string, number][]): Record<string, number> {
   return Object.fromEntries(rows);
 }
 
-export function buildAnonymizedExport(summary: Summary, options: ExportOptions = {}): ExportPayload {
+export function buildAnonymizedExport(
+  summary: Summary,
+  options: ExportOptions = {}
+): ExportPayload {
   const aggregate = {
     totalEvents: summary.totalEvents,
     skills: mapToObject(summary.skills),

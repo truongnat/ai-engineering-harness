@@ -5,10 +5,7 @@
 import path from "node:path";
 import type { ParseOptions } from "../args";
 import { buildInsights, buildInsightsExport } from "../../features/insights";
-import {
-  buildEvalRecommendations,
-  formatEvalRecommendations,
-} from "../../features/insights";
+import { buildEvalRecommendations, formatEvalRecommendations } from "../../features/insights";
 import { runRecommendedEvalRegression } from "../../features/insights";
 import { uploadInsightsExport } from "../../features/insights";
 

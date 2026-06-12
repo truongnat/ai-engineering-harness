@@ -4,7 +4,10 @@
 
 /** In-process install orchestrator. */
 
-import { applyPrivateIgnore, reconcileDeferredPrivateIgnore } from "../../../shared/install-kernel/git-hygiene";
+import {
+  applyPrivateIgnore,
+  reconcileDeferredPrivateIgnore,
+} from "../../../shared/install-kernel/git-hygiene";
 import { initHarnessProfile } from "../infrastructure/harness-skeleton";
 import { legacyDomainSkillGeneration } from "../infrastructure/legacy-deps";
 const { writeDomainSkillSurface } = legacyDomainSkillGeneration;

@@ -2,10 +2,7 @@
 // Layer: presentation
 // Depends on: all validate layers
 
-export {
-  ACTIVE_COMMAND_NAMING_PATHS,
-  DOGFOOD_DEMO_PREFIX,
-} from "./domain/contracts";
+export { ACTIVE_COMMAND_NAMING_PATHS, DOGFOOD_DEMO_PREFIX } from "./domain/contracts";
 
 export { VALID_TARGET_RUNTIMES } from "./domain/constants";
 
@@ -35,7 +32,11 @@ export {
   templateFiles,
 } from "./domain/constants";
 
-export { extractMarkdownSection, hasConcreteFailureRule, hasSubstantiveSectionBody } from "./domain/utils";
+export {
+  extractMarkdownSection,
+  hasConcreteFailureRule,
+  hasSubstantiveSectionBody,
+} from "./domain/utils";
 
 export {
   countCheckedContracts,
@@ -50,9 +51,4 @@ export { getRuntimeBootstrapPaths, isValidTargetRuntime } from "./infrastructure
 
 export { parseValidateArgs } from "./presentation/args";
 
-export {
-  executionHeadings,
-  skillTemplateHeadings,
-  taskHeadings,
-  main,
-} from "./presentation/main";
+export { executionHeadings, skillTemplateHeadings, taskHeadings, main } from "./presentation/main";

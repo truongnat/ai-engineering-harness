@@ -3,7 +3,11 @@
 // Depends on: shared/stack-detect
 
 /* eslint-disable @typescript-eslint/no-require-imports */
-import type { DomainId, ProjectAnalysisDomain, StackScanResult } from "../../../shared/stack-detect";
+import type {
+  DomainId,
+  ProjectAnalysisDomain,
+  StackScanResult,
+} from "../../../shared/stack-detect";
 
 // Use require for runtime to keep this file CJS-compatible when loaded directly
 // (TypeScript types are stripped at runtime via --experimental-strip-types)

@@ -78,20 +78,19 @@ function main(): void {
     if (options.help) {
       printHelp("archive-session-skill.js", [
         "Usage:",
-        "  node hooks/core/archive-session-skill.js --session <path> --skill <id> --reason \"Session complete\" [--promote-candidate false] [--json]",
+        '  node hooks/core/archive-session-skill.js --session <path> --skill <id> --reason "Session complete" [--promote-candidate false] [--json]',
         "",
         "Dispose means archive/deactivate, not delete.",
       ]);
       return;
     }
-    const result = archiveSessionSkill(options as unknown as Parameters<typeof archiveSessionSkill>[0]);
+    const result = archiveSessionSkill(
+      options as unknown as Parameters<typeof archiveSessionSkill>[0]
+    );
     emitResult(result, options.json as boolean);
     exitFromResult({ ok: true });
   } catch (error) {
-    emitResult(
-      { ok: false, reason: (error as Error).message },
-      process.argv.includes("--json")
-    );
+    emitResult({ ok: false, reason: (error as Error).message }, process.argv.includes("--json"));
     process.exit(1);
   }
 }

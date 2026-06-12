@@ -135,7 +135,10 @@ export function sanitizeSlug(value: string): string {
   );
 }
 
-export function writeMarkdownArtifact(filePath: string, sections: (string | null | undefined)[]): string {
+export function writeMarkdownArtifact(
+  filePath: string,
+  sections: (string | null | undefined)[]
+): string {
   ensureDir(path.dirname(filePath));
   const body = sections.filter(Boolean).join("\n\n");
   fs.writeFileSync(filePath, `${body!.trim()}\n`, "utf8");
